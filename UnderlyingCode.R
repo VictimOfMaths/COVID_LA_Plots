@@ -173,6 +173,9 @@ data$othexcess <- case_when(
   data$country!="Scotland" & data$week<=maxweek.ew ~ data$Other.20-data$deaths.1519)
 data$COVIDrate <- data$COVID.20*100000/data$pop
 
+data$cause=fct_relevel(data$cause, "COVID.20")
+  
+
 #############################################################
 #Daily data
 
@@ -273,6 +276,8 @@ daydata <- arrange(daydata, name, date)
 
 daydata$casesroll_avg <- roll_mean(daydata$cases, 7, align="right", fill=0)
 
+daydata$date <- as.Date(daydata$date)
+
 #Calculate weekly cases
 daydata$week <- week(as.Date(daydata$date)-days(4))
 
@@ -299,15 +304,15 @@ excess.s <-  data %>%
 excess <- bind_rows(excess.ew, excess.s)
 
 #Save master data
-write.csv(data, "Data/LAExcess.csv")
-write.csv(excess, "Data/LAExcessSummary.csv")
-write.csv(daydata, "Data/LACases.csv")
+write.csv(data, "COVID_LA_Plots/LAExcess.csv")
+write.csv(excess, "COVID_LA_Plots/LAExcessSummary.csv")
+write.csv(daydata, "COVID_LA_Plots/LACases.csv")
 
 ####################################################################
 
-data <- read.csv("Data/LAExcess.csv")
-excess <- read.csv("Data/LAExcessSummary.csv")
-daydata <- read.csv("Data/LACases.csv")
+data <- read.csv("COVID_LA_Plots/LAExcess.csv")
+excess <- read.csv("COVID_LA_Plots/LAExcessSummary.csv")
+daydata <- read.csv("COVID_LA_Plots/LACases.csv")
 
 ###################
 #LA-specific plots#
@@ -353,7 +358,6 @@ LAdata %>%
   gather(cause, excess, c(7,14)) %>% 
   group_by(week, cause) %>% 
   summarise(excess=sum(excess)) %>% 
-  mutate(cause=fct_relevel(cause, "COVID.20")) %>% 
 ggplot(aes(x=week, y=excess, fill=cause))+
   geom_bar(stat="identity")+
   geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+

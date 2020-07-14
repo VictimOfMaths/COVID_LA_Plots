@@ -7,7 +7,7 @@ fluidPage(
 
   sidebarPanel(
 
-    selectInput('LA', 'Select LA', sort(data_summary$name)),
+    selectInput('LA', 'Select LA', sort(data$name)),
     selectInput('plottype', 'Select plot', c("All deaths"=1,"By cause"=2,"By location"=3,"Cases vs deaths"=4))
   ),
 

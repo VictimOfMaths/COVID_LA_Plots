@@ -7,14 +7,14 @@ library(ggtext)
 library(paletteer)
 library(lubridate)
 library(forcats)
-library(Rcpp)
+library(RcppRoll)
 
 ###################################################################################
 #Weekly data
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek26.xlsx"
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek27.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
 colnames(data20) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
@@ -40,11 +40,27 @@ data1519$deaths.1519 <- as.numeric(data1519$deaths.1519)
 data1519$week <- as.numeric(data1519$week)
 data1519 <- data1519 %>% drop_na(name)
 
+#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
+data1519$name <- if_else(data1519$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
+                         "Buckinghamshire", data1519$name)
+data1519$code <- if_else(data1519$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
+                         "E06000060", data1519$code)
+
+data1519 <- data1519 %>% 
+  group_by(week, location, name, code) %>% 
+  summarise(deaths.1519=sum(deaths.1519)) %>% 
+  ungroup()
+
 data.ew <- merge(data1519, data20, all.x=TRUE)
 
 #Combine Cornwall & Isles of Scilly
 data.ew$code <- if_else(data.ew$code=="E06000053", "E06000052", data.ew$code)
 data.ew$name <- if_else(data.ew$name=="Isles of Scilly", "Cornwall", data.ew$name)
+
+#Combine Hackney & City of London
+data.ew$code <- if_else(data.ew$code=="E09000001", "E09000012", data.ew$code)
+data.ew$name <- if_else(data.ew$name=="City of London", "Hackney and City of London", data.ew$name)
+data.ew$name <- if_else(data.ew$name=="Hackney", "Hackney and City of London", data.ew$name)
 
 #Compress locations
 data.ew$location <- case_when(
@@ -140,6 +156,12 @@ colnames(LApop) <- c("code", "name", "geography", "pop")
 LApop$code <- if_else(LApop$code=="E06000053", "E06000052", LApop$code)
 LApop$name <- if_else(LApop$name=="Isles of Scilly", "Cornwall", LApop$name)
 
+#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
+LApop$name <- if_else(LApop$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
+                         "Buckinghamshire", LApop$name)
+LApop$code <- if_else(LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
+                         "E06000060", LApop$code)
+
 LApop <- LApop %>% 
   group_by(name, code) %>% 
   summarise(pop=sum(pop)) %>% 
@@ -161,7 +183,17 @@ data$Region <- case_when(
   is.na(data$Region) & data$country=="Wales" ~ "Wales",
   is.na(data$Region) & data$code %in% c("E06000058", "E06000059", "E07000246") ~ "South West",
   is.na(data$Region) & data$code %in% c("E07000244", "E07000245") ~ "East of England",
+  is.na(data$Region) & data$code=="E06000060" ~ "South East",
   TRUE ~ as.character(data$Region))
+
+#Generate national summaries
+data.nat <- data %>% 
+  group_by(week, country, location) %>% 
+  summarise(across(c("deaths.1519", "AllCause.20", "COVID.20", "Other.20"), sum)) %>% 
+  mutate(name=country, Region="Nation") %>% 
+  ungroup()
+
+data <- bind_rows(data, data.nat)
 
 #Calculate excesses
 data$allexcess <- case_when(
@@ -172,9 +204,6 @@ data$othexcess <- case_when(
   data$country=="Scotland" & data$week<=maxweek.s ~ data$Other.20-data$deaths.1519,
   data$country!="Scotland" & data$week<=maxweek.ew ~ data$Other.20-data$deaths.1519)
 data$COVIDrate <- data$COVID.20*100000/data$pop
-
-data$cause=fct_relevel(data$cause, "COVID.20")
-  
 
 #############################################################
 #Daily data
@@ -193,13 +222,25 @@ casedata.E <- casedata.E %>% filter(geography=="Lower tier local authority")
 mindate <- min(as.Date(casedata.E$date))
 maxdate <- max(as.Date(casedata.E$date))
 
+#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
+casedata.E$name <- if_else(casedata.E$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
+                      "Buckinghamshire", as.character(casedata.E$name))
+casedata.E$code <- if_else(casedata.E$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
+                      "E06000060", as.character(casedata.E$code))
+
+casedata.E <- casedata.E %>% 
+  group_by(name, code, date) %>% 
+  summarise(cases=sum(cases)) %>% 
+  ungroup()
+
+
 #Set up skeleton dataframe, merging City of London and Hackney
-daydata <- data.frame(code=rep(c(unique(data$code), "E09000012"),
+daydata <- data.frame(code=rep(unique(subset(data, !name %in% c("England", "Scotland", "Wales"))$code),
                                each=maxdate-mindate+1),
-                      name=rep(c(unique(data$name), "Hackney and City of London"),
+                      name=rep(unique(subset(data, !name %in% c("England", "Scotland", "Wales"))$name),
                                each=maxdate-mindate+1),
                       date=rep(seq.Date(from=mindate, to=maxdate, by="day"), 
-                               times=length(unique(data$name))+1))
+                               times=length(unique(subset(data, !name %in% c("England", "Scotland", "Wales"))$code))))
 
 #merge in English cases
 daydata <- merge(daydata, casedata.E, by=c("name", "code", "date"), all.x=TRUE)
@@ -221,7 +262,7 @@ daydata$country <- case_when(
 
 #Fill in blanks
 daydata$cases <- coalesce(daydata$cases.x, daydata$cases.y)
-daydata <- daydata[,-c(4:6)]
+daydata <- daydata[,-c(4:5)]
 daydata$cases <- if_else(
   is.na(daydata$cases) & daydata$country!="Scotland", 0, daydata$cases)
 
@@ -238,6 +279,12 @@ p1data$date <- as.Date(p1data$date)
 p1data <- subset(p1data, geography=="Lower tier local authority" & date<"2020-07-01")
 p1data$code <- if_else(p1data$code %in% c("E09000001", "E09000012"), 
                        "E09000012", as.character(p1data$code))
+p1data$code <- case_when(
+  p1data$code %in% c("E09000001", "E09000012") ~ "E09000012",
+  p1data$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ "E06000060",
+  TRUE ~ p1data$code
+)
+
 p1data <- p1data %>% 
   group_by(code, date) %>% 
   summarise(p1cases=sum(p1cases)) %>% 
@@ -251,9 +298,11 @@ p12data <- read.csv(temp)[,c(1:5)]
 colnames(p12data) <- c("name", "code", "geography", "date", "p12cases")
 p12data$date <- as.Date(p12data$date)
 p12data <- subset(p12data, geography=="Lower tier local authority" & date<"2020-07-01")
-p12data$code <- if_else(p12data$code %in% c("E09000001", "E09000012"), 
-                       "E09000012", as.character(p12data$code))
-
+p12data$code <- case_when(
+  p1data$code %in% c("E09000001", "E09000012") ~ "E09000012",
+  p1data$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ "E06000060",
+  TRUE ~ p12data$code
+)
 p12data <- p12data %>% 
   group_by(code, date) %>% 
   summarise(p12cases=sum(p12cases)) %>% 
@@ -272,9 +321,21 @@ daydata$p2cases <- daydata$p12cases-daydata$p1cases
 daydata$p2cases <- if_else(daydata$p2cases<0, 0, daydata$p2cases)
 
 daydata$date <- as.Date(daydata$date)
-daydata <- arrange(daydata, name, date)
 
-daydata$casesroll_avg <- roll_mean(daydata$cases, 7, align="right", fill=0)
+#National summary (E&W only)
+daydata.nat <- daydata %>% 
+  group_by(date, country) %>% 
+  summarise(across(c("cases", "p1cases", "p12cases", "p2cases"), sum)) %>% 
+  mutate(name=country) %>% 
+  ungroup()
+
+daydata <- bind_rows(daydata, daydata.nat)
+
+daydata <- daydata %>% 
+  group_by(name) %>% 
+  arrange(date) %>% 
+  mutate(casesroll_avg=roll_mean(cases, 7, align="right", fill=0)) %>% 
+  ungroup()
 
 daydata$date <- as.Date(daydata$date)
 
@@ -282,13 +343,13 @@ daydata$date <- as.Date(daydata$date)
 daydata$week <- week(as.Date(daydata$date)-days(4))
 
 daydata.week <- daydata %>% 
-  group_by(code, week) %>% 
+  group_by(name, week) %>% 
   summarise(cases=sum(cases), p1cases=sum(p1cases), p2cases=sum(p2cases)) %>% 
   ungroup()
 
 data <- merge(data, daydata.week, all.x=TRUE)
 
-#Calculate total exces deaths
+#Calculate total excess deaths
 excess.ew <- data %>% 
   filter(country!="Scotland" & week<=maxweek.ew) %>% 
   group_by(name) %>% 
@@ -318,7 +379,7 @@ daydata <- read.csv("COVID_LA_Plots/LACases.csv")
 #LA-specific plots#
 ###################
 
-LA <- "Newport"
+LA <- "England"
 
 LAdata <- data %>% filter(name==LA) 
 LAexcess <- excess %>% filter(name==LA) 
@@ -331,9 +392,9 @@ maxweek <- week(enddate)
 labpos <- max(sum(LAdata$AllCause.20[LAdata$week==maxweek]),
               sum(LAdata$deaths.1519[LAdata$week==maxweek]))
 
-lab <- if_else(LAexcess[1,2]<0, 
-               paste0(round(LAexcess[1,2],0), " (",round(LAexcess[1,4]*100,0), "%) deaths in 2020\ncompared to the average in 2015-19"),
-               paste0("+", round(LAexcess[1,2],0), " (+",round(LAexcess[1,4]*100,0), "%) deaths in 2020\ncompared to the average in 2015-19"))
+lab <- if_else(LAexcess[2]<0, 
+               paste0(round(LAexcess[2],0), " (",round(LAexcess[4]*100,0), "%) deaths in 2020\ncompared to the average in 2015-19"),
+               paste0("+", round(LAexcess[2],0), " (+",round(LAexcess[4]*100,0), "%) deaths in 2020\ncompared to the average in 2015-19"))
 
 #Excess deaths graph
 LAdata %>% 
@@ -358,6 +419,7 @@ LAdata %>%
   gather(cause, excess, c(7,14)) %>% 
   group_by(week, cause) %>% 
   summarise(excess=sum(excess)) %>% 
+  mutate(cause=fct_relevel(cause, "COVID.20")) %>% 
 ggplot(aes(x=week, y=excess, fill=cause))+
   geom_bar(stat="identity")+
   geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+

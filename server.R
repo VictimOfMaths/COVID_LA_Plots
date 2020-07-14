@@ -34,7 +34,7 @@ server <- function(input, output) {
     LAexcess <- excess %>% filter(name==LA)
     LAv1 <- as.numeric(LAexcess[3])
     LAv2 <- as.numeric(LAexcess[5])
-
+    
     enddate <- if_else(LAdata$country[1]=="Scotland", enddate.s, enddate.ew)
     source <- if_else(LAdata$country[1]=="Scotland", "NRS", "ONS")
     
@@ -157,5 +157,3 @@ server <- function(input, output) {
   }, height=600)
   
 }
-
-

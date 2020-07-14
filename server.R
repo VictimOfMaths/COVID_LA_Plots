@@ -6,9 +6,9 @@ library(paletteer)
 library(lubridate)
 library(forcats)
 
-data <- read.csv("COVID_LA_Plots/LAExcess.csv")
-excess <- read.csv("COVID_LA_Plots/LAExcessSummary.csv")
-daydata <- read.csv("COVID_LA_Plots/LACases.csv")
+data <- read.csv("LAExcess.csv")
+excess <- read.csv("LAExcessSummary.csv")
+daydata <- read.csv("LACases.csv")
 
 maxweek.ew <- max(subset(data, country!="Scotland" & !is.na(COVID.20))$week)
 enddate.ew <- as.Date("2020-01-03")+weeks(maxweek.ew-1)
@@ -16,6 +16,10 @@ maxweek.s <- max(subset(data, country=="Scotland" & !is.na(COVID.20))$week)
 enddate.s <- as.Date("2020-01-04")+weeks(maxweek.s-1)
 
 daydata$date <- as.Date(daydata$date)
+
+temp <- unique(as.character(data$name))
+names <- as.list(temp)
+names(names) <- unique(as.character(data$name))
 
 ###################
 #LA-specific plots#
@@ -154,4 +158,4 @@ server <- function(input, output) {
   
 }
 
-shinyApp(ui = ui, server = server)
+

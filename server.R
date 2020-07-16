@@ -57,14 +57,14 @@ server <- function(input, output) {
         geom_line(aes(x=week, y=AllCause.20), colour="red")+
         scale_x_continuous(name="Week")+
         scale_y_continuous(name="Deaths", limits=c(0,NA))+
-        theme_classic()+
-        theme(plot.subtitle=element_markdown())+
+        theme_classic(base_size=16)+
+        theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
         annotate("text", x=week(enddate)-2, y=max(labpos*1.5, labpos+20), 
                  label=lab,
-                 hjust=0, colour="red", size=4)+
+                 hjust=0, colour="red", size=rel(5))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=paste0("Weekly deaths in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span> by date of occurence<br>Data up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths<br>not yet having been fully processed."),
-             caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
+             caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
     #Excess deaths by cause
@@ -73,17 +73,17 @@ server <- function(input, output) {
         gather(cause, excess, c(8,15)) %>% 
         group_by(week, cause) %>% 
         summarise(excess=sum(excess)) %>% 
-        #mutate(cause=fct_relevel(cause, "COVID.20")) %>% 
         ggplot(aes(x=week, y=excess, fill=cause))+
         geom_bar(stat="identity")+
         geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
         scale_x_continuous(name="Week")+
         scale_y_continuous(name="Excess deaths vs. 2015-19 average")+
         scale_fill_paletteer_d("LaCroixColoR::PinaFraise", name="Cause", labels=c("COVID-19", "Other causes"))+
-        theme_classic()+
+        theme_classic(base_size=16)+
+        theme(plot.title.position="plot")+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by cause.\nData up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths\nnot yet having been fully processed."),
-             caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
+             caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
     #Excess deaths by location
@@ -95,10 +95,11 @@ server <- function(input, output) {
         scale_x_continuous(name="Week")+
         scale_y_continuous(name="Excess deaths vs. 2015-19 average")+
         scale_fill_paletteer_d("ggsci::planetexpress_futurama", name="Place of death")+
-        theme_classic()+
+        theme_classic(base_size=16)+
+        theme(plot.title.position="plot")+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=paste0("Excess deaths by occurence in 2020 vs. 2015-19 average by location.\nData up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths\nnot yet having been fully processed."),
-             caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
+             caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
     #Cases vs. deaths
@@ -112,11 +113,11 @@ server <- function(input, output) {
         geom_line(aes(x=week, y=excess), colour="#1BB6AF")+
         scale_x_continuous(name="Week", limits=c(0,maxweek+1))+
         scale_y_continuous(name="")+
-        theme_classic()+
-        theme(plot.subtitle=element_markdown())+
+        theme_classic(base_size=16)+
+        theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
         labs(title=paste0("Timeline of COVID-19 in ", LA),
              subtitle=paste0("Confirmed new COVID-19 <span style='color:#B25D91;'>cases</span> compared to confirmed COVID-19 <span style='color:#1BB6AF;'>deaths</span> by week of occurence.<br>Data up to ", enddate),
-             caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
+             caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
     #cases plot
@@ -129,11 +130,11 @@ server <- function(input, output) {
         geom_line(aes(x=date, y=casesroll_avg), colour="red")+
         scale_x_date(name="Date")+
         scale_y_continuous(name="Daily confirmed new cases")+
-        theme_classic()+
-        theme(plot.subtitle=element_markdown())+
+        theme_classic(base_size=16)+
+        theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
         labs(title=paste0("Confirmed new COVID cases in ",LA),
              subtitle="Confirmed new COVID-19 cases identified through combined pillar 1 & 2 testing<br>and the <span style='color:Red;'>7-day rolling average",
-             caption="Data from PHE | Plot by @VictimOfMaths")
+             caption="Data from PHE | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     
     #Experimental pillar 1 vs. 2 tests numbers
@@ -147,11 +148,11 @@ server <- function(input, output) {
         geom_line(aes(x=date, y=casesroll_avg), colour="navyblue")+
         scale_x_date(name="Date")+
         scale_y_continuous(name="Daily confirmed new cases")+
-        theme_classic()+
-        theme(plot.subtitle=element_markdown())+
+        theme_classic(base_size=16)+
+        theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
         labs(title=paste0("Confirmed new COVID cases in ",LA),
              subtitle="Confirmed new COVID-19 cases identified through <span style='color:#FF4E86;'>Pillar 1</span> and <span style='color:#FF9E44;'>Pillar 2</span> testing and the <span style='color:navyblue;'>7-day rolling average</span>.<br>PHE changed their methodology on 1st July and so pillar-specific data is not available since then.<br>Rolling average based on new approach.<br>Pillar-specific figures are estimated from the old approach and may be subject to some double-counting",
-             caption="Data from PHE | Plot by @VictimOfMaths")
+             caption="Data from PHE | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     p     
   }, height=600)

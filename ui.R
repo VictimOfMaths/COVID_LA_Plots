@@ -7,7 +7,7 @@ excess <- read.csv("LAExcessSummary.csv")
 
 ui <- fluidPage(
   
-  titlePanel("COVID19 excess deaths by LA"),
+  titlePanel("Visualising Local Authority COVID-19 deaths/cases data"),
   
   sidebarPanel(
     

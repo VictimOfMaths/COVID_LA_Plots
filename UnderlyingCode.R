@@ -14,7 +14,7 @@ library(RcppRoll)
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek27.xlsx"
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek28.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
 colnames(data20) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
@@ -77,10 +77,11 @@ data.ew <- data.ew %>%
 #2020 data
 
 #Need to update link and range each week
+#https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/deaths-involving-coronavirus-covid-19-in-scotland/related-statistics
 temp <- tempfile()
 source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data20.s <- read_excel(temp, sheet=2, range="A5:E3389", col_names=FALSE)
+data20.s <- read_excel(temp, sheet=2, range="A5:E3600", col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
 data20.s$week <- as.numeric(data20.s$week)
 
@@ -379,7 +380,7 @@ daydata <- read.csv("COVID_LA_Plots/LACases.csv")
 #LA-specific plots#
 ###################
 
-LA <- "England"
+LA <- "Scotland"
 
 LAdata <- data %>% filter(name==LA) 
 LAexcess <- excess %>% filter(name==LA) 
@@ -397,6 +398,7 @@ lab <- if_else(LAexcess[2]<0,
                paste0("+", round(LAexcess[2],0), " (+",round(LAexcess[4]*100,0), "%) deaths in 2020\ncompared to the average in 2015-19"))
 
 #Excess deaths graph
+png("Outputs/COVID_LA_Plots_1.png", units="in", width=8, height=6, res=500)
 LAdata %>% 
   group_by(week) %>% 
   summarise(deaths.1519=sum(deaths.1519), AllCause.20=sum(AllCause.20)) %>% 
@@ -411,10 +413,12 @@ ggplot()+
            label=lab,
            hjust=0, colour="red", size=3)+
   labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-       subtitle=paste0("Weekly deaths in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span> by date of occurance<br>Data up to ", enddate),
+       subtitle=paste0("Weekly deaths in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span> by date of occurence<br>Data up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths<br>not yet having been fully processed."),
        caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
+dev.off()
 
 #Excess deaths by cause
+png("Outputs/COVID_LA_Plots_2.png", units="in", width=8, height=6, res=500)
 LAdata %>% 
   gather(cause, excess, c(7,14)) %>% 
   group_by(week, cause) %>% 
@@ -428,10 +432,12 @@ ggplot(aes(x=week, y=excess, fill=cause))+
   scale_fill_paletteer_d("LaCroixColoR::PinaFraise", name="Cause", labels=c("COVID-19", "Other causes"))+
   theme_classic()+
   labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-       subtitle=paste0("Excess deaths by date of occurance in 2020 vs. 2015-19 average by cause\nData up to ", enddate),
+       subtitle=paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by cause.\nData up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths\nnot yet having been fully processed."),
        caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
+dev.off()
 
 #Excess deaths by location
+png("Outputs/COVID_LA_Plots_3.png", units="in", width=8, height=6, res=500)
 ggplot(LAdata, aes(x=week, y=allexcess, fill=location))+
   geom_col()+
   geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
@@ -440,10 +446,12 @@ ggplot(LAdata, aes(x=week, y=allexcess, fill=location))+
   scale_fill_paletteer_d("ggsci::planetexpress_futurama", name="Place of death")+
   theme_classic()+
   labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-       subtitle=paste0("Excess deaths by place of death in 2020 vs. 2015-19 average by cause\nData up to ", enddate),
+       subtitle=paste0("Excess deaths by occurence in 2020 vs. 2015-19 average by location.\nData up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths\nnot yet having been fully processed."),
        caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
+dev.off()
 
 #Cases vs. deaths
+png("Outputs/COVID_LA_Plots_4.png", units="in", width=8, height=6, res=500)
 LAdata %>% 
   group_by(week) %>% 
   summarise(excess=sum(COVID.20), cases=unique(cases)) %>% 
@@ -456,13 +464,14 @@ ggplot()+
   theme_classic()+
   theme(plot.subtitle=element_markdown())+
   labs(title=paste0("Timeline of COVID-19 in ", LA),
-       subtitle=paste0("Confirmed new COVID-19 <span style='color:#B25D91;'>cases</span> compared to <span style='color:#1BB6AF;'>deaths</span> by week of occurance<br>Data up to ", enddate),
+       subtitle=paste0("Confirmed new COVID-19 <span style='color:#B25D91;'>cases</span> compared to confirmed COVID-19 <span style='color:#1BB6AF;'>deaths</span> by week of occurence.<br>Data up to ", enddate),
        caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
-
+dev.off()
 
 #cases plot
 #England & Wales only
-#tiff(paste0("Outputs/COVIDNewCases", LA, ".tiff"), units="in", width=8, height=6, res=500)
+tiff(paste0("Outputs/COVIDNewCases", LA, ".tiff"), units="in", width=8, height=6, res=500)
+#png("Outputs/COVID_LA_Plots_5.png", units="in", width=8, height=6, res=500)
 daydata %>% 
   filter(name==LA) %>% 
 ggplot()+
@@ -473,13 +482,14 @@ ggplot()+
   theme_classic()+
   theme(plot.subtitle=element_markdown())+
   labs(title=paste0("Confirmed new COVID cases in ",LA),
-       subtitle="Confirmed new COVID-19 cases identified through combined pillar 1 & 2 testing and the <span style='color:Red;'>7-day rolling average",
+       subtitle="Confirmed new COVID-19 cases identified through combined pillar 1 & 2 testing<br>and the <span style='color:Red;'>7-day rolling average",
        caption="Data from PHE | Plot by @VictimOfMaths")
-#dev.off()
+dev.off()
 
 #Experimental pillar 1 vs. 2 tests numbers
 #ENGLAND ONLY
 #tiff(paste0("Outputs/COVIDNewCasesPillars", LA, ".tiff"), units="in", width=8, height=6, res=500)
+png("Outputs/COVID_LA_Plots_6.png", units="in", width=8, height=6, res=500)
 daydata %>% 
   filter(name==LA) %>% 
 ggplot()+
@@ -491,6 +501,9 @@ ggplot()+
   theme_classic()+
   theme(plot.subtitle=element_markdown())+
   labs(title=paste0("Confirmed new COVID cases in ",LA),
-       subtitle="Confirmed new COVID-19 cases identified through <span style='color:#FF4E86;'>Pillar 1</span> and <span style='color:#FF9E44;'>Pillar 2</span> testing and the <span style='color:navyblue;'>7-day rolling average</span>.<br>PHE changed their methodology on 1st July. Rolling average based on new approach.<br>Pillar-specific figures are estimated from the old approach and may be subject to some double-counting",
+       subtitle="Confirmed new COVID-19 cases identified through <span style='color:#FF4E86;'>Pillar 1</span> and <span style='color:#FF9E44;'>Pillar 2</span> testing and the <span style='color:navyblue;'>7-day rolling average</span>.<br>PHE changed their methodology on 1st July and so pillar-specific data is not available since then.<br>Rolling average based on new approach.<br>Pillar-specific figures are estimated from the old approach and may be subject to some double-counting",
        caption="Data from PHE | Plot by @VictimOfMaths")
-#dev.off()
+dev.off()
+
+#################################################
+#Analysis of cumulative excess deaths

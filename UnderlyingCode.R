@@ -81,7 +81,7 @@ data.ew <- data.ew %>%
 temp <- tempfile()
 source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data20.s <- read_excel(temp, sheet=2, range="A5:E3600", col_names=FALSE)
+data20.s <- read_excel(temp, sheet=2, range="A5:E3695", col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
 data20.s$week <- as.numeric(data20.s$week)
 
@@ -159,9 +159,9 @@ LApop$name <- if_else(LApop$name=="Isles of Scilly", "Cornwall", LApop$name)
 
 #Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
 LApop$name <- if_else(LApop$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
-                         "Buckinghamshire", LApop$name)
+                      "Buckinghamshire", LApop$name)
 LApop$code <- if_else(LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
-                         "E06000060", LApop$code)
+                      "E06000060", LApop$code)
 
 LApop <- LApop %>% 
   group_by(name, code) %>% 
@@ -225,9 +225,9 @@ maxdate <- max(as.Date(casedata.E$date))
 
 #Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
 casedata.E$name <- if_else(casedata.E$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
-                      "Buckinghamshire", as.character(casedata.E$name))
+                           "Buckinghamshire", as.character(casedata.E$name))
 casedata.E$code <- if_else(casedata.E$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
-                      "E06000060", as.character(casedata.E$code))
+                           "E06000060", as.character(casedata.E$code))
 
 casedata.E <- casedata.E %>% 
   group_by(name, code, date) %>% 
@@ -402,7 +402,7 @@ png("Outputs/COVID_LA_Plots_1.png", units="in", width=8, height=6, res=500)
 LAdata %>% 
   group_by(week) %>% 
   summarise(deaths.1519=sum(deaths.1519), AllCause.20=sum(AllCause.20)) %>% 
-ggplot()+
+  ggplot()+
   geom_line(aes(x=week, y=deaths.1519), colour="skyblue4")+
   geom_line(aes(x=week, y=AllCause.20), colour="red")+
   scale_x_continuous(name="Week")+
@@ -424,7 +424,7 @@ LAdata %>%
   group_by(week, cause) %>% 
   summarise(excess=sum(excess)) %>% 
   mutate(cause=fct_relevel(cause, "COVID.20")) %>% 
-ggplot(aes(x=week, y=excess, fill=cause))+
+  ggplot(aes(x=week, y=excess, fill=cause))+
   geom_bar(stat="identity")+
   geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
   scale_x_continuous(name="Week")+
@@ -455,7 +455,7 @@ png("Outputs/COVID_LA_Plots_4.png", units="in", width=8, height=6, res=500)
 LAdata %>% 
   group_by(week) %>% 
   summarise(excess=sum(COVID.20), cases=unique(cases)) %>% 
-ggplot()+
+  ggplot()+
   geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
   geom_line(aes(x=week, y=cases), colour="#B25D91")+
   geom_line(aes(x=week, y=excess), colour="#1BB6AF")+
@@ -474,7 +474,7 @@ tiff(paste0("Outputs/COVIDNewCases", LA, ".tiff"), units="in", width=8, height=6
 #png("Outputs/COVID_LA_Plots_5.png", units="in", width=8, height=6, res=500)
 daydata %>% 
   filter(name==LA) %>% 
-ggplot()+
+  ggplot()+
   geom_col(aes(x=date, y=cases), fill="skyblue2")+
   geom_line(aes(x=date, y=casesroll_avg), colour="red")+
   scale_x_date(name="Date")+
@@ -492,7 +492,7 @@ dev.off()
 png("Outputs/COVID_LA_Plots_6.png", units="in", width=8, height=6, res=500)
 daydata %>% 
   filter(name==LA) %>% 
-ggplot()+
+  ggplot()+
   geom_line(aes(x=date, y=p1cases), colour="#FF4E86")+
   geom_line(aes(x=date, y=p2cases), colour="#FF9E44")+
   geom_line(aes(x=date, y=casesroll_avg), colour="navyblue")+

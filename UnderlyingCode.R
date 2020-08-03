@@ -365,6 +365,27 @@ excess.s <-  data %>%
 
 excess <- bind_rows(excess.ew, excess.s)
 
+#Bring in LA populations
+temp <- tempfile()
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fpopulationandmigration%2fpopulationestimates%2fdatasets%2fpopulationestimatesforukenglandandwalesscotlandandnorthernireland%2fmid20182019laboundaries/ukmidyearestimates20182019ladcodes.xls"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D390", col_names=TRUE)
+colnames(LApop) <- c("code", "name", "geography", "pop")
+
+LApop$code <- case_when(
+  LApop$code %in% c("E09000001", "E09000012") ~ "E09000012",
+  LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ "E06000060",
+  TRUE ~ LApop$code
+)
+
+LApop <- LApop %>% 
+  group_by(code) %>% 
+  summarise(pop=sum(pop))
+
+daydata <- merge(daydata, LApop, all.x=TRUE)
+daydata$caserate <- daydata$cases*100000/daydata$pop
+daydata$caserate_avg <- daydata$casesroll_avg*100000/daydata$pop
+
 #Save master data
 write.csv(data, "COVID_LA_Plots/LAExcess.csv")
 write.csv(excess, "COVID_LA_Plots/LAExcessSummary.csv")
@@ -372,15 +393,17 @@ write.csv(daydata, "COVID_LA_Plots/LACases.csv")
 
 ####################################################################
 
-data <- read.csv("COVID_LA_Plots/LAExcess.csv")
-excess <- read.csv("COVID_LA_Plots/LAExcessSummary.csv")
-daydata <- read.csv("COVID_LA_Plots/LACases.csv")
+data <- read.csv("COVID_LA_Plots/LAExcess.csv")[,-c(1)]
+excess <- read.csv("COVID_LA_Plots/LAExcessSummary.csv")[,-c(1)]
+daydata <- read.csv("COVID_LA_Plots/LACases.csv")[,-c(1)]
+
+daydata$date <- as.Date(daydata$date)
 
 ###################
 #LA-specific plots#
 ###################
 
-LA <- "Scotland"
+LA <- "Sheffield"
 
 LAdata <- data %>% filter(name==LA) 
 LAexcess <- excess %>% filter(name==LA) 
@@ -483,7 +506,7 @@ daydata %>%
   theme(plot.subtitle=element_markdown())+
   labs(title=paste0("Confirmed new COVID cases in ",LA),
        subtitle="Confirmed new COVID-19 cases identified through combined pillar 1 & 2 testing<br>and the <span style='color:Red;'>7-day rolling average",
-       caption="Data from PHE | Plot by @VictimOfMaths")
+       caption="Data from PHE & PHW | Plot by @VictimOfMaths")
 dev.off()
 
 #Experimental pillar 1 vs. 2 tests numbers
@@ -504,6 +527,78 @@ daydata %>%
        subtitle="Confirmed new COVID-19 cases identified through <span style='color:#FF4E86;'>Pillar 1</span> and <span style='color:#FF9E44;'>Pillar 2</span> testing and the <span style='color:navyblue;'>7-day rolling average</span>.<br>PHE changed their methodology on 1st July and so pillar-specific data is not available since then.<br>Rolling average based on new approach.<br>Pillar-specific figures are estimated from the old approach and may be subject to some double-counting",
        caption="Data from PHE | Plot by @VictimOfMaths")
 dev.off()
+
+#Case rate vs. other LAs plot
+#ENGLAND & WALES ONLY
+#tiff(paste0("Outputs/COVIDNewCasesCompare", LA, ".tiff"), units="in", width=8, height=6, res=500)
+png("Outputs/COVID_LA_Plots_7.png", units="in", width=8, height=6, res=500)
+  ggplot()+
+  geom_line(data=subset(daydata, !name %in% c("England", "Wales")), aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+  geom_line(data=subset(daydata, name==LA), aes(x=date, y=caserate_avg), colour="#FF4E86")+
+  scale_x_date(name="Date")+
+  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
+  theme_classic()+
+  theme(plot.subtitle=element_markdown())+
+  labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
+       subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England & Wales"),
+       caption="Data from PHE & PHW | Plot by @VictimOfMaths")
+dev.off()
+
+daydata <- daydata %>% 
+  group_by(code) %>% 
+  arrange(date) %>% 
+  mutate(sum7day=roll_sum(cases, 3, align="right", fill=0), sum7dayrate=sum7day*100000/pop) %>% 
+  ungroup()
+
+daydata$ident <- case_when(
+  daydata$name=="Leicester" ~ "Leicester",
+  daydata$name %in% c("Blackburn with Darwen", "Burnley", "Hyndburn", "Pendle", "Rossendale", "Bradford",
+                      "Calderdale", "Kirklees", "Tameside", "Salford", "Stockport", "Trafford",
+                      "Bolton", "Bury", "Manchester", "Oldham", "Rochdale", "Wigan") ~ "New lockdowns",
+  TRUE ~ "Other Areas")
+
+tiff("Outputs/COVIDNewLockdowns.tiff", units="in", width=10, height=7, res=500)
+daydata %>%
+  filter(!name %in% c("England", "Wales") & country=="England") %>% 
+ggplot(aes(x=date, y=caserate_avg, colour=ident, group=name, alpha=ident))+
+  geom_line()+
+  scale_x_date(name="Date")+
+  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
+  scale_colour_manual(values=c("#92D84F", "#F44B4B", "Grey55"), name="")+
+  scale_alpha_manual(values=c(1,1,0.3), guide=FALSE)+
+  theme_classic()+
+  labs(title="New lockdowns are in areas where cases are high, but rises haven't been sharp",
+       subtitle="Rolling 7-day average of confirmed new COVID-19 case rates in English Local Authorities",
+       caption="Data from PHE | Plot by @VictimOfMaths")
+dev.off()
+
+tiff("Outputs/COVIDNewLockdowns2.tiff", units="in", width=10, height=7, res=500)
+daydata %>% 
+  filter(ident=="New lockdowns" & date>as.Date("2020-07-01")) %>% 
+  ggplot(aes(x=date, y=caserate_avg))+
+  geom_line(colour="tomato2")+
+  scale_x_date(name="Date")+
+  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
+  facet_wrap(~name)+
+  theme_classic()+
+  theme(strip.background=element_blank(), strip.text=element_text(face="bold", size=rel(1)))+
+  labs(title="Areas with new lockdowns have quite varied rates and trends of new cases",
+       subtitle="Rolling 7-day average of confirmed new COVID-19 case rates in English Local Authorities in July",
+       caption="Data from PHE | Plot by @VictimOfMaths")
+dev.off()
+
+daydata %>%
+  filter(!name %in% c("England", "Wales") & country=="England") %>% 
+  ggplot(aes(x=date, y=sum7dayrate, group=name))+
+  geom_line()+
+  scale_x_date(name="Date")+
+  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
+  scale_colour_manual(values=c("#92D84F", "#F44B4B", "Grey55"), name="")+
+  scale_alpha_manual(values=c(1,1,0.3), guide=FALSE)+
+  theme_classic()+
+  labs(title="New lockdowns are in areas where cases are high, but rises haven't been sharp",
+       subtitle="Rolling 7-day average of confirmed new COVID-19 case rates in English Local Authorities",
+       caption="Data from PHE | Plot by @VictimOfMaths")
 
 #################################################
 #Analysis of cumulative excess deaths

@@ -154,6 +154,21 @@ server <- function(input, output) {
              subtitle="Confirmed new COVID-19 cases identified through <span style='color:#FF4E86;'>Pillar 1</span> and <span style='color:#FF9E44;'>Pillar 2</span> testing and the <span style='color:navyblue;'>7-day rolling average</span>.<br>PHE changed their methodology on 1st July and so pillar-specific data is not available since then.<br>Rolling average based on new approach.<br>Pillar-specific figures are estimated from the old approach and may be subject to some double-counting",
              caption="Data from PHE | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
+    
+    #Comparison of case rates with other LAs
+    #ENGLAND & WALES ONLY
+    if (input$plottype == 7){
+      p <- ggplot()+
+        geom_line(data=subset(daydata, !name %in% c("England", "Wales")), aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+        geom_line(data=subset(daydata, name==LA), aes(x=date, y=caserate_avg), colour="#FF4E86")+
+        scale_x_date(name="Date")+
+        scale_y_continuous(name="Daily confirmed new cases per 100,000")+
+        theme_classic()+
+        theme(plot.subtitle=element_markdown())+
+        labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
+             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England & Wales"),
+             caption="Data from PHE & PHW | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
+    }
     p     
   }, height=600)
   

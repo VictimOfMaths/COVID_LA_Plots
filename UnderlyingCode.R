@@ -14,7 +14,7 @@ library(RcppRoll)
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek29.xlsx"
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek30.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
 colnames(data20) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
@@ -218,7 +218,7 @@ temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 
 casedata.E <- read.csv(temp)[,c(1:5)]
 colnames(casedata.E) <- c("name", "code", "geography", "date", "cases")
-casedata.E <- casedata.E %>% filter(geography=="Lower tier local authority")
+casedata.E <- casedata.E %>% filter(geography=="ltla")
 
 mindate <- min(as.Date(casedata.E$date))
 maxdate <- max(as.Date(casedata.E$date))
@@ -403,7 +403,7 @@ daydata$date <- as.Date(daydata$date)
 #LA-specific plots#
 ###################
 
-LA <- "Sheffield"
+LA <- "Calderdale"
 
 LAdata <- data %>% filter(name==LA) 
 LAexcess <- excess %>% filter(name==LA) 
@@ -530,8 +530,8 @@ dev.off()
 
 #Case rate vs. other LAs plot
 #ENGLAND & WALES ONLY
-#tiff(paste0("Outputs/COVIDNewCasesCompare", LA, ".tiff"), units="in", width=8, height=6, res=500)
-png("Outputs/COVID_LA_Plots_7.png", units="in", width=8, height=6, res=500)
+tiff(paste0("Outputs/COVIDNewCasesCompare", LA, ".tiff"), units="in", width=8, height=6, res=500)
+#png("Outputs/COVID_LA_Plots_7.png", units="in", width=8, height=6, res=500)
   ggplot()+
   geom_line(data=subset(daydata, !name %in% c("England", "Wales")), aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
   geom_line(data=subset(daydata, name==LA), aes(x=date, y=caserate_avg), colour="#FF4E86")+

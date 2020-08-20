@@ -37,6 +37,11 @@ server <- function(input, output) {
     
     enddate <- if_else(LAdata$country[1]=="Scotland", enddate.s, enddate.ew)
     source <- if_else(LAdata$country[1]=="Scotland", "NRS", "ONS")
+    source2 <- case_when(
+      LAdata$country[1]=="England" ~ "PHE",
+      LAdata$country[1]=="Scotland" ~ "Scottish Government",
+      LAdata$country[1]=="Wales" ~ "PHW"
+    )
     
     maxweek <- week(enddate)
     
@@ -117,11 +122,10 @@ server <- function(input, output) {
         theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
         labs(title=paste0("Timeline of COVID-19 in ", LA),
              subtitle=paste0("Confirmed new COVID-19 <span style='color:#B25D91;'>cases</span> compared to confirmed COVID-19 <span style='color:#1BB6AF;'>deaths</span> by week of occurence.<br>Data up to ", enddate),
-             caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
+             caption=paste0("Data from ", source," & ", source2 ," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
     #cases plot
-    #England & Wales only
     if (input$plottype == 5){
       p <- daydata %>% 
         filter(name==LA) %>% 
@@ -134,7 +138,7 @@ server <- function(input, output) {
         theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
         labs(title=paste0("Confirmed new COVID cases in ",LA),
              subtitle="Confirmed new COVID-19 cases identified through combined pillar 1 & 2 testing<br>and the <span style='color:Red;'>7-day rolling average",
-             caption="Data from PHE | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
+             caption=paste0("Data from ", source2, " | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
     #Experimental pillar 1 vs. 2 tests numbers
@@ -156,18 +160,31 @@ server <- function(input, output) {
     }
     
     #Comparison of case rates with other LAs
-    #ENGLAND & WALES ONLY
     if (input$plottype == 7){
       p <- ggplot()+
-        geom_line(data=subset(daydata, !name %in% c("England", "Wales")), aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland")), aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
         geom_line(data=subset(daydata, name==LA), aes(x=date, y=caserate_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
         scale_y_continuous(name="Daily confirmed new cases per 100,000")+
         theme_classic()+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
-             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England & Wales"),
-             caption="Data from PHE & PHW | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
+             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England & Wales and Health Boards in Scotland"),
+             caption=paste0("Data from ", source," &", source2 ," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
+    }
+    
+    #Comparison of case numbers with other LAs
+    if (input$plottype == 8){
+      p <- ggplot()+
+        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland")), aes(x=date, y=casesroll_avg, group=name), colour="Grey80")+
+        geom_line(data=subset(daydata, name==LA), aes(x=date, y=casesroll_avg), colour="#FF4E86")+
+        scale_x_date(name="Date")+
+        scale_y_continuous(name="Daily confirmed new cases")+
+        theme_classic()+
+        theme(plot.subtitle=element_markdown())+
+        labs(title=paste0("Number of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
+             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England & Wales and Health Boards in Scotland"),
+             caption=paste0("Data from ", source," &", source2 ," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     p     
   }, height=600)

@@ -14,7 +14,7 @@ library(RcppRoll)
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek31.xlsx"
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek32.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
 colnames(data20) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
@@ -73,15 +73,45 @@ data.ew <- data.ew %>%
   mutate(Other.20=AllCause.20-COVID.20) %>% 
   ungroup()
 
+#Bring in LA populations
+temp <- tempfile()
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fpopulationandmigration%2fpopulationestimates%2fdatasets%2fpopulationestimatesforukenglandandwalesscotlandandnorthernireland%2fmid20182019laboundaries/ukmidyearestimates20182019ladcodes.xls"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D423", col_names=TRUE)
+colnames(LApop) <- c("code", "name", "geography", "pop")
+
+#Merge isles of Scilly in with Cornwall
+LApop$code <- if_else(LApop$code=="E06000053", "E06000052", LApop$code)
+LApop$name <- if_else(LApop$name=="Isles of Scilly", "Cornwall", LApop$name)
+
+#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
+LApop$name <- if_else(LApop$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
+                      "Buckinghamshire", LApop$name)
+LApop$code <- if_else(LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
+                      "E06000060", LApop$code)
+
+#Merge City of London & Hackney
+LApop$code <- if_else(LApop$code=="E09000001", "E09000012", LApop$code)
+LApop$name <- if_else(LApop$name=="City of London", "Hackney and City of London", LApop$name)
+LApop$name <- if_else(LApop$name=="Hackney", "Hackney and City of London", LApop$name)
+
+LApop <- LApop %>% 
+  group_by(name, code) %>% 
+  summarise(pop=sum(pop)) %>% 
+  ungroup()
+
+data.ew <- merge(data.ew, LApop, all.x=TRUE)
+
+
 #Bring in Scottish deaths data (released by NRS on a Wednesday)
 #2020 data
 
 #Need to update link and range each week
 #https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/deaths-involving-coronavirus-covid-19-in-scotland/related-statistics
 temp <- tempfile()
-source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
+source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-health-board-location.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data20.s <- read_excel(temp, sheet=2, range="A5:E3903", col_names=FALSE)
+data20.s <- read_excel(temp, sheet=2, range="A4:E1778", col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
 data20.s$week <- as.numeric(data20.s$week)
 
@@ -96,9 +126,9 @@ data20.s$Other.20 <- replace_na(data20.s$Other.20, 0)
 
 #2015-19 data
 temp <- tempfile()
-source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location-15-19.xlsx"
+source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-health-board-location-15-19.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data1519.s <- read_excel(temp, sheet=2, range="A5:E25207", col_names=FALSE)
+data1519.s <- read_excel(temp, sheet=2, range="A5:E11159", col_names=FALSE)
 colnames(data1519.s) <- c("week", "name", "location", "year", "deaths")
 data1519.s$week <- as.numeric(data1519.s$week)
 
@@ -129,14 +159,32 @@ data.s <- data.s %>%
   mutate(AllCause.20=COVID.20+Other.20) %>% 
   ungroup()
 
-#Bring in Scottish LA codes
-temp <- tempfile()
-source <- "https://opendata.arcgis.com/datasets/35de30c6778b463a8305939216656132_0.csv"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-codelookup <- read.csv(temp)[,c(2,3)]
-colnames(codelookup) <- c("code", "name")
+#Bring in Scottish HB codes
+data.s$code <- case_when(
+  data.s$name=="Ayrshire and Arran" ~ "S08000015",
+  data.s$name=="Borders" ~ "S08000016",
+  data.s$name=="Dumfries and Galloway" ~ "S08000017",
+  data.s$name=="Fife" ~ "S08000029",
+  data.s$name=="Forth Valley" ~ "S08000019",
+  data.s$name=="Grampian" ~ "S08000020",
+  data.s$name=="Greater Glasgow and Clyde" ~ "S08000031",
+  data.s$name=="Highland" ~ "S08000022",
+  data.s$name=="Lanarkshire" ~ "S08000032",
+  data.s$name=="Lothian" ~ "S08000024",
+  data.s$name=="Orkney" ~ "S08000025",
+  data.s$name=="Shetland" ~ "S08000026",
+  data.s$name=="Tayside" ~ "S08000030",
+  data.s$name=="Western Isles" ~ "S08000028"
+)
 
-data.s <- merge(data.s, codelookup, all.x=TRUE)
+#Bring in population
+temp <- tempfile()
+source <- "https://www.nrscotland.gov.uk/files//statistics/population-estimates/mid-19/mid-year-pop-est-19-data.xlsx"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+HBpop <- read_excel(temp, sheet="Table 2", range="A40:C54", col_names=TRUE)
+colnames(HBpop) <- c("code", "name", "pop")
+
+data.s <- merge(data.s, HBpop, by=c("code", "name"))
 
 #Merge countries
 data <- bind_rows(data.ew, data.s)
@@ -145,30 +193,6 @@ data$country <- case_when(
   substr(data$code,1,1)=="E" ~ "England",
   substr(data$code,1,1)=="W" ~ "Wales",
   substr(data$code,1,1)=="S" ~ "Scotland")
-
-#Bring in LA populations
-temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fpopulationandmigration%2fpopulationestimates%2fdatasets%2fpopulationestimatesforukenglandandwalesscotlandandnorthernireland%2fmid20182019laboundaries/ukmidyearestimates20182019ladcodes.xls"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D423", col_names=TRUE)
-colnames(LApop) <- c("code", "name", "geography", "pop")
-
-#Merge isles of Scilly in with Cornwall
-LApop$code <- if_else(LApop$code=="E06000053", "E06000052", LApop$code)
-LApop$name <- if_else(LApop$name=="Isles of Scilly", "Cornwall", LApop$name)
-
-#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
-LApop$name <- if_else(LApop$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
-                      "Buckinghamshire", LApop$name)
-LApop$code <- if_else(LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
-                      "E06000060", LApop$code)
-
-LApop <- LApop %>% 
-  group_by(name, code) %>% 
-  summarise(pop=sum(pop)) %>% 
-  ungroup()
-
-data <- merge(data, LApop, all.x=TRUE)
 
 #Bring in Regions
 temp <- tempfile()
@@ -256,16 +280,67 @@ colnames(casedata.W) <- c("name", "date", "cases")
 
 daydata <- merge(daydata, casedata.W, by=c("name", "date"), all.x=TRUE)
 
-daydata$country <- case_when(
-  substr(daydata$code,1,1)=="E" ~ "England",
-  substr(daydata$code,1,1)=="W" ~ "Wales",
-  substr(daydata$code,1,1)=="S" ~ "Scotland")
+#Fill in blanks
+daydata$cases <- coalesce(daydata$cases.x, daydata$cases.y)
+daydata <- daydata[,-c(4:5)]
+daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S", 0, daydata$cases)
+
+#Bring in Scottish case data
+temp <- tempfile()
+source <- "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/04/coronavirus-covid-19-trends-in-daily-data/documents/covid-19-data-by-nhs-board/covid-19-data-by-nhs-board/govscot%3Adocument/COVID-19%2Bdaily%2Bdata%2B-%2Bby%2BNHS%2BBoard%2B-%2B20%2BAugust%2B2020.xlsx?forceDownload=true"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+casedata.S <- read_excel(temp, sheet=3, range="A3:O170")
+
+casedata.S$Date <- as.Date(casedata.S$Date)
+
+casedata.S_long <- gather(casedata.S, name, cumul_cases, c(2:15))
+casedata.S_long$name <- substr(casedata.S_long$name, 5,99)
+casedata.S_long$name <- gsub("[&]", "and", casedata.S_long$name)
+
+colnames(casedata.S_long) <- c("date", "name", "cumul_cases")
+
+#Treat supressed numbers as 0
+casedata.S_long$cumul_cases <- as.numeric(ifelse(casedata.S_long$cumul_cases=="*", 0, casedata.S_long$cumul_cases))
+
+#Calculate daily cases
+casedata.S_long <- casedata.S_long %>%
+  arrange(name, date) %>%
+  group_by(name) %>%
+  mutate(cases=cumul_cases-lag(cumul_cases,1))
+
+#Remove historic pillar 2 cases which are all dumped into June 15th
+casedata.S_long$cases <- if_else(casedata.S_long$date==as.Date("2020-06-15"),0,casedata.S_long$cases)
+
+casedata.S_long$cases <- if_else(is.na(casedata.S_long$cases), 0, casedata.S_long$cases)
+
+casedata.S_long$code <- case_when(
+  casedata.S_long$name=="Ayrshire and Arran" ~ "S08000015",
+  casedata.S_long$name=="Borders" ~ "S08000016",
+  casedata.S_long$name=="Dumfries and Galloway" ~ "S08000017",
+  casedata.S_long$name=="Fife" ~ "S08000029",
+  casedata.S_long$name=="Forth Valley" ~ "S08000019",
+  casedata.S_long$name=="Grampian" ~ "S08000020",
+  casedata.S_long$name=="Greater Glasgow and Clyde" ~ "S08000031",
+  casedata.S_long$name=="Highland" ~ "S08000022",
+  casedata.S_long$name=="Lanarkshire" ~ "S08000032",
+  casedata.S_long$name=="Lothian" ~ "S08000024",
+  casedata.S_long$name=="Orkney" ~ "S08000025",
+  casedata.S_long$name=="Shetland" ~ "S08000026",
+  casedata.S_long$name=="Tayside" ~ "S08000030",
+  casedata.S_long$name=="Western Isles" ~ "S08000028"
+)
+
+daydata <- merge(daydata, casedata.S_long[,-c(3)], by=c("name", "date", "code"), all.x=TRUE)
 
 #Fill in blanks
 daydata$cases <- coalesce(daydata$cases.x, daydata$cases.y)
 daydata <- daydata[,-c(4:5)]
-daydata$cases <- if_else(
-  is.na(daydata$cases) & daydata$country!="Scotland", 0, daydata$cases)
+daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
+
+daydata$country <- case_when(
+  substr(daydata$code,1,1)=="E" ~ "England",
+  substr(daydata$code,1,1)=="W" ~ "Wales",
+  substr(daydata$code,1,1)=="S" ~ "Scotland")
 
 #Experimental pillar 1 & 2 separation - England only and only up to end of June
 #Archive files from 1st & 2nd July - either side of pillar 2 addition to data
@@ -366,23 +441,23 @@ excess.s <-  data %>%
 excess <- bind_rows(excess.ew, excess.s)
 
 #Bring in LA populations
-temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fpopulationandmigration%2fpopulationestimates%2fdatasets%2fpopulationestimatesforukenglandandwalesscotlandandnorthernireland%2fmid20182019laboundaries/ukmidyearestimates20182019ladcodes.xls"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D390", col_names=TRUE)
-colnames(LApop) <- c("code", "name", "geography", "pop")
-
-LApop$code <- case_when(
-  LApop$code %in% c("E09000001", "E09000012") ~ "E09000012",
-  LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ "E06000060",
-  TRUE ~ LApop$code
-)
-
-LApop <- LApop %>% 
-  group_by(code) %>% 
-  summarise(pop=sum(pop))
+LApop <- data %>% 
+  select(code, pop) %>% 
+  distinct()
 
 daydata <- merge(daydata, LApop, all.x=TRUE)
+
+#Sort out pops for nations
+natpop <- daydata %>% 
+  filter(!name %in% c("England", "Wales", "Scotland")) %>% 
+  filter(date=="2020-04-01") %>% 
+  group_by(country) %>% 
+  summarise(pop=sum(pop))
+
+daydata <- merge(daydata, natpop, by="country", all.x=TRUE)
+daydata$pop <- if_else(is.na(daydata$pop.x), daydata$pop.y, daydata$pop.x)
+daydata <- daydata[,-c(11,12)]
+
 daydata$caserate <- daydata$cases*100000/daydata$pop
 daydata$caserate_avg <- daydata$casesroll_avg*100000/daydata$pop
 
@@ -390,215 +465,3 @@ daydata$caserate_avg <- daydata$casesroll_avg*100000/daydata$pop
 write.csv(data, "COVID_LA_Plots/LAExcess.csv")
 write.csv(excess, "COVID_LA_Plots/LAExcessSummary.csv")
 write.csv(daydata, "COVID_LA_Plots/LACases.csv")
-
-####################################################################
-
-data <- read.csv("COVID_LA_Plots/LAExcess.csv")[,-c(1)]
-excess <- read.csv("COVID_LA_Plots/LAExcessSummary.csv")[,-c(1)]
-daydata <- read.csv("COVID_LA_Plots/LACases.csv")[,-c(1)]
-
-daydata$date <- as.Date(daydata$date)
-
-###################
-#LA-specific plots#
-###################
-
-LA <- "Calderdale"
-
-LAdata <- data %>% filter(name==LA) 
-LAexcess <- excess %>% filter(name==LA) 
-
-enddate <- if_else(LAdata$country[1]=="Scotland", enddate.s, enddate.ew)
-source <- if_else(LAdata$country[1]=="Scotland", "NRS", "ONS")
-
-maxweek <- week(enddate)
-
-labpos <- max(sum(LAdata$AllCause.20[LAdata$week==maxweek]),
-              sum(LAdata$deaths.1519[LAdata$week==maxweek]))
-
-lab <- if_else(LAexcess[2]<0, 
-               paste0(round(LAexcess[2],0), " (",round(LAexcess[4]*100,0), "%) deaths in 2020\ncompared to the average in 2015-19"),
-               paste0("+", round(LAexcess[2],0), " (+",round(LAexcess[4]*100,0), "%) deaths in 2020\ncompared to the average in 2015-19"))
-
-#Excess deaths graph
-png("Outputs/COVID_LA_Plots_1.png", units="in", width=8, height=6, res=500)
-LAdata %>% 
-  group_by(week) %>% 
-  summarise(deaths.1519=sum(deaths.1519), AllCause.20=sum(AllCause.20)) %>% 
-  ggplot()+
-  geom_line(aes(x=week, y=deaths.1519), colour="skyblue4")+
-  geom_line(aes(x=week, y=AllCause.20), colour="red")+
-  scale_x_continuous(name="Week")+
-  scale_y_continuous(name="Deaths", limits=c(0,NA))+
-  theme_classic()+
-  theme(plot.subtitle=element_markdown())+
-  annotate("text", x=week(enddate)-2, y=max(labpos*1.5, labpos+20), 
-           label=lab,
-           hjust=0, colour="red", size=3)+
-  labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-       subtitle=paste0("Weekly deaths in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span> by date of occurence<br>Data up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths<br>not yet having been fully processed."),
-       caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
-dev.off()
-
-#Excess deaths by cause
-png("Outputs/COVID_LA_Plots_2.png", units="in", width=8, height=6, res=500)
-LAdata %>% 
-  gather(cause, excess, c(7,14)) %>% 
-  group_by(week, cause) %>% 
-  summarise(excess=sum(excess)) %>% 
-  mutate(cause=fct_relevel(cause, "COVID.20")) %>% 
-  ggplot(aes(x=week, y=excess, fill=cause))+
-  geom_bar(stat="identity")+
-  geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
-  scale_x_continuous(name="Week")+
-  scale_y_continuous(name="Excess deaths vs. 2015-19 average")+
-  scale_fill_paletteer_d("LaCroixColoR::PinaFraise", name="Cause", labels=c("COVID-19", "Other causes"))+
-  theme_classic()+
-  labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-       subtitle=paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by cause.\nData up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths\nnot yet having been fully processed."),
-       caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
-dev.off()
-
-#Excess deaths by location
-png("Outputs/COVID_LA_Plots_3.png", units="in", width=8, height=6, res=500)
-ggplot(LAdata, aes(x=week, y=allexcess, fill=location))+
-  geom_col()+
-  geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
-  scale_x_continuous(name="Week")+
-  scale_y_continuous(name="Excess deaths vs. 2015-19 average")+
-  scale_fill_paletteer_d("ggsci::planetexpress_futurama", name="Place of death")+
-  theme_classic()+
-  labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-       subtitle=paste0("Excess deaths by occurence in 2020 vs. 2015-19 average by location.\nData up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths\nnot yet having been fully processed."),
-       caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
-dev.off()
-
-#Cases vs. deaths
-png("Outputs/COVID_LA_Plots_4.png", units="in", width=8, height=6, res=500)
-LAdata %>% 
-  group_by(week) %>% 
-  summarise(excess=sum(COVID.20), cases=unique(cases)) %>% 
-  ggplot()+
-  geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
-  geom_line(aes(x=week, y=cases), colour="#B25D91")+
-  geom_line(aes(x=week, y=excess), colour="#1BB6AF")+
-  scale_x_continuous(name="Week", limits=c(0,maxweek+1))+
-  scale_y_continuous(name="")+
-  theme_classic()+
-  theme(plot.subtitle=element_markdown())+
-  labs(title=paste0("Timeline of COVID-19 in ", LA),
-       subtitle=paste0("Confirmed new COVID-19 <span style='color:#B25D91;'>cases</span> compared to confirmed COVID-19 <span style='color:#1BB6AF;'>deaths</span> by week of occurence.<br>Data up to ", enddate),
-       caption=paste0("Data from ", source," | Plot by @VictimOfMaths"))
-dev.off()
-
-#cases plot
-#England & Wales only
-tiff(paste0("Outputs/COVIDNewCases", LA, ".tiff"), units="in", width=8, height=6, res=500)
-#png("Outputs/COVID_LA_Plots_5.png", units="in", width=8, height=6, res=500)
-daydata %>% 
-  filter(name==LA) %>% 
-  ggplot()+
-  geom_col(aes(x=date, y=cases), fill="skyblue2")+
-  geom_line(aes(x=date, y=casesroll_avg), colour="red")+
-  scale_x_date(name="Date")+
-  scale_y_continuous(name="Daily confirmed new cases")+
-  theme_classic()+
-  theme(plot.subtitle=element_markdown())+
-  labs(title=paste0("Confirmed new COVID cases in ",LA),
-       subtitle="Confirmed new COVID-19 cases identified through combined pillar 1 & 2 testing<br>and the <span style='color:Red;'>7-day rolling average",
-       caption="Data from PHE & PHW | Plot by @VictimOfMaths")
-dev.off()
-
-#Experimental pillar 1 vs. 2 tests numbers
-#ENGLAND ONLY
-#tiff(paste0("Outputs/COVIDNewCasesPillars", LA, ".tiff"), units="in", width=8, height=6, res=500)
-png("Outputs/COVID_LA_Plots_6.png", units="in", width=8, height=6, res=500)
-daydata %>% 
-  filter(name==LA) %>% 
-  ggplot()+
-  geom_line(aes(x=date, y=p1cases), colour="#FF4E86")+
-  geom_line(aes(x=date, y=p2cases), colour="#FF9E44")+
-  geom_line(aes(x=date, y=casesroll_avg), colour="navyblue")+
-  scale_x_date(name="Date")+
-  scale_y_continuous(name="Daily confirmed new cases")+
-  theme_classic()+
-  theme(plot.subtitle=element_markdown())+
-  labs(title=paste0("Confirmed new COVID cases in ",LA),
-       subtitle="Confirmed new COVID-19 cases identified through <span style='color:#FF4E86;'>Pillar 1</span> and <span style='color:#FF9E44;'>Pillar 2</span> testing and the <span style='color:navyblue;'>7-day rolling average</span>.<br>PHE changed their methodology on 1st July and so pillar-specific data is not available since then.<br>Rolling average based on new approach.<br>Pillar-specific figures are estimated from the old approach and may be subject to some double-counting",
-       caption="Data from PHE | Plot by @VictimOfMaths")
-dev.off()
-
-#Case rate vs. other LAs plot
-#ENGLAND & WALES ONLY
-tiff(paste0("Outputs/COVIDNewCasesCompare", LA, ".tiff"), units="in", width=8, height=6, res=500)
-#png("Outputs/COVID_LA_Plots_7.png", units="in", width=8, height=6, res=500)
-  ggplot()+
-  geom_line(data=subset(daydata, !name %in% c("England", "Wales")), aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
-  geom_line(data=subset(daydata, name==LA), aes(x=date, y=caserate_avg), colour="#FF4E86")+
-  scale_x_date(name="Date")+
-  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
-  theme_classic()+
-  theme(plot.subtitle=element_markdown())+
-  labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
-       subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England & Wales"),
-       caption="Data from PHE & PHW | Plot by @VictimOfMaths")
-dev.off()
-
-daydata <- daydata %>% 
-  group_by(code) %>% 
-  arrange(date) %>% 
-  mutate(sum7day=roll_sum(cases, 3, align="right", fill=0), sum7dayrate=sum7day*100000/pop) %>% 
-  ungroup()
-
-daydata$ident <- case_when(
-  daydata$name=="Leicester" ~ "Leicester",
-  daydata$name %in% c("Blackburn with Darwen", "Burnley", "Hyndburn", "Pendle", "Rossendale", "Bradford",
-                      "Calderdale", "Kirklees", "Tameside", "Salford", "Stockport", "Trafford",
-                      "Bolton", "Bury", "Manchester", "Oldham", "Rochdale", "Wigan") ~ "New lockdowns",
-  TRUE ~ "Other Areas")
-
-tiff("Outputs/COVIDNewLockdowns.tiff", units="in", width=10, height=7, res=500)
-daydata %>%
-  filter(!name %in% c("England", "Wales") & country=="England") %>% 
-ggplot(aes(x=date, y=caserate_avg, colour=ident, group=name, alpha=ident))+
-  geom_line()+
-  scale_x_date(name="Date")+
-  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
-  scale_colour_manual(values=c("#92D84F", "#F44B4B", "Grey55"), name="")+
-  scale_alpha_manual(values=c(1,1,0.3), guide=FALSE)+
-  theme_classic()+
-  labs(title="New lockdowns are in areas where cases are high, but rises haven't been sharp",
-       subtitle="Rolling 7-day average of confirmed new COVID-19 case rates in English Local Authorities",
-       caption="Data from PHE | Plot by @VictimOfMaths")
-dev.off()
-
-tiff("Outputs/COVIDNewLockdowns2.tiff", units="in", width=10, height=7, res=500)
-daydata %>% 
-  filter(ident=="New lockdowns" & date>as.Date("2020-07-01")) %>% 
-  ggplot(aes(x=date, y=caserate_avg))+
-  geom_line(colour="tomato2")+
-  scale_x_date(name="Date")+
-  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
-  facet_wrap(~name)+
-  theme_classic()+
-  theme(strip.background=element_blank(), strip.text=element_text(face="bold", size=rel(1)))+
-  labs(title="Areas with new lockdowns have quite varied rates and trends of new cases",
-       subtitle="Rolling 7-day average of confirmed new COVID-19 case rates in English Local Authorities in July",
-       caption="Data from PHE | Plot by @VictimOfMaths")
-dev.off()
-
-daydata %>%
-  filter(!name %in% c("England", "Wales") & country=="England") %>% 
-  ggplot(aes(x=date, y=sum7dayrate, group=name))+
-  geom_line()+
-  scale_x_date(name="Date")+
-  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
-  scale_colour_manual(values=c("#92D84F", "#F44B4B", "Grey55"), name="")+
-  scale_alpha_manual(values=c(1,1,0.3), guide=FALSE)+
-  theme_classic()+
-  labs(title="New lockdowns are in areas where cases are high, but rises haven't been sharp",
-       subtitle="Rolling 7-day average of confirmed new COVID-19 case rates in English Local Authorities",
-       caption="Data from PHE | Plot by @VictimOfMaths")
-
-#################################################
-#Analysis of cumulative excess deaths

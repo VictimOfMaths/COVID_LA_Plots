@@ -77,7 +77,7 @@ data.ew <- data.ew %>%
 temp <- tempfile()
 source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fpopulationandmigration%2fpopulationestimates%2fdatasets%2fpopulationestimatesforukenglandandwalesscotlandandnorthernireland%2fmid20182019laboundaries/ukmidyearestimates20182019ladcodes.xls"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D423", col_names=TRUE)
+LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D435", col_names=TRUE)
 colnames(LApop) <- c("code", "name", "geography", "pop")
 
 #Merge isles of Scilly in with Cornwall
@@ -337,10 +337,49 @@ daydata$cases <- coalesce(daydata$cases.x, daydata$cases.y)
 daydata <- daydata[,-c(4:5)]
 daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 
+#Bring in NI case data
+#Need to update this link daily from 
+#https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-august-2020
+temp <- tempfile()
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-210820.xlsx"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+casedata.NI <- read_excel(temp, sheet=3, range="A2:E2242", col_names=FALSE)
+colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
+casedata.NI$date <- as.Date(casedata.NI$date)
+
+#Set up skeleton dataframe
+daydata.NI <- data.frame(date=rep(seq.Date(from=mindate, to=maxdate, by="day"), 
+                                  times=length(unique(casedata.NI$name))),
+                         name=rep(unique(casedata.NI$name), each=maxdate-mindate+1))
+
+daydata.NI <- merge(daydata.NI, casedata.NI, all.x=TRUE)
+
+#Fill in blanks and remove missing postcode/NA data
+daydata.NI$cases <- replace_na(daydata.NI$cases, 0)
+daydata.NI <- daydata.NI %>% filter(!name %in% c("Missing Postcode", "NA"))
+
+daydata.NI$code <- case_when(
+  daydata.NI$name=="Antrim and Newtownabbey" ~ "N09000001",
+  daydata.NI$name=="Ards and North Down" ~ "N09000011",
+  daydata.NI$name=="Armagh City, Banbridge and Craigavon" ~ "N09000002",
+  daydata.NI$name=="Belfast" ~ "N09000003",
+  daydata.NI$name=="Causeway Coast and Glens" ~ "N09000004",
+  daydata.NI$name=="Derry City and Strabane" ~ "N09000005",
+  daydata.NI$name=="Fermanagh and Omagh" ~ "N09000006",
+  daydata.NI$name=="Lisburn and Castlereagh" ~ "N09000007",
+  daydata.NI$name=="Mid and East Antrim" ~ "N09000008",
+  daydata.NI$name=="Mid Ulster" ~ "N09000009",
+  daydata.NI$name=="Newry, Mourne and Down" ~ "N09000010"
+)
+
+daydata <- bind_rows(daydata, daydata.NI[,c(2,1,6,5)])
+
 daydata$country <- case_when(
   substr(daydata$code,1,1)=="E" ~ "England",
   substr(daydata$code,1,1)=="W" ~ "Wales",
-  substr(daydata$code,1,1)=="S" ~ "Scotland")
+  substr(daydata$code,1,1)=="S" ~ "Scotland",
+  substr(daydata$code,1,1)=="N" ~ "Northern Ireland"
+  )
 
 #Experimental pillar 1 & 2 separation - England only and only up to end of June
 #Archive files from 1st & 2nd July - either side of pillar 2 addition to data
@@ -441,15 +480,18 @@ excess.s <-  data %>%
 excess <- bind_rows(excess.ew, excess.s)
 
 #Bring in LA populations
-LApop <- data %>% 
+LApop1 <- subset(LApop, substr(LApop$code,1,1)!="S")[,c(2,3)]
+
+LApop2 <- data %>% 
   select(code, pop) %>% 
+  filter(substr(code,1,1)=="S") %>% 
   distinct()
 
-daydata <- merge(daydata, LApop, all.x=TRUE)
+daydata <- merge(daydata, bind_rows(LApop1, LApop2), all.x=TRUE)
 
 #Sort out pops for nations
 natpop <- daydata %>% 
-  filter(!name %in% c("England", "Wales", "Scotland")) %>% 
+  filter(!name %in% c("England", "Wales", "Scotland", "Northern Ireland")) %>% 
   filter(date=="2020-04-01") %>% 
   group_by(country) %>% 
   summarise(pop=sum(pop))

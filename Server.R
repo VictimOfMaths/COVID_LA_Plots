@@ -40,7 +40,8 @@ server <- function(input, output) {
     source2 <- case_when(
       LAdata$country[1]=="England" ~ "PHE",
       LAdata$country[1]=="Scotland" ~ "Scottish Government",
-      LAdata$country[1]=="Wales" ~ "PHW"
+      LAdata$country[1]=="Wales" ~ "PHW",
+      LAdata$country[1]=="Northern Ireland" ~ "DoHNI"
     )
     
     maxweek <- week(enddate)
@@ -169,7 +170,7 @@ server <- function(input, output) {
         theme_classic()+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
-             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England & Wales and Health Boards in Scotland"),
+             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales & Northern Ireland and Health Boards in Scotland"),
              caption=paste0("Data from ", source," &", source2 ," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
@@ -183,7 +184,7 @@ server <- function(input, output) {
         theme_classic()+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Number of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
-             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England & Wales and Health Boards in Scotland"),
+             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales & Northern Ireland and Health Boards in Scotland"),
              caption=paste0("Data from ", source," &", source2 ," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     p     

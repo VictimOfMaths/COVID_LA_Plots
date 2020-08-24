@@ -341,9 +341,10 @@ daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 #Need to update this link daily from 
 #https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-august-2020
 temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-210820.xlsx"
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-240820.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-casedata.NI <- read_excel(temp, sheet=3, range="A2:E2242", col_names=FALSE)
+#Need to update the range here too:
+casedata.NI <- read_excel(temp, sheet=3, range="A2:E2280", col_names=FALSE)
 colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
 casedata.NI$date <- as.Date(casedata.NI$date)
 
@@ -507,3 +508,124 @@ daydata$caserate_avg <- daydata$casesroll_avg*100000/daydata$pop
 write.csv(data, "COVID_LA_Plots/LAExcess.csv")
 write.csv(excess, "COVID_LA_Plots/LAExcessSummary.csv")
 write.csv(daydata, "COVID_LA_Plots/LACases.csv")
+
+#Highlight areas
+
+library(gt)
+
+shortcases <- daydata %>% 
+  filter(!name %in% c("England", "Wales", "Scotland", "Northern Ireland")) %>% 
+  select(name, date, country, casesroll_avg, caserate_avg) %>% 
+  arrange(name, date) %>% 
+  group_by(name) %>% 
+  mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7),
+         caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
+  slice(which.max(date))
+
+shortcases <- as.data.frame(shortcases)
+
+up_arrow <- "<span style=\"color:green\">&#9650;</span>"
+down_arrow <- "<span style=\"color:red\">&#9660;</span>"
+
+#Highest case numbers
+shortcases %>% 
+  slice_max(casesroll_avg, n=10) %>% 
+  gt(rowname_col="name") %>% 
+  tab_header(title="Local Authorities in the UK with the highest number of new COVID cases",
+             subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
+  tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
+  tab_stubhead(label="Local Authority") %>% 
+  tab_spanner(label="Current cases", columns=vars(casesroll_avg, caserate_avg)) %>% 
+  tab_spanner(label="Change in last 7 days", columns=vars(cases_change, caserate_change)) %>% 
+  cols_label(date="Data up to", country="Country", casesroll_avg="Total",
+             caserate_avg="Rate per 100,000", cases_change="Total", 
+             caserate_change="Rate per 100,000") %>% 
+  fmt_date(columns=vars(date), date_style=9) %>% 
+  fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
+             decimals=1) %>% 
+  text_transform(locations=cells_body(columns="cases_change", rows=cases_change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="cases_change", rows=cases_change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
+             ~ px(100)) %>% 
+  cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
+             align="center")
+
+#Highest case rates
+shortcases %>% 
+  slice_max(caserate_avg, n=10) %>% 
+  gt(rowname_col="name") %>% 
+  tab_header(title="Local Authorities in the UK with the highest rate of new COVID cases",
+             subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
+  tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
+  tab_stubhead(label="Local Authority") %>% 
+  tab_spanner(label="Current cases", columns=vars(caserate_avg, casesroll_avg)) %>% 
+  tab_spanner(label="Change in last 7 days", columns=vars(caserate_change, cases_change)) %>% 
+  cols_label(date="Data up to", country="Country", casesroll_avg="Total",
+             caserate_avg="Rate per 100,000", cases_change="Total", 
+             caserate_change="Rate per 100,000") %>% 
+  fmt_date(columns=vars(date), date_style=9) %>% 
+  fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
+             decimals=1) %>% 
+  text_transform(locations=cells_body(columns="caserate_change", rows=cases_change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="caserate_change", rows=cases_change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
+             ~ px(100)) %>% 
+  cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
+             align="center")
+
+#Biggest rise in case numbers
+shortcases %>% 
+  slice_max(cases_change, n=10) %>% 
+  gt(rowname_col="name") %>% 
+  tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 case numbers in the last week",
+             subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
+  tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
+  tab_stubhead(label="Local Authority") %>% 
+  cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
+  tab_spanner(label="Change in last 7 days", columns=vars(cases_change, caserate_change)) %>% 
+  tab_spanner(label="Current cases", columns=vars(casesroll_avg, caserate_avg)) %>% 
+  cols_label(date="Data up to", country="Country", casesroll_avg="Total",
+             caserate_avg="Rate per 100,000", cases_change="Total", 
+             caserate_change="Rate per 100,000") %>% 
+  fmt_date(columns=vars(date), date_style=9) %>% 
+  fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
+             decimals=1) %>% 
+  text_transform(locations=cells_body(columns="cases_change", rows=cases_change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="cases_change", rows=cases_change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
+             ~ px(100)) %>% 
+  cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
+             align="center")
+
+#Biggest rise in case rates
+shortcases %>% 
+  slice_max(caserate_change, n=10) %>% 
+  gt(rowname_col="name") %>% 
+  tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 case rates in the last week",
+             subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
+  tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
+  tab_stubhead(label="Local Authority") %>% 
+  cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
+  tab_spanner(label="Current cases", columns=vars(caserate_avg, casesroll_avg)) %>% 
+  tab_spanner(label="Change in last 7 days", columns=vars(caserate_change, cases_change)) %>% 
+  cols_label(date="Data up to", country="Country", casesroll_avg="Total",
+             caserate_avg="Rate per 100,000", cases_change="Total", 
+             caserate_change="Rate per 100,000") %>% 
+  fmt_date(columns=vars(date), date_style=9) %>% 
+  fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
+             decimals=1) %>% 
+  text_transform(locations=cells_body(columns="caserate_change", rows=cases_change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="caserate_change", rows=cases_change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
+             ~ px(100)) %>% 
+  cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
+             align="center")
+

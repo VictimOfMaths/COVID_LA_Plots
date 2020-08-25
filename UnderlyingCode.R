@@ -524,18 +524,18 @@ shortcases <- daydata %>%
 
 shortcases <- as.data.frame(shortcases)
 
-up_arrow <- "<span style=\"color:green\">&#9650;</span>"
-down_arrow <- "<span style=\"color:red\">&#9660;</span>"
+up_arrow <- "<span style=\"color:red\">&#9650;</span>"
+down_arrow <- "<span style=\"color:green\">&#9660;</span>"
 
 #Highest case numbers
-shortcases %>% 
+casetable <- shortcases %>% 
   slice_max(casesroll_avg, n=10) %>% 
   gt(rowname_col="name") %>% 
   tab_header(title="Local Authorities in the UK with the highest number of new COVID cases",
              subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
   tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
   tab_stubhead(label="Local Authority") %>% 
-  tab_spanner(label="Current cases", columns=vars(casesroll_avg, caserate_avg)) %>% 
+  tab_spanner(label="Current cases per day", columns=vars(casesroll_avg, caserate_avg)) %>% 
   tab_spanner(label="Change in last 7 days", columns=vars(cases_change, caserate_change)) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
@@ -553,14 +553,14 @@ shortcases %>%
              align="center")
 
 #Highest case rates
-shortcases %>% 
+ratetable <- shortcases %>% 
   slice_max(caserate_avg, n=10) %>% 
   gt(rowname_col="name") %>% 
   tab_header(title="Local Authorities in the UK with the highest rate of new COVID cases",
              subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
   tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
   tab_stubhead(label="Local Authority") %>% 
-  tab_spanner(label="Current cases", columns=vars(caserate_avg, casesroll_avg)) %>% 
+  tab_spanner(label="Current cases per day", columns=vars(caserate_avg, casesroll_avg)) %>% 
   tab_spanner(label="Change in last 7 days", columns=vars(caserate_change, cases_change)) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
@@ -578,7 +578,7 @@ shortcases %>%
              align="center")
 
 #Biggest rise in case numbers
-shortcases %>% 
+casechangetable <- shortcases %>% 
   slice_max(cases_change, n=10) %>% 
   gt(rowname_col="name") %>% 
   tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 case numbers in the last week",
@@ -587,7 +587,7 @@ shortcases %>%
   tab_stubhead(label="Local Authority") %>% 
   cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
   tab_spanner(label="Change in last 7 days", columns=vars(cases_change, caserate_change)) %>% 
-  tab_spanner(label="Current cases", columns=vars(casesroll_avg, caserate_avg)) %>% 
+  tab_spanner(label="Current cases per day", columns=vars(casesroll_avg, caserate_avg)) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000") %>% 
@@ -604,7 +604,7 @@ shortcases %>%
              align="center")
 
 #Biggest rise in case rates
-shortcases %>% 
+ratechangetable <- shortcases %>% 
   slice_max(caserate_change, n=10) %>% 
   gt(rowname_col="name") %>% 
   tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 case rates in the last week",
@@ -612,7 +612,7 @@ shortcases %>%
   tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
   tab_stubhead(label="Local Authority") %>% 
   cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
-  tab_spanner(label="Current cases", columns=vars(caserate_avg, casesroll_avg)) %>% 
+  tab_spanner(label="Current cases per day", columns=vars(caserate_avg, casesroll_avg)) %>% 
   tab_spanner(label="Change in last 7 days", columns=vars(caserate_change, cases_change)) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
@@ -629,3 +629,7 @@ shortcases %>%
   cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
              align="center")
 
+gtsave(casetable, filename="casetable.html", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
+gtsave(ratetable, filename="ratetable.html", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
+gtsave(casechangetable, filename="casechangetable.html", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
+gtsave(ratechangetable, filename="ratechangetable.html", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")

@@ -341,10 +341,10 @@ daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 #Need to update this link daily from 
 #https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-august-2020
 temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-240820.xlsx"
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-250820.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Need to update the range here too:
-casedata.NI <- read_excel(temp, sheet=3, range="A2:E2280", col_names=FALSE)
+casedata.NI <- read_excel(temp, sheet=3, range="A2:E2293", col_names=FALSE)
 colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
 casedata.NI$date <- as.Date(casedata.NI$date)
 
@@ -514,15 +514,17 @@ write.csv(daydata, "COVID_LA_Plots/LACases.csv")
 library(gt)
 
 shortcases <- daydata %>% 
+  as.data.frame() %>% 
   filter(!name %in% c("England", "Wales", "Scotland", "Northern Ireland")) %>% 
   select(name, date, country, casesroll_avg, caserate_avg) %>% 
   arrange(name, date) %>% 
   group_by(name) %>% 
   mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7),
          caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
-  slice(which.max(date))
-
-shortcases <- as.data.frame(shortcases)
+  #Take data from day before most recent to allow for incomplete data in most recent
+  slice_tail(n=2) %>% 
+  slice_head(n=1) %>% 
+  as.data.frame()
 
 up_arrow <- "<span style=\"color:red\">&#9650;</span>"
 down_arrow <- "<span style=\"color:green\">&#9660;</span>"
@@ -629,7 +631,7 @@ ratechangetable <- shortcases %>%
   cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
              align="center")
 
-gtsave(casetable, filename="casetable.html", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
-gtsave(ratetable, filename="ratetable.html", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
-gtsave(casechangetable, filename="casechangetable.html", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
-gtsave(ratechangetable, filename="ratechangetable.html", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
+gtsave(casetable, filename="casetable.png", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
+gtsave(ratetable, filename="ratetable.png", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
+gtsave(casechangetable, filename="casechangetable.png", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")
+gtsave(ratechangetable, filename="ratechangetable.png", path="C:/Users/Colin/data projects/colin_misc/COVID_LA_Plots")

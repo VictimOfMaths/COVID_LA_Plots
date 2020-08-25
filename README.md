@@ -6,7 +6,7 @@ Much credit is due [@lukejostins](https://twitter.com/lukejostins) to who took a
 <br><br>
 Suggested citation for the app: Angus, Colin (2020): COVID-19 Local Authority Death and Case Plots. The University of Sheffield. Online resource. https://doi.org/10.15131/shef.data.12658088
 <br><br>
-The app produces 6 different sets of plots for England, Scotland and Wales and every Lower Tier Local Authority/Council Area although not all plots are available for all countries.
+The app produces 8 different sets of plots for England, Northern Ireland Scotland, Wales and every Lower Tier Local Authority/Health Board although not all plots are available for all countries.
 <br><br>
 ![Total excess deaths](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/COVID_LA_Plots_1.png)
 ![Excess deaths by cause](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/COVID_LA_Plots_2.png)
@@ -14,3 +14,4 @@ The app produces 6 different sets of plots for England, Scotland and Wales and e
 ![Cases vs deaths](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/COVID_LA_Plots_4.png)
 ![Case numbers](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/COVID_LA_Plots_5.png)
 ![Cases by pillar](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/COVID_LA_Plots_6.png)
+![Comparative case rates](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/COVID_LA_Plots_7.png)

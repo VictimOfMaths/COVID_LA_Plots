@@ -14,7 +14,7 @@ library(RcppRoll)
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek32.xlsx"
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek33.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
 colnames(data20) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
@@ -341,10 +341,10 @@ daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 #Need to update this link daily from 
 #https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-august-2020
 temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-250820.xlsx"
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-270820.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Need to update the range here too:
-casedata.NI <- read_excel(temp, sheet=3, range="A2:E2293", col_names=FALSE)
+casedata.NI <- read_excel(temp, sheet=3, range="A2:E2317", col_names=FALSE)
 colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
 casedata.NI$date <- as.Date(casedata.NI$date)
 

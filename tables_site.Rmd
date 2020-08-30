@@ -18,6 +18,7 @@ library(gt)
 ```
 
 ```{r}
+
 #Weekly data
 
 #Read in 2020 data for England

@@ -636,3 +636,44 @@ gtsave(casetable, filename="casetable.png", path="C:/data projects/colin_misc/CO
 gtsave(ratetable, filename="ratetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
 gtsave(casechangetable, filename="casechangetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
 gtsave(ratechangetable, filename="ratechangetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
+
+                 daydata$flag <- case_when(
+  daydata$name %in% c("Bolton", "Bury", "Manchester", "Oldham", "Rochdale", "Salford", 
+                      "Stockport", "Tameside", "Trafford", "Wigan")~ 1,
+  TRUE ~ 0)
+
+tiff("Outputs/COVIDManchesterLAs2.tiff", units="in", width=8, height=6, res=500)
+ggplot()+
+ geom_line(data=subset(daydata, date>as.Date("2020-07-01")), 
+           aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+  geom_line(data=subset(daydata, flag==1 & date>as.Date("2020-07-01")), 
+            aes(x=date, y=caserate_avg, colour=name))+
+  geom_segment(aes(x=as.Date("2020-08-01"), xend=as.Date("2020-08-01"), y=0, yend=20), 
+               colour="Red", linetype=2)+
+  scale_x_date(name="Date")+
+  scale_y_continuous(name="New cases per 100,000 population per day")+
+  scale_colour_paletteer_d("LaCroixColoR::paired", name="")+
+  theme_classic()+
+  labs(title="The case for relaxing local restrictions in Manchester looks questionable",
+       subtitle="Rolling 7-day average rates of new confirmed COVID-19 cases",
+       caption="Data from PHE | Plot by @VictimOfMaths")
+dev.off()
+
+daydata %>% 
+  filter(date %in% c(as.Date("2020-08-01"), as.Date("2020-08-31")) & flag==1) %>% 
+  select(name, date, casesroll_avg) %>% 
+  spread(date, casesroll_avg) %>% 
+  mutate(change=`2020-08-31`-`2020-08-01`, changeperc=change*100/`2020-08-01`) %>% 
+  gt() %>%
+  tab_spanner(label="7-day average new cases",columns=vars(`2020-08-01`, `2020-08-31`)) %>% 
+  tab_spanner(label="Change from start of restrictions", columns=vars(change, changeperc)) %>% 
+  cols_label(name="", `2020-08-01`="1st August", `2020-08-31`="31st August",
+              change="Absolute", changeperc="Relative") %>% 
+  fmt_number(columns=vars(`2020-08-01`, `2020-08-31`, change), decimals=1) %>% 
+  fmt_number(columns=vars(changeperc), decimals=0) %>% 
+  text_transform(locations=cells_body(columns="change", rows=change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="change", rows=change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(locations=cells_body(columns="changeperc"),
+                 fn = function(x) paste0(x, "%"))

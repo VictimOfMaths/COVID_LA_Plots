@@ -642,10 +642,10 @@ gtsave(ratechangetable, filename="ratechangetable.png", path="C:/data projects/c
                       "Stockport", "Tameside", "Trafford", "Wigan")~ 1,
   TRUE ~ 0)
 
-tiff("Outputs/COVIDManchesterLAs2.tiff", units="in", width=8, height=6, res=500)
+tiff("Outputs/COVIDManchesterLAs.tiff", units="in", width=8, height=6, res=500)
 ggplot()+
- geom_line(data=subset(daydata, date>as.Date("2020-07-01")), 
-           aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+  #geom_line(data=subset(daydata, date>as.Date("2020-07-01")), 
+  #         aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
   geom_line(data=subset(daydata, flag==1 & date>as.Date("2020-07-01")), 
             aes(x=date, y=caserate_avg, colour=name))+
   geom_segment(aes(x=as.Date("2020-08-01"), xend=as.Date("2020-08-01"), y=0, yend=20), 

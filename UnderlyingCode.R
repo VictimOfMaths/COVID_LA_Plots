@@ -581,10 +581,10 @@ daydata$flag <- case_when(
                       "Stockport", "Tameside", "Trafford", "Wigan")~ 1,
   TRUE ~ 0)
 
-tiff("Outputs/COVIDManchesterLAs2.tiff", units="in", width=8, height=6, res=500)
+tiff("Outputs/COVIDManchesterLAs1.tiff", units="in", width=8, height=6, res=500)
 ggplot()+
- geom_line(data=subset(daydata, date>as.Date("2020-07-01")), 
-           aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+ #geom_line(data=subset(daydata, date>as.Date("2020-07-01")), 
+ #          aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
   geom_line(data=subset(daydata, flag==1 & date>as.Date("2020-07-01")), 
             aes(x=date, y=caserate_avg, colour=name))+
   geom_segment(aes(x=as.Date("2020-08-01"), xend=as.Date("2020-08-01"), y=0, yend=20), 
@@ -598,44 +598,32 @@ ggplot()+
        caption="Data from PHE | Plot by @VictimOfMaths")
 dev.off()
 
-daydata %>% 
-  filter(date %in% c(as.Date("2020-08-01"), as.Date("2020-08-31")) & flag==1) %>% 
-  select(name, date, casesroll_avg) %>% 
-  spread(date, casesroll_avg) %>% 
-  mutate(change=`2020-08-31`-`2020-08-01`, changeperc=change*100/`2020-08-01`) %>% 
-  gt() %>%
-  tab_spanner(label="7-day average new cases",columns=vars(`2020-08-01`, `2020-08-31`)) %>% 
-  tab_spanner(label="Change from start of restrictions", columns=vars(change, changeperc)) %>% 
-  cols_label(name="", `2020-08-01`="1st August", `2020-08-31`="31st August",
-              change="Absolute", changeperc="Relative") %>% 
-  fmt_number(columns=vars(`2020-08-01`, `2020-08-31`, change), decimals=1) %>% 
-  fmt_number(columns=vars(changeperc), decimals=0) %>% 
-  text_transform(locations=cells_body(columns="change", rows=change<0),
-                 fn = function(x) paste(x, down_arrow)) %>% 
-  text_transform(locations=cells_body(columns="change", rows=change>0),
-                 fn = function(x) paste(x, up_arrow)) %>% 
-  text_transform(locations=cells_body(columns="changeperc"),
-                 fn = function(x) paste0(x, "%"))
-
-daydata$flag2 <- if_else(daydata$name %in% c("Manchester", "Bury", "Tameside", "Rochdale",
+daydata$flag2 <- case_when(
+  daydata$name %in% c("Manchester", "Bury", "Tameside", "Rochdale",
                                              "Salford", "Oldham", "Preston", "Blackburn with Darwen",
                                              "Pendle", "Bradford", "Calderdale", "Kirklees",
                                              "Glasgow City", "West Dunbartonshire",
-                                             "East Renfrewshire"),
-                         1,0)
+                                             "East Renfrewshire", "Leicester",
+                                             "Bolton", "Trafford") ~ "Restrictions in place",
+  daydata$name %in% c("Stockport", "Burnley", "Hyndburn", "Wigan",
+                      "Rossendale") ~ "Restrictions relaxed",
+  TRUE ~ "No Local Restrictions")
 
-tiff("Outputs/COVIDRestrictions.tiff", units="in", width=8, height=25, res=500)
+tiff("Outputs/COVIDRestrictions.tiff", units="in", width=10, height=10, res=500)
 daydata %>% 
   group_by(name) %>% 
   mutate(max=max(date)) %>% 
-  filter(date==max) %>% 
+  filter(date==max & caserate_avg>1.97 & !name %in% c("England", "Scotland",
+                                                      "Wales", "Northern Ireland")) %>% 
 ggplot()+
-  geom_col(aes(x=caserate_avg*7, y=fct_reorder(name, caserate_avg), fill=as.factor(flag2)),
+  geom_col(aes(x=caserate_avg*7, y=fct_reorder(name, caserate_avg), fill=flag2),
            show.legend = FALSE)+
   scale_x_continuous(name="New COVID-19 cases per 100,000 in the last 7 days")+
   scale_y_discrete(name="")+
-  scale_fill_manual(values=c("Grey70", "Red"))+
+  scale_fill_manual(values=c("Grey70", "#E41A1C", "#4DAF4A"))+
   theme_classic()+
-  labs(title="",
+  theme(plot.subtitle=element_markdown())+
+  labs(title="Local COVID-related restrictions are being applied inconsistently",
+       subtitle="Local Authorities with restrictions <span style='color:#E41A1C;'>in place </span>or that have been <span style='color:#4DAF4A;'>relaxed in the past week",
        caption="Data from ONS, NRS, DoHNI, PHE, PHW & PHS | Plot by @VictimOfMaths")
 dev.off()

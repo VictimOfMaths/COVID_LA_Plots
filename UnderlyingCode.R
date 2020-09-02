@@ -14,7 +14,7 @@ library(RcppRoll)
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek33.xlsx"
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek34.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
 colnames(data20) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
@@ -73,45 +73,15 @@ data.ew <- data.ew %>%
   mutate(Other.20=AllCause.20-COVID.20) %>% 
   ungroup()
 
-#Bring in LA populations
-temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fpopulationandmigration%2fpopulationestimates%2fdatasets%2fpopulationestimatesforukenglandandwalesscotlandandnorthernireland%2fmid20182019laboundaries/ukmidyearestimates20182019ladcodes.xls"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D435", col_names=TRUE)
-colnames(LApop) <- c("code", "name", "geography", "pop")
-
-#Merge isles of Scilly in with Cornwall
-LApop$code <- if_else(LApop$code=="E06000053", "E06000052", LApop$code)
-LApop$name <- if_else(LApop$name=="Isles of Scilly", "Cornwall", LApop$name)
-
-#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
-LApop$name <- if_else(LApop$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
-                      "Buckinghamshire", LApop$name)
-LApop$code <- if_else(LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
-                      "E06000060", LApop$code)
-
-#Merge City of London & Hackney
-LApop$code <- if_else(LApop$code=="E09000001", "E09000012", LApop$code)
-LApop$name <- if_else(LApop$name=="City of London", "Hackney and City of London", LApop$name)
-LApop$name <- if_else(LApop$name=="Hackney", "Hackney and City of London", LApop$name)
-
-LApop <- LApop %>% 
-  group_by(name, code) %>% 
-  summarise(pop=sum(pop)) %>% 
-  ungroup()
-
-data.ew <- merge(data.ew, LApop, all.x=TRUE)
-
-
 #Bring in Scottish deaths data (released by NRS on a Wednesday)
 #2020 data
 
 #Need to update link and range each week
 #https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/deaths-involving-coronavirus-covid-19-in-scotland/related-statistics
 temp <- tempfile()
-source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-health-board-location.xlsx"
+source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data20.s <- read_excel(temp, sheet=2, range="A4:E1778", col_names=FALSE)
+data20.s <- read_excel(temp, sheet=2, range="A5:E3903", col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
 data20.s$week <- as.numeric(data20.s$week)
 
@@ -126,9 +96,9 @@ data20.s$Other.20 <- replace_na(data20.s$Other.20, 0)
 
 #2015-19 data
 temp <- tempfile()
-source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-health-board-location-15-19.xlsx"
+source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-council-areas.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data1519.s <- read_excel(temp, sheet=2, range="A5:E11159", col_names=FALSE)
+data1519.s <- read_excel(temp, sheet=2, range="A5:E25193", col_names=FALSE)
 colnames(data1519.s) <- c("week", "name", "location", "year", "deaths")
 data1519.s$week <- as.numeric(data1519.s$week)
 
@@ -159,32 +129,13 @@ data.s <- data.s %>%
   mutate(AllCause.20=COVID.20+Other.20) %>% 
   ungroup()
 
-#Bring in Scottish HB codes
-data.s$code <- case_when(
-  data.s$name=="Ayrshire and Arran" ~ "S08000015",
-  data.s$name=="Borders" ~ "S08000016",
-  data.s$name=="Dumfries and Galloway" ~ "S08000017",
-  data.s$name=="Fife" ~ "S08000029",
-  data.s$name=="Forth Valley" ~ "S08000019",
-  data.s$name=="Grampian" ~ "S08000020",
-  data.s$name=="Greater Glasgow and Clyde" ~ "S08000031",
-  data.s$name=="Highland" ~ "S08000022",
-  data.s$name=="Lanarkshire" ~ "S08000032",
-  data.s$name=="Lothian" ~ "S08000024",
-  data.s$name=="Orkney" ~ "S08000025",
-  data.s$name=="Shetland" ~ "S08000026",
-  data.s$name=="Tayside" ~ "S08000030",
-  data.s$name=="Western Isles" ~ "S08000028"
-)
-
-#Bring in population
+#Bring in Scottish LA codes
 temp <- tempfile()
-source <- "https://www.nrscotland.gov.uk/files//statistics/population-estimates/mid-19/mid-year-pop-est-19-data.xlsx"
+source <- "https://opendata.arcgis.com/datasets/35de30c6778b463a8305939216656132_0.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-HBpop <- read_excel(temp, sheet="Table 2", range="A40:C54", col_names=TRUE)
-colnames(HBpop) <- c("code", "name", "pop")
-
-data.s <- merge(data.s, HBpop, by=c("code", "name"))
+codelookup <- read.csv(temp)[,c(2,3)]
+colnames(codelookup) <- c("code", "name")
+data.s <- merge(data.s, codelookup, all.x=TRUE)
 
 #Merge countries
 data <- bind_rows(data.ew, data.s)
@@ -193,6 +144,35 @@ data$country <- case_when(
   substr(data$code,1,1)=="E" ~ "England",
   substr(data$code,1,1)=="W" ~ "Wales",
   substr(data$code,1,1)=="S" ~ "Scotland")
+
+#Bring in LA populations
+temp <- tempfile()
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fpopulationandmigration%2fpopulationestimates%2fdatasets%2fpopulationestimatesforukenglandandwalesscotlandandnorthernireland%2fmid20182019laboundaries/ukmidyearestimates20182019ladcodes.xls"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D435", col_names=TRUE)
+colnames(LApop) <- c("code", "name", "geography", "pop")
+
+#Merge isles of Scilly in with Cornwall
+LApop$code <- if_else(LApop$code=="E06000053", "E06000052", LApop$code)
+LApop$name <- if_else(LApop$name=="Isles of Scilly", "Cornwall", LApop$name)
+
+#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
+LApop$name <- if_else(LApop$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
+                      "Buckinghamshire", LApop$name)
+LApop$code <- if_else(LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
+                      "E06000060", LApop$code)
+
+#Merge City of London & Hackney
+LApop$code <- if_else(LApop$code=="E09000001", "E09000012", LApop$code)
+LApop$name <- if_else(LApop$name=="City of London", "Hackney and City of London", LApop$name)
+LApop$name <- if_else(LApop$name=="Hackney", "Hackney and City of London", LApop$name)
+
+LApop <- LApop %>% 
+  group_by(name, code) %>% 
+  summarise(pop=sum(pop)) %>% 
+  ungroup()
+
+data <- merge(data, LApop, all.x=TRUE)
 
 #Bring in Regions
 temp <- tempfile()
@@ -286,51 +266,17 @@ daydata <- daydata[,-c(4:5)]
 daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S", 0, daydata$cases)
 
 #Bring in Scottish case data
+#Need to update this link each day from:
+#https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
 temp <- tempfile()
-source <- "https://www.gov.scot/binaries/content/documents/govscot/publications/statistics/2020/04/coronavirus-covid-19-trends-in-daily-data/documents/covid-19-data-by-nhs-board/covid-19-data-by-nhs-board/govscot%3Adocument/COVID-19%2Bdaily%2Bdata%2B-%2Bby%2BNHS%2BBoard%2B-%2B20%2BAugust%2B2020.xlsx?forceDownload=true"
+source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20200901.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-casedata.S <- read_excel(temp, sheet=3, range="A3:O170")
+casedata.S <- read.csv(temp)[,c(1:3)]
+colnames(casedata.S) <- c("date", "code", "cases")
 
-casedata.S$Date <- as.Date(casedata.S$Date)
+casedata.S$date <- as.Date(as.character(casedata.S$date), "%Y%m%d")
 
-casedata.S_long <- gather(casedata.S, name, cumul_cases, c(2:15))
-casedata.S_long$name <- substr(casedata.S_long$name, 5,99)
-casedata.S_long$name <- gsub("[&]", "and", casedata.S_long$name)
-
-colnames(casedata.S_long) <- c("date", "name", "cumul_cases")
-
-#Treat supressed numbers as 0
-casedata.S_long$cumul_cases <- as.numeric(ifelse(casedata.S_long$cumul_cases=="*", 0, casedata.S_long$cumul_cases))
-
-#Calculate daily cases
-casedata.S_long <- casedata.S_long %>%
-  arrange(name, date) %>%
-  group_by(name) %>%
-  mutate(cases=cumul_cases-lag(cumul_cases,1))
-
-#Remove historic pillar 2 cases which are all dumped into June 15th
-casedata.S_long$cases <- if_else(casedata.S_long$date==as.Date("2020-06-15"),0,casedata.S_long$cases)
-
-casedata.S_long$cases <- if_else(is.na(casedata.S_long$cases), 0, casedata.S_long$cases)
-
-casedata.S_long$code <- case_when(
-  casedata.S_long$name=="Ayrshire and Arran" ~ "S08000015",
-  casedata.S_long$name=="Borders" ~ "S08000016",
-  casedata.S_long$name=="Dumfries and Galloway" ~ "S08000017",
-  casedata.S_long$name=="Fife" ~ "S08000029",
-  casedata.S_long$name=="Forth Valley" ~ "S08000019",
-  casedata.S_long$name=="Grampian" ~ "S08000020",
-  casedata.S_long$name=="Greater Glasgow and Clyde" ~ "S08000031",
-  casedata.S_long$name=="Highland" ~ "S08000022",
-  casedata.S_long$name=="Lanarkshire" ~ "S08000032",
-  casedata.S_long$name=="Lothian" ~ "S08000024",
-  casedata.S_long$name=="Orkney" ~ "S08000025",
-  casedata.S_long$name=="Shetland" ~ "S08000026",
-  casedata.S_long$name=="Tayside" ~ "S08000030",
-  casedata.S_long$name=="Western Isles" ~ "S08000028"
-)
-
-daydata <- merge(daydata, casedata.S_long[,-c(3)], by=c("name", "date", "code"), all.x=TRUE)
+daydata <- merge(daydata, casedata.S, by=c("date", "code"), all.x=TRUE)
 
 #Fill in blanks
 daydata$cases <- coalesce(daydata$cases.x, daydata$cases.y)
@@ -482,14 +428,7 @@ excess.s <-  data %>%
 excess <- bind_rows(excess.ew, excess.s)
 
 #Bring in LA populations
-LApop1 <- subset(LApop, substr(LApop$code,1,1)!="S")[,c(2,3)]
-
-LApop2 <- data %>% 
-  select(code, pop) %>% 
-  filter(substr(code,1,1)=="S") %>% 
-  distinct()
-
-daydata <- merge(daydata, bind_rows(LApop1, LApop2), all.x=TRUE)
+daydata <- merge(daydata, LApop, all.x=TRUE)
 
 #Sort out pops for nations
 natpop <- daydata %>% 
@@ -637,15 +576,15 @@ gtsave(ratetable, filename="ratetable.png", path="C:/data projects/colin_misc/CO
 gtsave(casechangetable, filename="casechangetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
 gtsave(ratechangetable, filename="ratechangetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
 
-                 daydata$flag <- case_when(
+daydata$flag <- case_when(
   daydata$name %in% c("Bolton", "Bury", "Manchester", "Oldham", "Rochdale", "Salford", 
                       "Stockport", "Tameside", "Trafford", "Wigan")~ 1,
   TRUE ~ 0)
 
-tiff("Outputs/COVIDManchesterLAs.tiff", units="in", width=8, height=6, res=500)
+tiff("Outputs/COVIDManchesterLAs2.tiff", units="in", width=8, height=6, res=500)
 ggplot()+
-  #geom_line(data=subset(daydata, date>as.Date("2020-07-01")), 
-  #         aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+ geom_line(data=subset(daydata, date>as.Date("2020-07-01")), 
+           aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
   geom_line(data=subset(daydata, flag==1 & date>as.Date("2020-07-01")), 
             aes(x=date, y=caserate_avg, colour=name))+
   geom_segment(aes(x=as.Date("2020-08-01"), xend=as.Date("2020-08-01"), y=0, yend=20), 
@@ -677,3 +616,26 @@ daydata %>%
                  fn = function(x) paste(x, up_arrow)) %>% 
   text_transform(locations=cells_body(columns="changeperc"),
                  fn = function(x) paste0(x, "%"))
+
+daydata$flag2 <- if_else(daydata$name %in% c("Manchester", "Bury", "Tameside", "Rochdale",
+                                             "Salford", "Oldham", "Preston", "Blackburn with Darwen",
+                                             "Pendle", "Bradford", "Calderdale", "Kirklees",
+                                             "Glasgow City", "West Dunbartonshire",
+                                             "East Renfrewshire"),
+                         1,0)
+
+tiff("Outputs/COVIDRestrictions.tiff", units="in", width=8, height=25, res=500)
+daydata %>% 
+  group_by(name) %>% 
+  mutate(max=max(date)) %>% 
+  filter(date==max) %>% 
+ggplot()+
+  geom_col(aes(x=caserate_avg*7, y=fct_reorder(name, caserate_avg), fill=as.factor(flag2)),
+           show.legend = FALSE)+
+  scale_x_continuous(name="New COVID-19 cases per 100,000 in the last 7 days")+
+  scale_y_discrete(name="")+
+  scale_fill_manual(values=c("Grey70", "Red"))+
+  theme_classic()+
+  labs(title="",
+       caption="Data from ONS, NRS, DoHNI, PHE, PHW & PHS | Plot by @VictimOfMaths")
+dev.off()

@@ -8,6 +8,7 @@ library(paletteer)
 library(lubridate)
 library(forcats)
 library(RcppRoll)
+library(gt)
 
 ###################################################################################
 #Weekly data
@@ -269,7 +270,7 @@ daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S",
 #Need to update this link each day from:
 #https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
 temp <- tempfile()
-source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20200901.csv"
+source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20200903.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 casedata.S <- read.csv(temp)[,c(1:3)]
 colnames(casedata.S) <- c("date", "code", "cases")
@@ -287,7 +288,7 @@ daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 #Need to update this link daily from 
 #https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-september-2020
 temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-010920.XLSX"
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/dd-030920.XLSX"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Need to update the range here too:
 casedata.NI <- read_excel(temp, sheet=3, range="A2:E2382", col_names=FALSE)
@@ -449,142 +450,16 @@ write.csv(data, "COVID_LA_Plots/LAExcess.csv")
 write.csv(excess, "COVID_LA_Plots/LAExcessSummary.csv")
 write.csv(daydata, "COVID_LA_Plots/LACases.csv")
 
-#Highlight areas
-
-library(gt)
-
-shortcases <- daydata %>% 
-  as.data.frame() %>% 
-  filter(!name %in% c("England", "Wales", "Scotland", "Northern Ireland")) %>% 
-  select(name, date, country, casesroll_avg, caserate_avg) %>% 
-  arrange(name, date) %>% 
-  group_by(name) %>% 
-  mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7),
-         caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
-  #Take data from day before most recent to allow for incomplete data in most recent
-  slice_tail(n=2) %>% 
-  slice_head(n=1) %>% 
-  as.data.frame()
-
-up_arrow <- "<span style=\"color:red\">&#9650;</span>"
-down_arrow <- "<span style=\"color:green\">&#9660;</span>"
-
-#Highest case numbers
-casetable <- shortcases %>% 
-  slice_max(casesroll_avg, n=10) %>% 
-  gt(rowname_col="name") %>% 
-  tab_header(title="Local Authorities in the UK with the highest number of new COVID cases",
-             subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
-  tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
-  tab_stubhead(label="Local Authority") %>% 
-  tab_spanner(label="Current cases per day", columns=vars(casesroll_avg, caserate_avg)) %>% 
-  tab_spanner(label="Change in last 7 days", columns=vars(cases_change, caserate_change)) %>% 
-  cols_label(date="Data up to", country="Country", casesroll_avg="Total",
-             caserate_avg="Rate per 100,000", cases_change="Total", 
-             caserate_change="Rate per 100,000") %>% 
-  fmt_date(columns=vars(date), date_style=9) %>% 
-  fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
-             decimals=1) %>% 
-  text_transform(locations=cells_body(columns="cases_change", rows=cases_change<0),
-                 fn = function(x) paste(x, down_arrow)) %>% 
-  text_transform(locations=cells_body(columns="cases_change", rows=cases_change>0),
-                 fn = function(x) paste(x, up_arrow)) %>% 
-  cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
-             ~ px(100)) %>% 
-  cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
-             align="center")
-
-#Highest case rates
-ratetable <- shortcases %>% 
-  slice_max(caserate_avg, n=10) %>% 
-  gt(rowname_col="name") %>% 
-  tab_header(title="Local Authorities in the UK with the highest rate of new COVID cases",
-             subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
-  tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
-  tab_stubhead(label="Local Authority") %>% 
-  tab_spanner(label="Current cases per day", columns=vars(caserate_avg, casesroll_avg)) %>% 
-  tab_spanner(label="Change in last 7 days", columns=vars(caserate_change, cases_change)) %>% 
-  cols_label(date="Data up to", country="Country", casesroll_avg="Total",
-             caserate_avg="Rate per 100,000", cases_change="Total", 
-             caserate_change="Rate per 100,000") %>% 
-  fmt_date(columns=vars(date), date_style=9) %>% 
-  fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
-             decimals=1) %>% 
-  text_transform(locations=cells_body(columns="caserate_change", rows=cases_change<0),
-                 fn = function(x) paste(x, down_arrow)) %>% 
-  text_transform(locations=cells_body(columns="caserate_change", rows=cases_change>0),
-                 fn = function(x) paste(x, up_arrow)) %>% 
-  cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
-             ~ px(100)) %>% 
-  cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
-             align="center")
-
-#Biggest rise in case numbers
-casechangetable <- shortcases %>% 
-  slice_max(cases_change, n=10) %>% 
-  gt(rowname_col="name") %>% 
-  tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 case numbers in the last week",
-             subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
-  tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
-  tab_stubhead(label="Local Authority") %>% 
-  cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
-  tab_spanner(label="Change in last 7 days", columns=vars(cases_change, caserate_change)) %>% 
-  tab_spanner(label="Current cases per day", columns=vars(casesroll_avg, caserate_avg)) %>% 
-  cols_label(date="Data up to", country="Country", casesroll_avg="Total",
-             caserate_avg="Rate per 100,000", cases_change="Total", 
-             caserate_change="Rate per 100,000") %>% 
-  fmt_date(columns=vars(date), date_style=9) %>% 
-  fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
-             decimals=1) %>% 
-  text_transform(locations=cells_body(columns="cases_change", rows=cases_change<0),
-                 fn = function(x) paste(x, down_arrow)) %>% 
-  text_transform(locations=cells_body(columns="cases_change", rows=cases_change>0),
-                 fn = function(x) paste(x, up_arrow)) %>% 
-  cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
-             ~ px(100)) %>% 
-  cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
-             align="center")
-
-#Biggest rise in case rates
-ratechangetable <- shortcases %>% 
-  slice_max(caserate_change, n=10) %>% 
-  gt(rowname_col="name") %>% 
-  tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 case rates in the last week",
-             subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
-  tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
-  tab_stubhead(label="Local Authority") %>% 
-  cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
-  tab_spanner(label="Current cases per day", columns=vars(caserate_avg, casesroll_avg)) %>% 
-  tab_spanner(label="Change in last 7 days", columns=vars(caserate_change, cases_change)) %>% 
-  cols_label(date="Data up to", country="Country", casesroll_avg="Total",
-             caserate_avg="Rate per 100,000", cases_change="Total", 
-             caserate_change="Rate per 100,000") %>% 
-  fmt_date(columns=vars(date), date_style=9) %>% 
-  fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
-             decimals=1) %>% 
-  text_transform(locations=cells_body(columns="caserate_change", rows=cases_change<0),
-                 fn = function(x) paste(x, down_arrow)) %>% 
-  text_transform(locations=cells_body(columns="caserate_change", rows=cases_change>0),
-                 fn = function(x) paste(x, up_arrow)) %>% 
-  cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
-             ~ px(100)) %>% 
-  cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
-             align="center")
-
-gtsave(casetable, filename="casetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
-gtsave(ratetable, filename="ratetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
-gtsave(casechangetable, filename="casechangetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
-gtsave(ratechangetable, filename="ratechangetable.png", path="C:/data projects/colin_misc/COVID_LA_Plots")
-
+#Additional analysis of local lockdown restrictions
 daydata$flag <- case_when(
   daydata$name %in% c("Bolton", "Bury", "Manchester", "Oldham", "Rochdale", "Salford", 
                       "Stockport", "Tameside", "Trafford", "Wigan")~ 1,
   TRUE ~ 0)
 
-tiff("Outputs/COVIDManchesterLAs1.tiff", units="in", width=8, height=6, res=500)
+tiff("Outputs/COVIDManchesterLAs.tiff", units="in", width=8, height=6, res=500)
 ggplot()+
  #geom_line(data=subset(daydata, date>as.Date("2020-07-01")), 
- #          aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+#           aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
   geom_line(data=subset(daydata, flag==1 & date>as.Date("2020-07-01")), 
             aes(x=date, y=caserate_avg, colour=name))+
   geom_segment(aes(x=as.Date("2020-08-01"), xend=as.Date("2020-08-01"), y=0, yend=20), 
@@ -593,10 +468,32 @@ ggplot()+
   scale_y_continuous(name="New cases per 100,000 population per day")+
   scale_colour_paletteer_d("LaCroixColoR::paired", name="")+
   theme_classic()+
-  labs(title="The case for relaxing local restrictions in Manchester looks questionable",
+  labs(title="The case for wider relaxation of local restrictions in Manchester looks weak",
        subtitle="Rolling 7-day average rates of new confirmed COVID-19 cases",
        caption="Data from PHE | Plot by @VictimOfMaths")
 dev.off()
+
+up_arrow <- "<span style=\"color:red\">&#9650;</span>"
+down_arrow <- "<span style=\"color:green\">&#9660;</span>"
+
+daydata %>% 
+  filter(date %in% c(as.Date("2020-08-01"), as.Date("2020-09-01")) & flag==1) %>% 
+  select(name, date, casesroll_avg) %>% 
+  spread(date, casesroll_avg) %>% 
+  mutate(change=`2020-09-01`-`2020-08-01`, changeperc=change*100/`2020-08-01`) %>% 
+  gt() %>%
+  tab_spanner(label="7-day average new cases",columns=vars(`2020-08-01`, `2020-09-01`)) %>% 
+  tab_spanner(label="Change from start of restrictions", columns=vars(change, changeperc)) %>% 
+  cols_label(name="", `2020-08-01`="1st August", `2020-09-01`="1st September",
+              change="Absolute", changeperc="Relative") %>% 
+  fmt_number(columns=vars(`2020-08-01`, `2020-09-01`, change), decimals=1) %>% 
+  fmt_number(columns=vars(changeperc), decimals=0) %>% 
+  text_transform(locations=cells_body(columns="change", rows=change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="change", rows=change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(locations=cells_body(columns="changeperc"),
+                 fn = function(x) paste0(x, "%"))
 
 daydata$flag2 <- case_when(
   daydata$name %in% c("Manchester", "Bury", "Tameside", "Rochdale",
@@ -604,7 +501,7 @@ daydata$flag2 <- case_when(
                                              "Pendle", "Bradford", "Calderdale", "Kirklees",
                                              "Glasgow City", "West Dunbartonshire",
                                              "East Renfrewshire", "Leicester",
-                                             "Bolton", "Trafford") ~ "Restrictions in place",
+                      "Bolton", "Trafford") ~ "Restrictions in place",
   daydata$name %in% c("Stockport", "Burnley", "Hyndburn", "Wigan",
                       "Rossendale") ~ "Restrictions relaxed",
   TRUE ~ "No Local Restrictions")

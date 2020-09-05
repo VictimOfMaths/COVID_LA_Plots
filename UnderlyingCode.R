@@ -270,7 +270,7 @@ daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S",
 #Need to update this link each day from:
 #https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
 temp <- tempfile()
-source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20200903.csv"
+source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20200904.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 casedata.S <- read.csv(temp)[,c(1:3)]
 colnames(casedata.S) <- c("date", "code", "cases")
@@ -288,10 +288,10 @@ daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 #Need to update this link daily from 
 #https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-september-2020
 temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/dd-030920.XLSX"
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-040920_0.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Need to update the range here too:
-casedata.NI <- read_excel(temp, sheet=3, range="A2:E2382", col_names=FALSE)
+casedata.NI <- read_excel(temp, sheet=3, range="A2:E2421", col_names=FALSE)
 colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
 casedata.NI$date <- as.Date(casedata.NI$date)
 
@@ -523,4 +523,66 @@ ggplot()+
   labs(title="Local COVID-related restrictions are being applied inconsistently",
        subtitle="Local Authorities with restrictions <span style='color:#E41A1C;'>in place </span>or that have been <span style='color:#4DAF4A;'>relaxed in the past week",
        caption="Data from ONS, NRS, DoHNI, PHE, PHW & PHS | Plot by @VictimOfMaths")
+dev.off()
+
+daydata$restrictions <- case_when(
+  daydata$name=="Leicester" & daydata$date>=as.Date("2020-06-29") ~ "Leicester",
+  daydata$name %in% c("Manchester", "Trafford", "Bury", "Tameside", "Rochdale", "Salford", "Bolton",
+                      "Oldham", "Preston", "Blackburn with Darwen", "Pendle", "Bradford",
+                      "Calderdale", "Kirklees") & daydata$date>=as.Date("2020-07-31") ~ "Northern England",
+  daydata$name %in% c("Wigan", "Rossendale") & daydata$date>=as.Date("2020-07-31") & 
+    daydata$date<as.Date("2020-08-26") ~ "Wigan & Rossendale",
+  daydata$name %in% c("Stockport", "Burnley", "Hyndburn") & daydata$date>=as.Date("2020-07-31") & 
+    daydata$date<as.Date("2020-09-02") ~ "Stockport, Burnley & Hyndburn",
+  daydata$name=="Aberdeen City" & daydata$date>=as.Date("2020-08-05") & 
+    daydata$date<as.Date("2020-08-24") ~ "Aberdeen",
+  daydata$name %in% c("Glasgow City", "East Renfrewshire", "West Dunbartonshire") & 
+  daydata$date>=as.Date("2020-09-01") ~ "Glasgow")
+
+daydata$restrictions <- factor(daydata$restrictions, levels=c("Leicester", 
+                                                              "Wigan & Rossendale",
+                                                              "Stockport, Burnley & Hyndburn", 
+                                                              "Northern England",
+                                                              "Aberdeen",
+                                                              "Glasgow"))
+
+temp <- daydata %>% 
+  filter(!is.na(restrictions))
+
+restrictedareas <- unique(temp$name)
+
+tiff("Outputs/COVIDRestrictionsLeeds.tiff", units="in", width=8, height=6, res=500)
+ggplot()+
+  geom_line(data=daydata,
+            aes(x=date, y=caserate_avg, group=name), colour="grey75")+
+  geom_line(data=subset(daydata, !is.na(restrictions)), 
+            aes(x=date, y=caserate_avg, group=name), colour="Tomato")+
+  geom_line(data=subset(daydata, name=="Leeds"),
+            aes(x=date, y=caserate_avg), colour="RoyalBlue")+
+  scale_x_date(limits=c(as.Date("2020-06-20"), as.Date("2020-09-04")), name="")+
+  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
+  theme_classic()+
+  theme(plot.subtitle=element_markdown())+
+  labs(title="Leeds is under threat of new lockdown restrictions",
+       subtitle="Daily rates of new confirmed COVID-19 cases in <span style='color:royalblue;'>Leeds </span>compared to <span style='color:tomato;'>areas with local restrictions</span>",
+       caption="Date from PHE, PHW, PHS & DoHNI | Plot by @VictimOfMaths")
+dev.off()
+
+tiff("Outputs/COVIDRestrictionsLeeds2.tiff", units="in", width=8, height=6, res=500)
+ggplot()+
+  geom_line(data=daydata,
+            aes(x=date, y=caserate_avg, group=name), colour="grey75")+
+  geom_line(data=subset(daydata, name=="Leeds"),
+            aes(x=date, y=caserate_avg), colour="RoyalBlue")+
+  geom_line(data=subset(daydata, name=="Rossendale"),
+            aes(x=date, y=caserate_avg), colour="ForestGreen")+
+  geom_line(data=subset(daydata, name=="South Tyneside"),
+            aes(x=date, y=caserate_avg), colour="Purple")+
+  scale_x_date(limits=c(as.Date("2020-08-01"), as.Date("2020-09-04")), name="")+
+  scale_y_continuous(name="Daily confirmed new cases per 100,000")+
+  theme_classic()+
+  theme(plot.subtitle=element_markdown())+
+  labs(title="Is Leeds the only area under threat of new restrictions?",
+       subtitle="Daily rates of new confirmed COVID-19 cases in <span style='color:royalblue;'>Leeds </span>compared to <span style='color:ForestGreen;'>Rossendale</span> and <span style='color:Purple;'>South Tyneside</span>",
+       caption="Date from PHE, PHW, PHS & DoHNI | Plot by @VictimOfMaths")
 dev.off()

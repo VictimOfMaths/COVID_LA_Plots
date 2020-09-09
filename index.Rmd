@@ -39,12 +39,41 @@ shortcases <- daydata %>%
 
 up_arrow <- "<span style=\"color:red\">&#9650;</span>"
 down_arrow <- "<span style=\"color:green\">&#9660;</span>"
+
+#Code for sparklines adapted from Tom Mock's excellent blog
+#https://themockup.blog/posts/2020-09-04-10-table-rules-in-r/
+maxdate=max(shortcases$date)
 ```
 
 ```{r, include=FALSE}
 #Highest case numbers
+plot_spark1 <- function(data){
+  data %>% 
+    ggplot(aes(x = date, y = casesroll_avg)) +
+    geom_line(size = 15) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+sparknamedata1 <- shortcases %>% 
+  slice_max(casesroll_avg, n=10)
+
+sparknamedata1$name <- as.character(sparknamedata1$name)
+
+sparknamedata1$name <- fct_inorder(sparknamedata1$name)
+
+spark_plots1 <- daydata %>% 
+  as.data.frame() %>% 
+  filter(name %in% unique(sparknamedata1$name) & date>maxdate-months(1)) %>% 
+  select(name, date, country, casesroll_avg) %>% 
+  mutate(name=factor(name, levels=unique(sparknamedata1$name))) %>% 
+  arrange(name, date) %>% 
+  nest(casesroll_avg = c(date, casesroll_avg)) %>% 
+  mutate(plot = map(casesroll_avg, plot_spark1))
+
 casetable <- shortcases %>% 
   slice_max(casesroll_avg, n=10) %>% 
+  mutate(ggplot = NA) %>%
   gt(rowname_col="name") %>% 
   tab_header(title="Local Authorities in the UK with the highest number of new COVID cases",
              subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
@@ -54,7 +83,7 @@ casetable <- shortcases %>%
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(cases_change, caserate_change)) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
-             caserate_change="Rate per 100,000") %>% 
+             caserate_change="Rate per 100,000", ggplot="Last month") %>% 
   fmt_date(columns=vars(date), date_style=9) %>% 
   fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
              decimals=1) %>% 
@@ -62,6 +91,13 @@ casetable <- shortcases %>%
                  fn = function(x) paste(x, down_arrow)) %>% 
   text_transform(locations=cells_body(columns="cases_change", rows=cases_change>0),
                  fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(
+    locations = cells_body(vars(ggplot)),
+    fn = function(x){
+      map(spark_plots1$plot, ggplot_image, height = px(15), aspect_ratio = 4)
+    }
+  ) %>% 
+  cols_width(vars(ggplot) ~ px(100)) %>% 
   cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
              ~ px(100)) %>% 
   cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
@@ -70,8 +106,33 @@ casetable <- shortcases %>%
 
 ```{r, include=FALSE}
 #Highest case rates
+plot_spark2 <- function(data){
+  data %>% 
+    ggplot(aes(x = date, y = caserate_avg)) +
+    geom_line(size = 15) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+sparknamedata2 <- shortcases %>% 
+  slice_max(caserate_avg, n=10)
+
+sparknamedata2$name <- as.character(sparknamedata2$name)
+
+sparknamedata2$name <- fct_inorder(sparknamedata2$name)
+
+spark_plots2 <- daydata %>% 
+  as.data.frame() %>% 
+  filter(name %in% unique(sparknamedata2$name) & date>maxdate-months(1)) %>% 
+  select(name, date, country, caserate_avg) %>% 
+  mutate(name=factor(name, levels=unique(sparknamedata2$name))) %>% 
+  arrange(name, date) %>% 
+  nest(caserate_avg = c(date, caserate_avg)) %>% 
+  mutate(plot = map(caserate_avg, plot_spark2))
+
 ratetable <- shortcases %>% 
   slice_max(caserate_avg, n=10) %>% 
+  mutate(ggplot = NA) %>%
   gt(rowname_col="name") %>% 
   tab_header(title="Local Authorities in the UK with the highest rate of new COVID cases",
              subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
@@ -81,7 +142,7 @@ ratetable <- shortcases %>%
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(caserate_change, cases_change)) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
-             caserate_change="Rate per 100,000") %>% 
+             caserate_change="Rate per 100,000", ggplot="Last month") %>% 
   fmt_date(columns=vars(date), date_style=9) %>% 
   fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
              decimals=1) %>% 
@@ -89,6 +150,13 @@ ratetable <- shortcases %>%
                  fn = function(x) paste(x, down_arrow)) %>% 
   text_transform(locations=cells_body(columns="caserate_change", rows=cases_change>0),
                  fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(
+    locations = cells_body(vars(ggplot)),
+    fn = function(x){
+      map(spark_plots2$plot, ggplot_image, height = px(15), aspect_ratio = 4)
+    }
+  ) %>% 
+  cols_width(vars(ggplot) ~ px(100)) %>% 
   cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
              ~ px(100)) %>% 
   cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
@@ -97,8 +165,36 @@ ratetable <- shortcases %>%
 
 ```{r, include=FALSE}
 #Biggest rise in case numbers
+plot_spark3 <- function(data){
+  data %>% 
+    ggplot(aes(x = date, y = cases_change)) +
+    geom_line(size = 15) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+sparknamedata3 <- shortcases %>% 
+  slice_max(cases_change, n=10)
+
+sparknamedata3$name <- as.character(sparknamedata3$name)
+
+sparknamedata3$name <- fct_inorder(sparknamedata3$name)
+
+spark_plots3 <- daydata %>% 
+  as.data.frame() %>% 
+  arrange(name, date) %>% 
+  group_by(name) %>% 
+  mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7)) %>% 
+  ungroup() %>% 
+  filter(name %in% unique(sparknamedata3$name) & date>maxdate-months(1)) %>% 
+  select(name, date, country, cases_change) %>% 
+  mutate(name=factor(name, levels=unique(sparknamedata3$name))) %>% 
+  nest(cases_change = c(date, cases_change)) %>% 
+  mutate(plot = map(cases_change, plot_spark3))
+
 casechangetable <- shortcases %>% 
   slice_max(cases_change, n=10) %>% 
+  mutate(ggplot=NA) %>% 
   gt(rowname_col="name") %>% 
   tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 case numbers in the last week",
              subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
@@ -109,7 +205,7 @@ casechangetable <- shortcases %>%
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(casesroll_avg, caserate_avg)) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
-             caserate_change="Rate per 100,000") %>% 
+             caserate_change="Rate per 100,000", ggplot="Last month") %>% 
   fmt_date(columns=vars(date), date_style=9) %>% 
   fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
              decimals=1) %>% 
@@ -117,6 +213,13 @@ casechangetable <- shortcases %>%
                  fn = function(x) paste(x, down_arrow)) %>% 
   text_transform(locations=cells_body(columns="cases_change", rows=cases_change>0),
                  fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(
+    locations = cells_body(vars(ggplot)),
+    fn = function(x){
+      map(spark_plots3$plot, ggplot_image, height = px(15), aspect_ratio = 4)
+    }
+  ) %>% 
+  cols_width(vars(ggplot) ~ px(100)) %>% 
   cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
              ~ px(100)) %>% 
   cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
@@ -125,8 +228,36 @@ casechangetable <- shortcases %>%
 
 ```{r, include=FALSE}
 #Biggest rise in case rates
+plot_spark4 <- function(data){
+  data %>% 
+    ggplot(aes(x = date, y = caserate_change)) +
+    geom_line(size = 15) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+sparknamedata4 <- shortcases %>% 
+  slice_max(caserate_change, n=10)
+
+sparknamedata4$name <- as.character(sparknamedata4$name)
+
+sparknamedata4$name <- fct_inorder(sparknamedata4$name)
+
+spark_plots4 <- daydata %>% 
+  as.data.frame() %>% 
+  arrange(name, date) %>% 
+  group_by(name) %>% 
+  mutate(caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
+  ungroup() %>% 
+  filter(name %in% unique(sparknamedata4$name) & date>maxdate-months(1)) %>% 
+  select(name, date, country, caserate_change) %>% 
+  mutate(name=factor(name, levels=unique(sparknamedata4$name))) %>% 
+  nest(caserate_change = c(date, caserate_change)) %>% 
+  mutate(plot = map(caserate_change, plot_spark4))
+
 ratechangetable <- shortcases %>% 
   slice_max(caserate_change, n=10) %>% 
+  mutate(ggplot=NA) %>% 
   gt(rowname_col="name") %>% 
   tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 case rates in the last week",
              subtitle="Based on 7-day rolling average of Pillar 1 and 2 tests combined") %>% 
@@ -137,7 +268,7 @@ ratechangetable <- shortcases %>%
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(caserate_change, cases_change)) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
-             caserate_change="Rate per 100,000") %>% 
+             caserate_change="Rate per 100,000", ggplot="Last month") %>% 
   fmt_date(columns=vars(date), date_style=9) %>% 
   fmt_number(columns=vars(casesroll_avg, caserate_avg, cases_change, caserate_change),
              decimals=1) %>% 
@@ -145,6 +276,13 @@ ratechangetable <- shortcases %>%
                  fn = function(x) paste(x, down_arrow)) %>% 
   text_transform(locations=cells_body(columns="caserate_change", rows=cases_change>0),
                  fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(
+    locations = cells_body(vars(ggplot)),
+    fn = function(x){
+      map(spark_plots4$plot, ggplot_image, height = px(15), aspect_ratio = 4)
+    }
+  ) %>% 
+  cols_width(vars(ggplot) ~ px(100)) %>% 
   cols_width(vars(casesroll_avg, caserate_avg, cases_change, caserate_change)
              ~ px(100)) %>% 
   cols_align(vars(casesroll_avg, caserate_avg, cases_change, caserate_change),

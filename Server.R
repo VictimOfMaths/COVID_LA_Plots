@@ -29,6 +29,7 @@ server <- function(input, output) {
   
   output$plot <- renderPlot({
     LA <- input$LA
+    lag <- if_else(input$censoring==TRUE, 3, 0)
     
     LAdata <- data %>% filter(name==LA) 
     LAexcess <- excess %>% filter(name==LA)
@@ -130,7 +131,7 @@ server <- function(input, output) {
     #cases plot
     if (input$plottype == 5){
       p <- daydata %>% 
-        filter(name==LA) %>% 
+        filter(name==LA & date<max(date)-days(lag)) %>% 
         ggplot()+
         geom_col(aes(x=date, y=cases), fill="skyblue2")+
         geom_line(aes(x=date, y=casesroll_avg), colour="red")+
@@ -147,7 +148,7 @@ server <- function(input, output) {
     #ENGLAND ONLY
     if (input$plottype == 6){
       p <- daydata %>% 
-        filter(name==LA) %>% 
+        filter(name==LA  & date<max(date)-days(lag)) %>% 
         ggplot()+
         geom_line(aes(x=date, y=p1cases), colour="#FF4E86")+
         geom_line(aes(x=date, y=p2cases), colour="#FF9E44")+
@@ -164,8 +165,11 @@ server <- function(input, output) {
     #Comparison of case rates with other LAs
     if (input$plottype == 7){
       p <- ggplot()+
-        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland")), aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
-        geom_line(data=subset(daydata, name==LA), aes(x=date, y=caserate_avg), colour="#FF4E86")+
+        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
+                                date<max(date)-days(lag)), 
+                  aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
+        geom_line(data=subset(daydata, name==LA & date<max(date)-days(lag)), 
+                  aes(x=date, y=caserate_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
         scale_y_continuous(name="Daily confirmed new cases per 100,000")+
         theme_classic()+
@@ -178,8 +182,11 @@ server <- function(input, output) {
     #Comparison of case numbers with other LAs
     if (input$plottype == 8){
       p <- ggplot()+
-        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland")), aes(x=date, y=casesroll_avg, group=name), colour="Grey80")+
-        geom_line(data=subset(daydata, name==LA), aes(x=date, y=casesroll_avg), colour="#FF4E86")+
+        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
+                                date<max(date)-days(lag)), 
+                  aes(x=date, y=casesroll_avg, group=name), colour="Grey80")+
+        geom_line(data=subset(daydata, name==LA & date<max(date)-days(lag)),
+                  aes(x=date, y=casesroll_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
         scale_y_continuous(name="Daily confirmed new cases")+
         theme_classic()+

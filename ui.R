@@ -16,7 +16,9 @@ ui <- fluidPage(
     selectInput('plottype', 'Select plot', c("Total excess deaths (GB only)"=1,"Excess deaths by cause (GB only)"=2,"Excess deaths by location (GB only)"=3,
                                              "Cases vs deaths (GB only)"=4, "Case numbers"=5, 
                                              "Cases by pillar (England only)"=6, "Comparative case rates"=7,
-                                             "Comparative case numbers"=8))
+                                             "Comparative case numbers"=8)),
+    checkboxInput('censoring', "Censor incomplete case data\n(remove most recent 3 days' figures, which are heavily underreported)",
+                  TRUE)
   ),
   
   mainPanel(

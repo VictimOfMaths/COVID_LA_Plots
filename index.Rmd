@@ -32,8 +32,8 @@ shortcases <- daydata %>%
   group_by(name) %>% 
   mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7),
          caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
-  #Take data from day before most recent to allow for incomplete data in most recent
-  slice_tail(n=2) %>% 
+  #censor data from last 3 days due to underreporting
+  slice_tail(n=4) %>% 
   slice_head(n=1) %>% 
   as.data.frame()
 
@@ -64,7 +64,7 @@ sparknamedata1$name <- fct_inorder(sparknamedata1$name)
 
 spark_plots1 <- daydata %>% 
   as.data.frame() %>% 
-  filter(name %in% unique(sparknamedata1$name) & date>maxdate-months(1)) %>% 
+  filter(name %in% unique(sparknamedata1$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
   select(name, date, country, casesroll_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata1$name))) %>% 
   arrange(name, date) %>% 
@@ -81,6 +81,7 @@ casetable <- shortcases %>%
   tab_stubhead(label="Local Authority") %>% 
   tab_spanner(label="Current cases per day", columns=vars(casesroll_avg, caserate_avg)) %>% 
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(cases_change, caserate_change)) %>% 
+  tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000", ggplot="Last month") %>% 
@@ -123,7 +124,7 @@ sparknamedata2$name <- fct_inorder(sparknamedata2$name)
 
 spark_plots2 <- daydata %>% 
   as.data.frame() %>% 
-  filter(name %in% unique(sparknamedata2$name) & date>maxdate-months(1)) %>% 
+  filter(name %in% unique(sparknamedata2$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
   select(name, date, country, caserate_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata2$name))) %>% 
   arrange(name, date) %>% 
@@ -140,6 +141,7 @@ ratetable <- shortcases %>%
   tab_stubhead(label="Local Authority") %>% 
   tab_spanner(label="Current cases per day", columns=vars(caserate_avg, casesroll_avg)) %>% 
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(caserate_change, cases_change)) %>% 
+   tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000", ggplot="Last month") %>% 
@@ -186,7 +188,7 @@ spark_plots3 <- daydata %>%
   group_by(name) %>% 
   mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7)) %>% 
   ungroup() %>% 
-  filter(name %in% unique(sparknamedata3$name) & date>maxdate-months(1)) %>% 
+  filter(name %in% unique(sparknamedata3$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
   select(name, date, country, cases_change) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata3$name))) %>% 
   nest(cases_change = c(date, cases_change)) %>% 
@@ -203,6 +205,7 @@ casechangetable <- shortcases %>%
   cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
   tab_spanner(label="Change in last 7 days", columns=vars(cases_change, caserate_change)) %>% 
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(casesroll_avg, caserate_avg)) %>% 
+   tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000", ggplot="Last month") %>% 
@@ -249,7 +252,7 @@ spark_plots4 <- daydata %>%
   group_by(name) %>% 
   mutate(caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
   ungroup() %>% 
-  filter(name %in% unique(sparknamedata4$name) & date>maxdate-months(1)) %>% 
+  filter(name %in% unique(sparknamedata4$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
   select(name, date, country, caserate_change) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata4$name))) %>% 
   nest(caserate_change = c(date, caserate_change)) %>% 
@@ -266,6 +269,7 @@ ratechangetable <- shortcases %>%
   cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
   tab_spanner(label="Current cases per day", columns=vars(caserate_avg, casesroll_avg)) %>% 
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(caserate_change, cases_change)) %>% 
+   tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000", ggplot="Last month") %>% 

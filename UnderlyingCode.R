@@ -234,6 +234,9 @@ casedata.E$name <- if_else(casedata.E$name %in% c("Aylesbury Vale", "Chiltern", 
 casedata.E$code <- if_else(casedata.E$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
                            "E06000060", as.character(casedata.E$code))
 
+#Align names
+casedata.E$name <- if_else(casedata.E$name=="Cornwall and Isles of Scilly", "Cornwall", casedata.E$name)
+
 casedata.E <- casedata.E %>% 
   group_by(name, code, date) %>% 
   summarise(cases=sum(cases)) %>% 

@@ -172,7 +172,7 @@ server <- function(input, output) {
                   aes(x=date, y=caserate_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
         scale_y_continuous(name="Daily confirmed new cases per 100,000")+
-        theme_classic()+
+        theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales, Scotland & Northern Ireland"),
@@ -189,7 +189,7 @@ server <- function(input, output) {
                   aes(x=date, y=casesroll_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
         scale_y_continuous(name="Daily confirmed new cases")+
-        theme_classic()+
+        theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Number of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales, Scotland & Northern Ireland"),

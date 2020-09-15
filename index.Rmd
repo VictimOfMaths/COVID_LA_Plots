@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbesr of COVID-19 cases"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "14/09/2020"
+date: "15/09/2020"
 output: html_document
 ---
 ```{r, include = FALSE}
@@ -203,8 +203,8 @@ casechangetable <- shortcases %>%
   tab_source_note("Data from PHE, PHW, DoHNI and ScotGov | Analysis by @VictimOfMaths") %>% 
   tab_stubhead(label="Local Authority") %>% 
   cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
-  tab_spanner(label="Change in last 7 days", columns=vars(cases_change, caserate_change)) %>% 
-  tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(casesroll_avg, caserate_avg)) %>% 
+  tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(cases_change, caserate_change)) %>% 
+  tab_spanner(label="Current cases per day", columns=vars(casesroll_avg, caserate_avg)) %>% 
    tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 

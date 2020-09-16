@@ -82,7 +82,7 @@ data.ew <- data.ew %>%
 temp <- tempfile()
 source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data20.s <- read_excel(temp, sheet=2, range="A5:E3903", col_names=FALSE)
+data20.s <- read_excel(temp, sheet=2, range="A5:E4419", col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
 data20.s$week <- as.numeric(data20.s$week)
 
@@ -100,7 +100,7 @@ temp <- tempfile()
 source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-council-areas.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data1519.s <- read_excel(temp, sheet=2, range="A5:E25193", col_names=FALSE)
-colnames(data1519.s) <- c("week", "name", "location", "year", "deaths")
+colnames(data1519.s) <- c("week", "name", "year", "location", "deaths")
 data1519.s$week <- as.numeric(data1519.s$week)
 
 #Take 5 year averages
@@ -273,9 +273,9 @@ daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S",
 #Need to update this link each day from:
 #https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
 temp <- tempfile()
-source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20200915.csv"
+source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20200916.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-casedata.S <- read.csv(temp)[,c(1:3)]
+casedata.S <- read.csv(temp)[,c(1,2,4)]
 colnames(casedata.S) <- c("date", "code", "cases")
 
 casedata.S$date <- as.Date(as.character(casedata.S$date), "%Y%m%d")
@@ -291,10 +291,10 @@ daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 #Need to update this link daily from 
 #https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-september-2020
 temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-150920.xlsx"
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-160920.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Need to update the range here too:
-casedata.NI <- read_excel(temp, sheet=3, range="A2:E2563", col_names=FALSE)
+casedata.NI <- read_excel(temp, sheet=3, range="A2:E2577", col_names=FALSE)
 colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
 casedata.NI$date <- as.Date(casedata.NI$date)
 

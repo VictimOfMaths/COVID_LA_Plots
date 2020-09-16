@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbesr of COVID-19 cases"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "15/09/2020"
+date: "16/09/2020"
 output: html_document
 ---
 ```{r, include = FALSE}
@@ -169,7 +169,7 @@ ratetable <- shortcases %>%
 #Biggest rise in case numbers
 plot_spark3 <- function(data){
   data %>% 
-    ggplot(aes(x = date, y = cases_change)) +
+    ggplot(aes(x = date, y = casesroll_avg)) +
     geom_line(size = 15) +
     theme_void() +
     theme(legend.position = "none")
@@ -184,15 +184,12 @@ sparknamedata3$name <- fct_inorder(sparknamedata3$name)
 
 spark_plots3 <- daydata %>% 
   as.data.frame() %>% 
-  arrange(name, date) %>% 
-  group_by(name) %>% 
-  mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7)) %>% 
-  ungroup() %>% 
   filter(name %in% unique(sparknamedata3$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
-  select(name, date, country, cases_change) %>% 
+  select(name, date, country, casesroll_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata3$name))) %>% 
-  nest(cases_change = c(date, cases_change)) %>% 
-  mutate(plot = map(cases_change, plot_spark3))
+  arrange(name, date) %>% 
+  nest(casesroll_avg = c(date, casesroll_avg)) %>% 
+  mutate(plot = map(casesroll_avg, plot_spark3))
 
 casechangetable <- shortcases %>% 
   slice_max(cases_change, n=10) %>% 
@@ -233,7 +230,7 @@ casechangetable <- shortcases %>%
 #Biggest rise in case rates
 plot_spark4 <- function(data){
   data %>% 
-    ggplot(aes(x = date, y = caserate_change)) +
+    ggplot(aes(x = date, y = caserate_avg)) +
     geom_line(size = 15) +
     theme_void() +
     theme(legend.position = "none")
@@ -248,15 +245,12 @@ sparknamedata4$name <- fct_inorder(sparknamedata4$name)
 
 spark_plots4 <- daydata %>% 
   as.data.frame() %>% 
-  arrange(name, date) %>% 
-  group_by(name) %>% 
-  mutate(caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
-  ungroup() %>% 
   filter(name %in% unique(sparknamedata4$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
-  select(name, date, country, caserate_change) %>% 
+  select(name, date, country, caserate_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata4$name))) %>% 
-  nest(caserate_change = c(date, caserate_change)) %>% 
-  mutate(plot = map(caserate_change, plot_spark4))
+  arrange(name, date) %>% 
+  nest(caserate_avg = c(date, caserate_avg)) %>% 
+  mutate(plot = map(caserate_avg, plot_spark4))
 
 ratechangetable <- shortcases %>% 
   slice_max(caserate_change, n=10) %>% 

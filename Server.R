@@ -136,7 +136,7 @@ server <- function(input, output) {
         geom_col(aes(x=date, y=cases), fill="skyblue2")+
         geom_line(aes(x=date, y=casesroll_avg), colour="red")+
         scale_x_date(name="Date")+
-        scale_y_continuous(name="Daily confirmed new cases")+
+        scale_y_continuous(name="Daily confirmed new cases", position="right")+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
         labs(title=paste0("Confirmed new COVID cases in ",LA),
@@ -171,7 +171,7 @@ server <- function(input, output) {
         geom_line(data=subset(daydata, name==LA & date<max(date)-days(lag)), 
                   aes(x=date, y=caserate_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
-        scale_y_continuous(name="Daily confirmed new cases per 100,000")+
+        scale_y_continuous(name="Daily confirmed new cases per 100,000", position="right")+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
@@ -188,7 +188,7 @@ server <- function(input, output) {
         geom_line(data=subset(daydata, name==LA & date<max(date)-days(lag)),
                   aes(x=date, y=casesroll_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
-        scale_y_continuous(name="Daily confirmed new cases")+
+        scale_y_continuous(name="Daily confirmed new cases", position="right")+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Number of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),

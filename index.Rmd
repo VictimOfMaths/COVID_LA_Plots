@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbesr of COVID-19 cases"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "19/09/2020"
+date: "20/09/2020"
 output: html_document
 ---
 ```{r, include = FALSE}

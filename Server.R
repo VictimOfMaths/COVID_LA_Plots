@@ -71,7 +71,7 @@ server <- function(input, output) {
                  label=lab,
                  hjust=0, colour="red", size=rel(5))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-             subtitle=paste0("Weekly deaths in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span> by date of occurence<br>Data up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths<br>not yet having been fully processed."),
+             subtitle=paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of death data can have substantial reporting delays.<br>Around 5% of deaths are not included in this data until at least 3 months from when the death occurs."),
              caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
@@ -90,7 +90,7 @@ server <- function(input, output) {
         theme_classic(base_size=16)+
         theme(plot.title.position="plot")+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-             subtitle=paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by cause.\nData up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths\nnot yet having been fully processed."),
+             subtitle=paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by cause.\nData up to ", enddate, ". Date of death data can have substantial reporting delays.\nAround 5% of deaths are not included in this data until at least 3 months from when the death occurs."),
              caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
@@ -106,7 +106,7 @@ server <- function(input, output) {
         theme_classic(base_size=16)+
         theme(plot.title.position="plot")+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
-             subtitle=paste0("Excess deaths by occurence in 2020 vs. 2015-19 average by location.\nData up to ", enddate, ". Data for recent weeks is likely to be an undercount due to deaths\nnot yet having been fully processed."),
+             subtitle=paste0("Excess deaths by occurence in 2020 vs. 2015-19 average by location.\nData up to ", enddate, ". Date of death data can have substantial reporting delays.\nAround 5% of deaths are not included in this data until at least 3 months from when the death occurs."),
              caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
@@ -132,6 +132,7 @@ server <- function(input, output) {
     if (input$plottype == 5){
       p <- daydata %>% 
         filter(name==LA & date<max(date)-days(lag)) %>% 
+        mutate(casesroll_avg=if_else(date>max(date)-days(lag), NA_real_, casesroll_avg)) %>% 
         ggplot()+
         geom_col(aes(x=date, y=cases), fill="skyblue2")+
         geom_line(aes(x=date, y=casesroll_avg), colour="red")+

@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbesr of COVID-19 cases"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "14/10/2020"
+date: "15/10/2020"
 output: html_document
 ---
 ```{r, include = FALSE}
@@ -32,8 +32,8 @@ shortcases <- daydata %>%
   group_by(name) %>% 
   mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7),
          caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
-  #censor data from last 3 days due to underreporting
-  slice_tail(n=4) %>% 
+  #censor data from last 4 days due to underreporting
+  slice_tail(n=5) %>% 
   slice_head(n=1) %>% 
   as.data.frame()
 
@@ -81,7 +81,7 @@ casetable <- shortcases %>%
   tab_stubhead(label="Local Authority") %>% 
   tab_spanner(label="Current cases per day", columns=vars(casesroll_avg, caserate_avg)) %>% 
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(cases_change, caserate_change)) %>% 
-  tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
+  tab_footnote(footnote="Data from the most recent 4 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000", ggplot="Last month") %>% 
@@ -141,7 +141,7 @@ ratetable <- shortcases %>%
   tab_stubhead(label="Local Authority") %>% 
   tab_spanner(label="Current cases per day", columns=vars(caserate_avg, casesroll_avg)) %>% 
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(caserate_change, cases_change)) %>% 
-   tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
+   tab_footnote(footnote="Data from the most recent 4 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000", ggplot="Last month") %>% 
@@ -202,7 +202,7 @@ casechangetable <- shortcases %>%
   cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(cases_change, caserate_change)) %>% 
   tab_spanner(label="Current cases per day", columns=vars(casesroll_avg, caserate_avg)) %>% 
-   tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
+   tab_footnote(footnote="Data from the most recent 4 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000", ggplot="Last month") %>% 
@@ -263,7 +263,7 @@ ratechangetable <- shortcases %>%
   cols_move(columns=vars(cases_change, caserate_change), after="country") %>% 
   tab_spanner(label="Current cases per day", columns=vars(caserate_avg, casesroll_avg)) %>% 
   tab_spanner(label="Change in daily cases in the last 7 days", columns=vars(caserate_change, cases_change)) %>% 
-   tab_footnote(footnote="Data from the most recent 3 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
+   tab_footnote(footnote="Data from the most recent 4 days available is excluded as this is often very incomplete", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", casesroll_avg="Total",
              caserate_avg="Rate per 100,000", cases_change="Total", 
              caserate_change="Rate per 100,000", ggplot="Last month") %>% 

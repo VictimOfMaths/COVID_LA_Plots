@@ -277,7 +277,7 @@ daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S",
 #Need to update this link each day from:
 #https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
 temp <- tempfile()
-source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20201020.csv"
+source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/2dd8534b-0a6f-4744-9253-9565d62f96c2/download/trend_hb_20201021.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 casedata.S <- read.csv(temp)[,c(1,2,4)]
 colnames(casedata.S) <- c("date", "code", "cases")
@@ -336,67 +336,130 @@ daydata$country <- case_when(
   substr(daydata$code,1,1)=="N" ~ "Northern Ireland"
   )
 
-#Experimental pillar 1 & 2 separation - England only and only up to end of June
-#Archive files from 1st & 2nd July - either side of pillar 2 addition to data
-#Available from https://coronavirus.data.gov.uk/archive
-#Pillar 1 data
-temp <- tempfile()
-source <- "https://coronavirus.data.gov.uk/downloads/csv/dated/coronavirus-cases_202007011400.csv"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-p1data <- read.csv(temp)[,c(1:5)]
-colnames(p1data) <- c("name", "code", "geography", "date", "p1cases")
-p1data$date <- as.Date(p1data$date)
-p1data <- subset(p1data, geography=="Lower tier local authority" & date<"2020-07-01")
-p1data$code <- if_else(p1data$code %in% c("E09000001", "E09000012"), 
-                       "E09000012", as.character(p1data$code))
-p1data$code <- case_when(
-  p1data$code %in% c("E09000001", "E09000012") ~ "E09000012",
-  p1data$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ "E06000060",
-  TRUE ~ p1data$code
-)
-
-p1data <- p1data %>% 
-  group_by(code, date) %>% 
-  summarise(p1cases=sum(p1cases)) %>% 
-  ungroup()
-
-#Pillar 1 & 2 combined
-temp <- tempfile()
-source <- "https://coronavirus.data.gov.uk/downloads/csv/dated/coronavirus-cases_202007021618.csv"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-p12data <- read.csv(temp)[,c(1:5)]
-colnames(p12data) <- c("name", "code", "geography", "date", "p12cases")
-p12data$date <- as.Date(p12data$date)
-p12data <- subset(p12data, geography=="Lower tier local authority" & date<"2020-07-01")
-p12data$code <- as.character(p12data$code)
-p12data$code <- case_when(
-  p12data$code %in% c("E09000001", "E09000012") ~ "E09000012",
-  p12data$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ "E06000060",
-  TRUE ~ p12data$code
-)
-p12data <- p12data %>% 
-  group_by(code, date) %>% 
-  summarise(p12cases=sum(p12cases)) %>% 
-  ungroup()
-
-daydata <- merge(daydata, p1data, by=c("date", "code"), all.x=TRUE)
-daydata <- merge(daydata, p12data, by=c("date", "code"), all.x=TRUE)
-
-daydata$p1cases <- if_else(is.na(daydata$p1cases) & daydata$country=="England" & daydata$date<as.Date("2020-07-01"),
-                           0, daydata$p1cases)
-daydata$p12cases <- if_else(is.na(daydata$p12cases) & daydata$country=="England" & daydata$date<as.Date("2020-07-01"), 
-                            0, daydata$p12cases)
-
-#Estimate Pillar 2 cases
-daydata$p2cases <- daydata$p12cases-daydata$p1cases
-daydata$p2cases <- if_else(daydata$p2cases<0, 0, daydata$p2cases)
-
 daydata$date <- as.Date(daydata$date)
+
+###################################################
+#Hospital admissions and deaths in hospitals
+
+#Admissions data which is published weekly (next update on 22nd October)
+#https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/10/Weekly-covid-admissions-publication-201015-1.xlsx"
+
+#Hospital deaths data which is published daily
+#https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/10/COVID-19-total-announced-deaths-21-October-2020.xlsx"
+
+#Increment by 7 when each new report is published
+admrange <- "BW"
+#Increment by 1 each day
+deathrange <- "IF"
+
+#Set latest date of admissions data
+admdate <- as.Date("2020-10-11")
+
+#Read in admissions
+temp <- tempfile()
+temp <- curl_download(url=admurl, destfile=temp, quiet=FALSE, mode="wb")
+raw.adm <- read_excel(temp, sheet=1, range=paste0("A26:",admrange,"508"), col_names=FALSE)
+
+#Tidy up data
+admissions <- raw.adm %>% 
+  gather(date, admissions, c(4:ncol(raw.adm))) %>% 
+  mutate(date=as.Date("2020-08-01")+days(as.integer(substr(date, 4, 6))-4)) %>% 
+  rename(Region=...1, code=...2, name=...3)
+
+#Read in deaths
+temp <- tempfile()
+temp <- curl_download(url=deathurl, destfile=temp, quiet=FALSE, mode="wb")
+raw.deaths <- read_excel(temp, sheet=6, range=paste0("B19:",deathrange,"240"), col_names=FALSE)[,-c(2,5)]
+
+#Tidy up data
+deaths <- raw.deaths %>% 
+  gather(date, deaths, c(4:ncol(raw.deaths))) %>% 
+  mutate(date=as.Date("2020-03-01")+days(as.integer(substr(date, 4, 6))-6)) %>% 
+  rename(Region=...1, code=...3, name=...4)
+
+#Merge together from 1st August 2020 onwards
+data.deaths.adm <- deaths %>% 
+  filter(date>=as.Date("2020-08-01")) %>% 
+  merge(admissions, all.x=TRUE, all.y=TRUE, by=c("code", "date", "Region")) %>% 
+  mutate(admissions=if_else(is.na(admissions) & date<=admdate, 0, admissions),
+         deaths=if_else(is.na(deaths), 0, deaths),
+         name=coalesce(name.x, name.y)) %>% 
+  select(-c("name.x", "name.y"))
+
+#Bring in PHE data summarising admissions in HES to each trust by MSOA
+MSOA.adm <- read_excel("Data/2020 Trust Catchment Populations_Supplementary MSOA Analysis.xlsx", 
+                       sheet=2)
+
+#Address changes in trust codes - data from https://digital.nhs.uk/services/organisation-data-service/organisation-changes
+MSOA.adm <- MSOA.adm %>% 
+  mutate(TrustCode=case_when(
+    TrustCode %in% c("RE9", "RLN") ~ "R0B",
+    TrustCode=="R1J" ~ "RTQ",
+    TrustCode=="RQ6" ~ "REM",
+    TrustCode=="RNL" ~ "RNN",
+    #TrustCode %in% c("RQ8", "RDD") ~ "RAJ",
+    TrustCode=="RA3" ~ "RA7",
+    #TrustCode=="RC1" ~ "RC9",
+    TrustCode=="RBA" ~ "RH5",
+    TRUE ~ TrustCode)) %>% 
+  group_by(CatchmentYear, msoa, TrustCode) %>% 
+  summarise(msoa_total_catchment=sum(msoa_total_catchment)) %>% 
+  ungroup()
+
+#Bring in MSOA to LTLA lookup
+temp <- tempfile()
+source <- "http://geoportal1-ons.opendata.arcgis.com/datasets/0b3c76d1eb5e4ffd98a3679ab8dea605_0.csv"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+MSOA.lookup <- read.csv(temp) %>% 
+  select(MSOA11CD, LAD19CD) %>% 
+  unique()
+
+#Merge into PHE lookup
+MSOA.adm <- merge(MSOA.adm, MSOA.lookup, by.x="msoa", by.y="MSOA11CD", all.x=TRUE)
+
+#Convert to the lookup we want (trust to LTLA), averaging across last 3 years in data (2016-18)
+trust.lookup <- MSOA.adm %>% 
+  filter(CatchmentYear>=2016) %>% 
+  group_by(TrustCode, LAD19CD) %>% 
+  summarise(catchment=sum(msoa_total_catchment)) %>% 
+  ungroup() %>% 
+  group_by(TrustCode) %>% 
+  mutate(pop=sum(catchment), popprop=catchment/pop) %>% 
+  ungroup()
+
+#Bring lookup into admissions and deaths data
+data.deaths.adm <- merge(data.deaths.adm, trust.lookup, by.x="code", by.y="TrustCode", all.x=TRUE)
+
+#Allocate admissions and deaths to LTLA based on population proportions and 
+#aggregate up to LTLA level
+data.deaths.adm <- data.deaths.adm %>% 
+  mutate(LA.deaths=deaths*popprop, LA.admissions=admissions*popprop) %>% 
+  group_by(LAD19CD, date) %>% 
+  summarise(deaths=sum(LA.deaths, na.rm=TRUE), admissions=sum(LA.admissions, na.rm=TRUE)) %>% 
+  ungroup() %>% 
+  filter(!is.na(LAD19CD)) %>% 
+  #merge City of London into Hackney and Isles of Scilly into Cornwall
+  mutate(LAD19CD=case_when(LAD19CD=="E09000001" ~ "E09000012",
+                           LAD19CD=="E06000053" ~ "E06000052",
+                           LAD19CD %in% c("E07000004", "E07000005", "E07000006", 
+                                          "E07000007") ~ "E06000060",
+                           TRUE ~ as.character(LAD19CD))) %>%
+  group_by(LAD19CD, date) %>% 
+  summarise(deaths=sum(deaths), admissions=sum(admissions)) %>% 
+  ungroup()
+
+#Merge into case data
+daydata <- merge(daydata, data.deaths.adm, by.x=c("date", "code"), by.y=c("date", "LAD19CD"), 
+                 all.x=TRUE, all.y=TRUE) %>% 
+  #Set admissions data for missing dates to missing
+  mutate(admissions=if_else(date>admdate, NA_real_, admissions))
 
 #National summary (E&W only)
 daydata.nat <- daydata %>% 
   group_by(date, country) %>% 
-  summarise(across(c("cases", "p1cases", "p12cases", "p2cases"), sum)) %>% 
+  summarise(cases=sum(cases), admissions=sum(admissions), deaths=sum(deaths)) %>% 
   mutate(name=country) %>% 
   ungroup()
 
@@ -405,7 +468,9 @@ daydata <- bind_rows(daydata, daydata.nat)
 daydata <- daydata %>% 
   group_by(name) %>% 
   arrange(date) %>% 
-  mutate(casesroll_avg=roll_mean(cases, 7, align="center", fill=NA)) %>% 
+  mutate(casesroll_avg=roll_mean(cases, 7, align="center", fill=NA),
+         admroll_avg=roll_mean(admissions, 7, align="center", fill=NA),
+         deathsroll_avg=roll_mean(deaths, 7, align="center", fill=NA)) %>% 
   ungroup()
 
 daydata$date <- as.Date(daydata$date)
@@ -415,7 +480,7 @@ daydata$week <- week(as.Date(daydata$date)-days(4))
 
 daydata.week <- daydata %>% 
   group_by(name, week) %>% 
-  summarise(cases=sum(cases), p1cases=sum(p1cases), p2cases=sum(p2cases)) %>% 
+  summarise(cases=sum(cases)) %>% 
   ungroup()
 
 data <- merge(data, daydata.week, all.x=TRUE)
@@ -447,10 +512,14 @@ natpop <- daydata %>%
 
 daydata <- merge(daydata, natpop, by="country", all.x=TRUE)
 daydata$pop <- if_else(is.na(daydata$pop.x), daydata$pop.y, daydata$pop.x)
-daydata <- daydata[,-c(11,12)]
+daydata <- daydata[,-c(12,13)]
 
 daydata$caserate <- daydata$cases*100000/daydata$pop
 daydata$caserate_avg <- daydata$casesroll_avg*100000/daydata$pop
+daydata$admrate <- daydata$admissions*100000/daydata$pop
+daydata$admrate_avg <- daydata$admroll_avg*100000/daydata$pop
+daydata$deathrate <- daydata$deaths*100000/daydata$pop
+daydata$deathrate_avg <- daydata$deathsroll_avg*100000/daydata$pop
 
 #Save master data
 write.csv(data, "COVID_LA_Plots/LAExcess.csv")

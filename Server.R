@@ -145,26 +145,9 @@ server <- function(input, output) {
              caption=paste0("Data from ", source2, " | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
     }
     
-    #Experimental pillar 1 vs. 2 tests numbers
-    #ENGLAND ONLY
-    if (input$plottype == 6){
-      p <- daydata %>% 
-        filter(name==LA  & date<max(date)-days(lag)) %>% 
-        ggplot()+
-        geom_line(aes(x=date, y=p1cases), colour="#FF4E86")+
-        geom_line(aes(x=date, y=p2cases), colour="#FF9E44")+
-        geom_line(aes(x=date, y=casesroll_avg), colour="navyblue")+
-        scale_x_date(name="Date")+
-        scale_y_continuous(name="Daily confirmed new cases")+
-        theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
-        labs(title=paste0("Confirmed new COVID cases in ",LA),
-             subtitle="Confirmed new COVID-19 cases identified through <span style='color:#FF4E86;'>Pillar 1</span> and <span style='color:#FF9E44;'>Pillar 2</span> testing and the <span style='color:navyblue;'>7-day rolling average</span>.<br>PHE changed their methodology on 1st July and so pillar-specific data is not available since then.<br>Rolling average based on new approach.<br>Pillar-specific figures are estimated from the old approach and may be subject to some double-counting",
-             caption="Data from PHE | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
-    }
     
     #Comparison of case rates with other LAs
-    if (input$plottype == 7){
+    if (input$plottype == 6){
       p <- ggplot()+
         geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
                                 date<max(date)-days(lag)), 
@@ -181,7 +164,7 @@ server <- function(input, output) {
     }
     
     #Comparison of case numbers with other LAs
-    if (input$plottype == 8){
+    if (input$plottype == 7){
       p <- ggplot()+
         geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
                                 date<max(date)-days(lag)), 
@@ -195,6 +178,63 @@ server <- function(input, output) {
         labs(title=paste0("Number of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales, Scotland & Northern Ireland"),
              caption="Data from PHE, PHW, ScotGov & DoHNI | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
+    }
+    
+    #Hospital admissions and deaths data
+    if (input$plottype == 8){
+      p <- ggplot()+
+        geom_col(data=subset(daydata, name==LA), 
+                  aes(x=date, y=admissions), fill="#6EA5CF")+
+        geom_line(data=subset(daydata, name==LA), 
+                  aes(x=date, y=admroll_avg), colour="#05375D")+
+        geom_col(data=subset(daydata, name==LA), 
+                 aes(x=date, y=-deaths), fill="#DB6DC2")+
+        geom_line(data=subset(daydata, name==LA), 
+                  aes(x=date, y=-deathsroll_avg), colour="#690052")+
+        geom_hline(yintercept=0)+
+        scale_x_date(name="Date", limits=c(as.Date("2020-08-01"), NA))+
+        scale_y_continuous(position="right", labels=abs, name="")+
+        annotate("text", x=as.Date("2020-08-20"), y=max(daydata$admissions[daydata$name==LA], na.rm=TRUE)/3,
+                 label="Daily admissions", size=rel(5))+
+        annotate("text", x=as.Date("2020-08-20"), y=-max(daydata$deaths[daydata$name==LA], na.rm=TRUE)/2,
+                 label="Daily hospital deaths", size=rel(5))+
+        theme_classic(base_size=16)+
+        theme(plot.subtitle=element_markdown())+
+        labs(title=paste0("NHS England data on COVID-19 in hospitals in ", LA),
+             subtitle="Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br> Admissions data is published weekly, so may by missing for more recent days.",
+             caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
+    }
+    
+    #Comparison of admission rates with other LAs
+    if (input$plottype == 9){
+      p <- ggplot()+
+        geom_line(data=subset(daydata, name!="England"), 
+                  aes(x=date, y=admrate_avg, group=name), colour="Grey80")+
+        geom_line(data=subset(daydata, name==LA), 
+                  aes(x=date, y=admrate_avg), colour="#FF4E86")+
+        scale_x_date(name="Date", limits=c(as.Date("2020-08-01"), NA))+
+        scale_y_continuous(name="Daily confirmed new hospital admissions per 100,000", position="right")+
+        theme_classic(base_size=16)+
+        theme(plot.subtitle=element_markdown())+
+        labs(title=paste0("COVID-19 cases in hospitals in ", LA, " vs. the rest of England"),
+             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 admissions per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England."),
+             caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
+    }
+    
+    #Comparison of hospital death rates with other LAs
+    if (input$plottype == 10){
+      p <- ggplot()+
+        geom_line(data=subset(daydata, name!="England"), 
+                  aes(x=date, y=deathrate_avg, group=name), colour="Grey80")+
+        geom_line(data=subset(daydata, name==LA), 
+                  aes(x=date, y=deathrate_avg), colour="#FF4E86")+
+        scale_x_date(name="Date", limits=c(as.Date("2020-08-01"), NA))+
+        scale_y_continuous(name="Daily confirmed hospital deaths per 100,000", position="right")+
+        theme_classic(base_size=16)+
+        theme(plot.subtitle=element_markdown())+
+        labs(title=paste0("COVID-19 hospitals deaths in ", LA, " vs. the rest of England"),
+             subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England."),
+             caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     p     
   }, height=600)

@@ -6,6 +6,8 @@ library(paletteer)
 library(lubridate)
 library(forcats)
 
+options(scipen=9999)
+
 data <- read.csv("LAExcess.csv")
 excess <- read.csv("LAExcessSummary.csv")
 daydata <- read.csv("LACases.csv")
@@ -130,6 +132,9 @@ server <- function(input, output) {
     
     #cases plot
     if (input$plottype == 5){
+      plotlabel <- if_else(input$scale=="Log", "Daily confirmed new cases (log scale)",
+                       "Daily confirmed new cases")
+      scaletype <- if_else(input$scale=="Log", "log10", "identity")
       p <- daydata %>% 
         filter(name==LA & date<max(date)-days(lag)) %>% 
         mutate(casesroll_avg=if_else(date>max(date)-days(lag), NA_real_, casesroll_avg)) %>% 
@@ -137,7 +142,7 @@ server <- function(input, output) {
         geom_col(aes(x=date, y=cases), fill="skyblue2")+
         geom_line(aes(x=date, y=casesroll_avg), colour="red")+
         scale_x_date(name="Date")+
-        scale_y_continuous(name="Daily confirmed new cases", position="right")+
+        scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
         labs(title=paste0("Confirmed new COVID cases in ",LA),
@@ -148,6 +153,9 @@ server <- function(input, output) {
     
     #Comparison of case rates with other LAs
     if (input$plottype == 6){
+      plotlabel <- if_else(input$scale=="Log", "Daily confirmed new cases per 100,000\n(log scale)",
+                           "Daily confirmed new cases per 100,000")
+      scaletype <- if_else(input$scale=="Log", "log10", "identity")
       p <- ggplot()+
         geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
                                 date<max(date)-days(lag)), 
@@ -155,7 +163,7 @@ server <- function(input, output) {
         geom_line(data=subset(daydata, name==LA & date<max(date)-days(lag)), 
                   aes(x=date, y=caserate_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
-        scale_y_continuous(name="Daily confirmed new cases per 100,000", position="right")+
+        scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
@@ -165,6 +173,9 @@ server <- function(input, output) {
     
     #Comparison of case numbers with other LAs
     if (input$plottype == 7){
+      plotlabel <- if_else(input$scale=="Log", "Daily confirmed new cases (log scale)",
+                           "Daily confirmed new cases")
+      scaletype <- if_else(input$scale=="Log", "log10", "identity")
       p <- ggplot()+
         geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
                                 date<max(date)-days(lag)), 
@@ -172,7 +183,7 @@ server <- function(input, output) {
         geom_line(data=subset(daydata, name==LA & date<max(date)-days(lag)),
                   aes(x=date, y=casesroll_avg), colour="#FF4E86")+
         scale_x_date(name="Date")+
-        scale_y_continuous(name="Daily confirmed new cases", position="right")+
+        scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("Number of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
@@ -213,7 +224,8 @@ server <- function(input, output) {
         geom_line(data=subset(daydata, name==LA), 
                   aes(x=date, y=admrate_avg), colour="#FF4E86")+
         scale_x_date(name="Date", limits=c(as.Date("2020-08-01"), NA))+
-        scale_y_continuous(name="Daily confirmed new hospital admissions per 100,000", position="right")+
+        scale_y_continuous(name="Daily confirmed new hospital admissions per 100,000", 
+                           position="right")+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("COVID-19 cases in hospitals in ", LA, " vs. the rest of England"),

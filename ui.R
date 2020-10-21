@@ -20,7 +20,8 @@ ui <- fluidPage(
                                              "Compare Hospital admission rates (Eng only)"=9,
                                              "Compare Hospital death rates (Eng only)"=10)),
     checkboxInput('censoring', "Censor incomplete case data\n(remove most recent 3 days' figures, which are heavily underreported)",
-                  TRUE)
+                  TRUE),
+    radioButtons('scale', "Select y-axis scale for case plots", choices=c("Linear", "Log"), inline=TRUE)
   ),
   
   mainPanel(

@@ -389,8 +389,9 @@ data.deaths.adm <- deaths %>%
   select(-c("name.x", "name.y"))
 
 #Bring in PHE data summarising admissions in HES to each trust by MSOA
-MSOA.adm <- read_excel("Data/2020 Trust Catchment Populations_Supplementary MSOA Analysis.xlsx", 
-                       sheet=2)
+#MSOA.adm <- read_excel("Data/2020 Trust Catchment Populations_Supplementary MSOA Analysis.xlsx", 
+#                       sheet=2)
+MSOA.adm <- read.csv("COVID_LA_Plots/Trust to MSOA HES data.csv")
 
 #Address changes in trust codes - data from https://digital.nhs.uk/services/organisation-data-service/organisation-changes
 MSOA.adm <- MSOA.adm %>% 
@@ -403,7 +404,7 @@ MSOA.adm <- MSOA.adm %>%
     TrustCode=="RA3" ~ "RA7",
     #TrustCode=="RC1" ~ "RC9",
     TrustCode=="RBA" ~ "RH5",
-    TRUE ~ TrustCode)) %>% 
+    TRUE ~ as.character(TrustCode))) %>% 
   group_by(CatchmentYear, msoa, TrustCode) %>% 
   summarise(msoa_total_catchment=sum(msoa_total_catchment)) %>% 
   ungroup()

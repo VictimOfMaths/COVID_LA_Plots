@@ -1,0 +1,302 @@
+---
+title: "Local Authorities in the UK with high rates or numbers of COVID-19 hospital admissions"
+author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
+date: "22/10/2020"
+output: html_document
+---
+  ```{r, include = FALSE}
+library(tidyverse)
+library(curl)
+library(readxl)
+library(ggtext)
+library(paletteer)
+library(lubridate)
+library(forcats)
+library(RcppRoll)
+library(gt)
+```
+
+```{r,include= FALSE}
+daydata <- read.csv("LACases.csv")[,-c(1)]
+daydata$date <- as.Date(daydata$date)
+
+#Have to manually enter the maximum date with admissions data
+maxdate <- as.Date("2020-10-11")
+
+```
+
+
+```{r,include= FALSE}
+shortadm <- daydata %>% 
+  as.data.frame() %>% 
+  filter(!name %in% c("England", "Wales", "Scotland", "Northern Ireland") & date<=maxdate-days(3)) %>% 
+  select(name, date, country, admroll_avg, admrate_avg) %>% 
+  arrange(name, date) %>% 
+  group_by(name) %>% 
+  mutate(adm_change=admroll_avg-lag(admroll_avg, 7),
+         admrate_change=admrate_avg-lag(admrate_avg, 7)) %>% 
+  slice_tail(n=1) %>% 
+  as.data.frame()
+
+up_arrow <- "<span style=\"color:red\">&#9650;</span>"
+down_arrow <- "<span style=\"color:green\">&#9660;</span>"
+
+#Code for sparklines adapted from Tom Mock's excellent blog
+#https://themockup.blog/posts/2020-09-04-10-table-rules-in-r/
+maxdate=max(shortadm$date)
+```
+
+```{r, include=FALSE}
+#Highest case numbers
+plot_spark1 <- function(data){
+  data %>% 
+    ggplot(aes(x = date, y = admrate_avg)) +
+    geom_line(size = 15) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+sparknamedata1 <- shortadm %>% 
+  slice_max(admrate_avg, n=10)
+
+sparknamedata1$name <- as.character(sparknamedata1$name)
+
+sparknamedata1$name <- fct_inorder(sparknamedata1$name)
+
+spark_plots1 <- daydata %>% 
+  as.data.frame() %>% 
+  filter(name %in% unique(sparknamedata1$name) & date>maxdate-months(1) & date<=maxdate) %>% 
+  select(name, date, country, admrate_avg) %>% 
+  mutate(name=factor(name, levels=unique(sparknamedata1$name))) %>% 
+  arrange(name, date) %>% 
+  nest(admrate_avg = c(date, admrate_avg)) %>% 
+  mutate(plot = map(admrate_avg, plot_spark1))
+
+admtable <- shortadm %>% 
+  slice_max(admroll_avg, n=10) %>% 
+  mutate(ggplot = NA) %>%
+  gt(rowname_col="name") %>% 
+  tab_header(title="Local Authorities in England with the highest number of new admissions to hospital with COVID-19",
+             subtitle="Based on rolling 7-day average of both patients admitted with a positive test and those testing positive after admission") %>% 
+  tab_source_note("Data from NHS England | Analysis by @VictimOfMaths") %>% 
+  tab_stubhead(label="Local Authority") %>% 
+  tab_spanner(label="Current admissions per day", columns=vars(admroll_avg, admrate_avg)) %>% 
+  tab_spanner(label="Change in daily admissions in the last 7 days", columns=vars(adm_change, admrate_change)) %>% 
+  tab_footnote(footnote="Data is only released once a week", locations=cells_column_labels(columns=vars(date))) %>% 
+  cols_label(date="Data up to", country="Country", admroll_avg="Total",
+             admrate_avg="Rate per 100,000", adm_change="Total", 
+             admrate_change="Rate per 100,000", ggplot="Last month") %>% 
+  fmt_date(columns=vars(date), date_style=9) %>% 
+  fmt_number(columns=vars(admroll_avg, admrate_avg, adm_change, admrate_change),
+             decimals=1) %>% 
+  text_transform(locations=cells_body(columns="adm_change", rows=adm_change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="adm_change", rows=adm_change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(
+    locations = cells_body(vars(ggplot)),
+    fn = function(x){
+      map(spark_plots1$plot, ggplot_image, height = px(15), aspect_ratio = 4)
+    }
+  ) %>% 
+  cols_width(vars(ggplot) ~ px(100)) %>% 
+  cols_width(vars(admroll_avg, admrate_avg, adm_change, admrate_change)
+             ~ px(100)) %>% 
+  cols_align(vars(admroll_avg, admrate_avg, adm_change, admrate_change),
+             align="center")
+```
+
+```{r, include=FALSE}
+#Highest case rates
+plot_spark2 <- function(data){
+  data %>% 
+    ggplot(aes(x = date, y = admrate_avg)) +
+    geom_line(size = 15) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+sparknamedata2 <- shortadm %>% 
+  slice_max(admrate_avg, n=10)
+
+sparknamedata2$name <- as.character(sparknamedata2$name)
+
+sparknamedata2$name <- fct_inorder(sparknamedata2$name)
+
+spark_plots2 <- daydata %>% 
+  as.data.frame() %>% 
+  filter(name %in% unique(sparknamedata2$name) & date>maxdate-months(1) & date<=maxdate) %>% 
+  select(name, date, country, admrate_avg) %>% 
+  mutate(name=factor(name, levels=unique(sparknamedata2$name))) %>% 
+  arrange(name, date) %>% 
+  nest(admrate_avg = c(date, admrate_avg)) %>% 
+  mutate(plot = map(admrate_avg, plot_spark2))
+
+admratetable <- shortadm %>% 
+  slice_max(admrate_avg, n=10) %>% 
+  mutate(ggplot = NA) %>%
+  gt(rowname_col="name") %>% 
+  tab_header(title="Local Authorities in England with the highest rate of new admissions to hospital with COVID-19",
+              subtitle="Based on rolling 7-day average of both patients admitted with a positive test and those testing positive after admission") %>% 
+  tab_source_note("Data from NHS England | Analysis by @VictimOfMaths") %>% 
+  tab_stubhead(label="Local Authority") %>% 
+  tab_spanner(label="Current admissions per day", columns=vars(admrate_avg, admroll_avg)) %>% 
+  tab_spanner(label="Change in daily admissions in the last 7 days", columns=vars(admrate_change, adm_change)) %>% 
+  tab_footnote(footnote="Data is only released once a week", locations=cells_column_labels(columns=vars(date))) %>% 
+  cols_label(date="Data up to", country="Country", admroll_avg="Total",
+             admrate_avg="Rate per 100,000", adm_change="Total", 
+             adm_change="Rate per 100,000", ggplot="Last month") %>% 
+  fmt_date(columns=vars(date), date_style=9) %>% 
+  fmt_number(columns=vars(admroll_avg, admrate_avg, adm_change, admrate_change),
+             decimals=1) %>% 
+  text_transform(locations=cells_body(columns="admrate_change", rows=adm_change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="admrate_change", rows=adm_change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(
+    locations = cells_body(vars(ggplot)),
+    fn = function(x){
+      map(spark_plots2$plot, ggplot_image, height = px(15), aspect_ratio = 4)
+    }
+  ) %>% 
+  cols_width(vars(ggplot) ~ px(100)) %>% 
+  cols_width(vars(admroll_avg, admrate_avg, adm_change, admrate_change)
+             ~ px(100)) %>% 
+  cols_align(vars(admroll_avg, admrate_avg, adm_change, admrate_change),
+             align="center")
+```
+
+```{r, include=FALSE}
+#Biggest rise in case numbers
+plot_spark3 <- function(data){
+  data %>% 
+    ggplot(aes(x = date, y = admroll_avg)) +
+    geom_line(size = 15) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+sparknamedata3 <- shortadm %>% 
+  slice_max(adm_change, n=10)
+
+sparknamedata3$name <- as.character(sparknamedata3$name)
+
+sparknamedata3$name <- fct_inorder(sparknamedata3$name)
+
+spark_plots3 <- daydata %>% 
+  as.data.frame() %>% 
+  filter(name %in% unique(sparknamedata3$name) & date>maxdate-months(1) & date<=maxdate) %>% 
+  select(name, date, country, admroll_avg) %>% 
+  mutate(name=factor(name, levels=unique(sparknamedata3$name))) %>% 
+  arrange(name, date) %>% 
+  nest(admroll_avg = c(date, admroll_avg)) %>% 
+  mutate(plot = map(admroll_avg, plot_spark3))
+
+admchangetable <- shortadm %>% 
+  slice_max(adm_change, n=10) %>% 
+  mutate(ggplot=NA) %>% 
+  gt(rowname_col="name") %>% 
+  tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 hospital admissions in the last week",
+              subtitle="Based on rolling 7-day average of both patients admitted with a positive test and those testing positive after admission") %>% 
+  tab_source_note("Data from NHS England | Analysis by @VictimOfMaths") %>% 
+  tab_stubhead(label="Local Authority") %>% 
+  cols_move(columns=vars(adm_change, admrate_change), after="country") %>% 
+  tab_spanner(label="Change in daily admissions in the last 7 days", columns=vars(adm_change, admrate_change)) %>% 
+  tab_spanner(label="Current admissions per day", columns=vars(admroll_avg, admrate_avg)) %>% 
+  tab_footnote(footnote="Data is only released once a week", locations=cells_column_labels(columns=vars(date))) %>% 
+  cols_label(date="Data up to", country="Country", admroll_avg="Total",
+             admrate_avg="Rate per 100,000", adm_change="Total", 
+             admrate_change="Rate per 100,000", ggplot="Last month") %>% 
+  fmt_date(columns=vars(date), date_style=9) %>% 
+  fmt_number(columns=vars(admroll_avg, admrate_avg, adm_change, admrate_change),
+             decimals=1) %>% 
+  text_transform(locations=cells_body(columns="adm_change", rows=adm_change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="adm_change", rows=adm_change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(
+    locations = cells_body(vars(ggplot)),
+    fn = function(x){
+      map(spark_plots3$plot, ggplot_image, height = px(15), aspect_ratio = 4)
+    }
+  ) %>% 
+  cols_width(vars(ggplot) ~ px(100)) %>% 
+  cols_width(vars(admroll_avg, admrate_avg, adm_change, admrate_change)
+             ~ px(100)) %>% 
+  cols_align(vars(admroll_avg, admrate_avg, adm_change, admrate_change),
+             align="center")
+```
+
+```{r, include=FALSE}
+#Biggest rise in case rates
+plot_spark4 <- function(data){
+  data %>% 
+    ggplot(aes(x = date, y = admrate_avg)) +
+    geom_line(size = 15) +
+    theme_void() +
+    theme(legend.position = "none")
+}
+
+sparknamedata4 <- shortadm %>% 
+  slice_max(admrate_change, n=10)
+
+sparknamedata4$name <- as.character(sparknamedata4$name)
+
+sparknamedata4$name <- fct_inorder(sparknamedata4$name)
+
+spark_plots4 <- daydata %>% 
+  as.data.frame() %>% 
+  filter(name %in% unique(sparknamedata4$name) & date>maxdate-months(1) & date<=maxdate) %>% 
+  select(name, date, country, admrate_avg) %>% 
+  mutate(name=factor(name, levels=unique(sparknamedata4$name))) %>% 
+  arrange(name, date) %>% 
+  nest(admrate_avg = c(date, admrate_avg)) %>% 
+  mutate(plot = map(admrate_avg, plot_spark4))
+
+admratechangetable <- shortadm %>% 
+  slice_max(admrate_change, n=10) %>% 
+  mutate(ggplot=NA) %>% 
+  gt(rowname_col="name") %>% 
+  tab_header(title="Local Authorities in the UK with biggest rise in new COVID-19 hospital admission rates in the last week",
+              subtitle="Based on rolling 7-day average of both patients admitted with a positive test and those testing positive after admission") %>% 
+  tab_source_note("Data from NHS England | Analysis by @VictimOfMaths") %>% 
+  tab_stubhead(label="Local Authority") %>% 
+  cols_move(columns=vars(adm_change, admrate_change), after="country") %>% 
+  tab_spanner(label="Current admissions per day", columns=vars(admrate_avg, admroll_avg)) %>% 
+  tab_spanner(label="Change in daily admissions in the last 7 days", columns=vars(admrate_change, adm_change)) %>% 
+  tab_footnote(footnote="Data is only released once a week", locations=cells_column_labels(columns=vars(date))) %>% 
+  cols_label(date="Data up to", country="Country", admroll_avg="Total",
+             admrate_avg="Rate per 100,000", adm_change="Total", 
+             admrate_change="Rate per 100,000", ggplot="Last month") %>% 
+  fmt_date(columns=vars(date), date_style=9) %>% 
+  fmt_number(columns=vars(admroll_avg, admrate_avg, adm_change, admrate_change),
+             decimals=1) %>% 
+  text_transform(locations=cells_body(columns="admrate_change", rows=adm_change<0),
+                 fn = function(x) paste(x, down_arrow)) %>% 
+  text_transform(locations=cells_body(columns="admrate_change", rows=adm_change>0),
+                 fn = function(x) paste(x, up_arrow)) %>% 
+  text_transform(
+    locations = cells_body(vars(ggplot)),
+    fn = function(x){
+      map(spark_plots4$plot, ggplot_image, height = px(15), aspect_ratio = 4)
+    }
+  ) %>% 
+  cols_width(vars(ggplot) ~ px(100)) %>% 
+  cols_width(vars(admroll_avg, admrate_avg, adm_change, admrate_change)
+             ~ px(100)) %>% 
+  cols_align(vars(admroll_avg, admrate_avg, adm_change, admrate_change),
+             align="center")
+```
+
+
+
+```{r}
+admtable
+
+admratetable
+
+admchangetable
+
+admratechangetable
+```
+

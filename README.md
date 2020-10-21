@@ -7,7 +7,7 @@ Much credit is due [@lukejostins](https://twitter.com/lukejostins) to who took a
 Suggested citation for the app: Angus, Colin (2020): COVID-19 Local Authority Death and Case Plots. The University of Sheffield. Online resource. https://doi.org/10.15131/shef.data.12658088
 <br><br>
 The app produces 8 different sets of plots for England, Northern Ireland Scotland, Wales and every Lower Tier Local Authority/Council Area although not all plots are available for all countries.<br><br>
-I've also compiled a set of automatically-updating tables based on the same data, which show the local areas with the highest numbers and rates of COVID-19 cases in the past week and the biggest increases in case numbers/rates. You can find these at (https://victimofmaths.github.io/COVID_LA_Plots/). Many thanks to [@Fcorowe](https://twitter.com/Fcorowe) for helping me understand how to set this up.
+I've also compiled a set of automatically-updating tables based on the same data, which show the local areas with the highest numbers and rates of COVID-19 cases in the past week and the biggest increases in case numbers/rates. You can find these at (https://victimofmaths.github.io/COVID_LA_Plots/). An equivalent set of tables for changes in hospital admissions lives [here](https://victimofmaths.github.io/COVID_LA_Plots/admtables.html) Many thanks to [@Fcorowe](https://twitter.com/Fcorowe) for helping me understand how to set this up.
 <br><br>
 ![Total excess deaths](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/COVID_LA_Plots_1.png)
 ![Excess deaths by cause](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/COVID_LA_Plots_2.png)

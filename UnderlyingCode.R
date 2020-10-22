@@ -277,7 +277,7 @@ daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S",
 #Need to update this link each day from:
 #https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
 temp <- tempfile()
-source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/2dd8534b-0a6f-4744-9253-9565d62f96c2/download/trend_hb_20201021.csv"
+source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20201021.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 casedata.S <- read.csv(temp)[,c(1,2,4)]
 colnames(casedata.S) <- c("date", "code", "cases")
@@ -341,21 +341,21 @@ daydata$date <- as.Date(daydata$date)
 ###################################################
 #Hospital admissions and deaths in hospitals
 
-#Admissions data which is published weekly (next update on 22nd October)
+#Admissions data which is published weekly (next update on 28th October)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/10/Weekly-covid-admissions-publication-201015-1.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/10/Weekly-covid-admissions-publication-201022.xlsx"
 
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
 deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/10/COVID-19-total-announced-deaths-21-October-2020.xlsx"
 
 #Increment by 7 when each new report is published
-admrange <- "BW"
+admrange <- "CD"
 #Increment by 1 each day
 deathrange <- "IF"
 
 #Set latest date of admissions data
-admdate <- as.Date("2020-10-11")
+admdate <- as.Date("2020-10-18")
 
 #Read in admissions
 temp <- tempfile()

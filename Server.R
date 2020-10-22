@@ -134,7 +134,7 @@ server <- function(input, output) {
     if (input$plottype == 5){
       plotlabel <- if_else(input$scale=="Log", "Daily confirmed new cases (log scale)",
                        "Daily confirmed new cases")
-      scaletype <- if_else(input$scale=="Log", "log10", "identity")
+      scaletype <- if_else(input$scale=="Log", "log2", "identity")
       p <- daydata %>% 
         filter(name==LA & date<max(date)-days(lag)) %>% 
         mutate(casesroll_avg=if_else(date>max(date)-days(lag), NA_real_, casesroll_avg)) %>% 
@@ -155,7 +155,7 @@ server <- function(input, output) {
     if (input$plottype == 6){
       plotlabel <- if_else(input$scale=="Log", "Daily confirmed new cases per 100,000\n(log scale)",
                            "Daily confirmed new cases per 100,000")
-      scaletype <- if_else(input$scale=="Log", "log10", "identity")
+      scaletype <- if_else(input$scale=="Log", "log2", "identity")
       p <- ggplot()+
         geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
                                 date<max(date)-days(lag)), 
@@ -173,9 +173,9 @@ server <- function(input, output) {
     
     #Comparison of case numbers with other LAs
     if (input$plottype == 7){
-      plotlabel <- if_else(input$scale=="Log", "Daily confirmed new cases (log scale)",
+      plotlabel <- if_else(input$scale=="Log", "Daily confirmed new cases\n(log scale)",
                            "Daily confirmed new cases")
-      scaletype <- if_else(input$scale=="Log", "log10", "identity")
+      scaletype <- if_else(input$scale=="Log", "log2", "identity")
       p <- ggplot()+
         geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
                                 date<max(date)-days(lag)), 
@@ -205,9 +205,9 @@ server <- function(input, output) {
         geom_hline(yintercept=0)+
         scale_x_date(name="Date", limits=c(as.Date("2020-08-01"), NA))+
         scale_y_continuous(position="right", labels=abs, name="")+
-        annotate("text", x=as.Date("2020-08-20"), y=max(daydata$admissions[daydata$name==LA], na.rm=TRUE)/3,
+        annotate("text", x=as.Date("2020-08-20"), y=max(daydata$admissions[daydata$name==LA], na.rm=TRUE)/2,
                  label="Daily admissions", size=rel(5))+
-        annotate("text", x=as.Date("2020-08-20"), y=-max(daydata$deaths[daydata$name==LA], na.rm=TRUE)/2,
+        annotate("text", x=as.Date("2020-08-20"), y=-max(daydata$deaths[daydata$name==LA], na.rm=TRUE),
                  label="Daily hospital deaths", size=rel(5))+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+

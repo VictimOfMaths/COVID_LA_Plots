@@ -21,7 +21,7 @@ daydata <- read.csv("LACases.csv")[,-c(1)]
 daydata$date <- as.Date(daydata$date)
 
 #Have to manually enter the maximum date with admissions data
-maxdate <- as.Date("2020-10-11")
+maxdate <- as.Date("2020-10-18")
 
 ```
 

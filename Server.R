@@ -157,7 +157,7 @@ server <- function(input, output) {
                            "Daily confirmed new cases per 100,000")
       scaletype <- if_else(input$scale=="Log", "log2", "identity")
       p <- ggplot()+
-        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
+        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland", "Northern Ireland") & 
                                 date<max(date)-days(lag)), 
                   aes(x=date, y=caserate_avg, group=name), colour="Grey80")+
         geom_line(data=subset(daydata, name==LA & date<max(date)-days(lag)), 
@@ -177,7 +177,7 @@ server <- function(input, output) {
                            "Daily confirmed new cases")
       scaletype <- if_else(input$scale=="Log", "log2", "identity")
       p <- ggplot()+
-        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland") & 
+        geom_line(data=subset(daydata, !name %in% c("England", "Wales", "Scotland", "Northern Ireland") & 
                                 date<max(date)-days(lag)), 
                   aes(x=date, y=casesroll_avg, group=name), colour="Grey80")+
         geom_line(data=subset(daydata, name==LA & date<max(date)-days(lag)),
@@ -212,7 +212,7 @@ server <- function(input, output) {
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("NHS England data on COVID-19 in hospitals in ", LA),
-             subtitle="Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br> Admissions data is published weekly, so may by missing for more recent days.",
+             subtitle="Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br> Admissions data is published weekly, so may by missing for more recent days.<br> Data for the most recent days for both measures may be an undercount due to delays in processing tests.",
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     
@@ -245,7 +245,7 @@ server <- function(input, output) {
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown())+
         labs(title=paste0("COVID-19 hospitals deaths in ", LA, " vs. the rest of England"),
-             subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England."),
+             subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England. Data for recent days may be undercounted due to delays in processing tests."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     p     

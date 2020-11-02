@@ -277,7 +277,7 @@ daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S",
 #Need to update this link each day from:
 #https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
 temp <- tempfile()
-source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20201101.csv"
+source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20201102.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 casedata.S <- read.csv(temp)[,c(1,2,4)]
 colnames(casedata.S) <- c("date", "code", "cases")
@@ -295,10 +295,10 @@ daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 #Need to update this link daily from 
 #https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-november-2020
 temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-011120.xlsx"
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-021120.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Need to update the range here too:
-casedata.NI <- read_excel(temp, sheet=3, range="A2:E3176", col_names=FALSE)
+casedata.NI <- read_excel(temp, sheet=3, range="A2:E3189", col_names=FALSE)
 colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
 casedata.NI$date <- as.Date(casedata.NI$date)
 
@@ -347,12 +347,12 @@ admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020
 
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/10/COVID-19-total-announced-deaths-29-October-2020.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-2-November-2020.xlsx"
 
 #Increment by 7 when each new report is published
 admrange <- "CK"
 #Increment by 1 each day
-deathrange <- "IN"
+deathrange <- "IR"
 
 #Set latest date of admissions data
 admdate <- as.Date("2020-10-25")

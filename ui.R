@@ -12,7 +12,8 @@ ui <- fluidPage(
   sidebarPanel(
     
     selectInput('LA', 'Select Nation or Local Authority', c("England", "Scotland", "Wales", "Northern Ireland",
-                                                            sort(as.character(unique(cases$name)))), multiple=FALSE),
+                                                            sort(as.character(unique(cases$name))), multiple=FALSE,
+                selected="England")),
     selectInput('plottype', 'Select plot', c("Total excess deaths (GB only)"=1,"Excess deaths by cause (GB only)"=2,"Excess deaths by location (GB only)"=3,
                                              "Cases vs deaths (GB only)"=4, "Case numbers"=5, 
                                              "Compare case rates"=6, "Compare case numbers"=7,

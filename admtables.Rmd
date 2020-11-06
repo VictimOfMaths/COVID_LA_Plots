@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbers of COVID-19 hospital admissions"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "29/10/2020"
+date: "06/11/2020"
 output: html_document
 ---
   ```{r, include = FALSE}
@@ -21,7 +21,7 @@ daydata <- read.csv("LACases.csv")[,-c(1)]
 daydata$date <- as.Date(daydata$date)
 
 #Have to manually enter the maximum date with admissions data
-maxdate <- as.Date("2020-10-18")
+maxdate <- as.Date("2020-11-01")
 
 ```
 

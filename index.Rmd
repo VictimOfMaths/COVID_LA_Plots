@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbers of COVID-19 cases"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "03/11/2020"
+date: "06/11/2020"
 output: html_document
 ---
 ```{r, include = FALSE}
@@ -42,7 +42,7 @@ down_arrow <- "<span style=\"color:green\">&#9660;</span>"
 
 #Code for sparklines adapted from Tom Mock's excellent blog
 #https://themockup.blog/posts/2020-09-04-10-table-rules-in-r/
-maxdate=max(shortcases$date)
+maxdate=as.Date("2020-10-30")#max(shortcases$date)
 ```
 
 ```{r, include=FALSE}

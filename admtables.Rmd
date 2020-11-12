@@ -22,7 +22,7 @@ daydata <- read.csv("LACases.csv")[,-c(1)] %>%
 daydata$date <- as.Date(daydata$date)
 
 #Have to manually enter the maximum date with admissions data
-maxdate <- as.Date("2020-11-01")
+maxdate <- as.Date("2020-11-08")
 
 ```
 
@@ -51,14 +51,14 @@ maxdate=max(shortadm$date)
 #Highest case numbers
 plot_spark1 <- function(data){
   data %>% 
-    ggplot(aes(x = date, y = admrate_avg)) +
+    ggplot(aes(x = date, y = admroll_avg)) +
     geom_line(size = 15) +
     theme_void() +
     theme(legend.position = "none")
 }
 
 sparknamedata1 <- shortadm %>% 
-  slice_max(admrate_avg, n=10)
+  slice_max(admroll_avg, n=10)
 
 sparknamedata1$name <- as.character(sparknamedata1$name)
 
@@ -67,11 +67,11 @@ sparknamedata1$name <- fct_inorder(sparknamedata1$name)
 spark_plots1 <- daydata %>% 
   as.data.frame() %>% 
   filter(name %in% unique(sparknamedata1$name) & date>maxdate-months(1) & date<=maxdate) %>% 
-  select(name, date, country, admrate_avg) %>% 
+  select(name, date, country, admroll_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata1$name))) %>% 
   arrange(name, date) %>% 
-  nest(admrate_avg = c(date, admrate_avg)) %>% 
-  mutate(plot = map(admrate_avg, plot_spark1))
+  nest(admroll_avg = c(date, admroll_avg)) %>% 
+  mutate(plot = map(admroll_avg, plot_spark1))
 
 admtable <- shortadm %>% 
   slice_max(admroll_avg, n=10) %>% 

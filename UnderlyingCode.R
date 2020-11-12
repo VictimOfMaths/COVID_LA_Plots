@@ -12,29 +12,42 @@ library(gt)
 
 #To do:
 
-#Add deaths by date of registration and include option to toggle between registration and occurence
 
 ###################################################################################
 #Weekly data
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek43.xlsx"
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek44.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+#Occurrences
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
 colnames(data20) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
 data20 <- subset(data20, type=="Local Authority")[,-c(2)]
 
 data20$deaths.20 <- as.numeric(data20$deaths.20)
 data20$week <- as.numeric(data20$week)
+data20$measure <- "Occurrences"
 
 maxweek.ew <- max(data20$week)
 enddate.ew <- as.Date("2020-01-03")+weeks(maxweek.ew-1)
+
+#Registrations
+data20.2 <- read_excel(temp, sheet=4, col_names=FALSE)[-c(1:4),]
+colnames(data20.2) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
+data20.2 <- subset(data20.2, type=="Local Authority")[,-c(2)]
+
+data20.2$deaths.20 <- as.numeric(data20.2$deaths.20)
+data20.2$week <- as.numeric(data20.2$week)
+data20.2$measure <- "Registrations"
+
+data20 <- bind_rows(data20, data20.2)
 
 #Spread causes
 data20 <- pivot_wider(data20, names_from="cause", values_from="deaths.20")
 
 #Read in 2015-19 historic data for England & Wales
+#Historic data is only available for registrations
 temp <- tempfile()
 source <- "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/adhocs/11826fiveyearaverageweeklydeathsbylocalauthorityandplaceofoccurrenceenglandandwalesdeathsregistered2015to2019/weeklyfiveyearaveragesbylaandplaceofoccurrence20152019.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
@@ -56,6 +69,14 @@ data1519 <- data1519 %>%
   summarise(deaths.1519=sum(deaths.1519)) %>% 
   ungroup()
 
+#Duplicate for reg/occ split
+temp <- data1519 %>% 
+  mutate(measure="Registrations")
+
+data1519 <- data1519 %>% 
+  mutate(measure="Occurrences") %>% 
+  bind_rows(temp)
+
 data.ew <- merge(data1519, data20, all.x=TRUE)
 
 #Combine Cornwall & Isles of Scilly
@@ -73,7 +94,7 @@ data.ew$location <- case_when(
   TRUE ~ data.ew$location)
 
 data.ew <- data.ew %>% 
-  group_by(code, name, location, week) %>% 
+  group_by(code, name, location, week, measure) %>% 
   summarise(deaths.1519=sum(deaths.1519), AllCause.20=sum(`All causes`), COVID.20=sum(`COVID 19`)) %>% 
   mutate(Other.20=AllCause.20-COVID.20) %>% 
   ungroup()
@@ -83,10 +104,11 @@ data.ew <- data.ew %>%
 
 #Need to update link and range each week
 #https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/deaths-involving-coronavirus-covid-19-in-scotland/related-statistics
+#Occurrences
 temp <- tempfile()
 source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data20.s <- read_excel(temp, sheet=2, range="A5:E5246", col_names=FALSE)
+data20.s <- read_excel(temp, sheet=2, range="A5:E5392", col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
 data20.s$week <- as.numeric(data20.s$week)
 
@@ -98,18 +120,58 @@ data20.s$cause <- if_else(data20.s$cause=="Non-COVID-19", "Other.20", "COVID.20"
 data20.s <- spread(data20.s, cause, deaths)
 data20.s$COVID.20 <- replace_na(data20.s$COVID.20, 0)
 data20.s$Other.20 <- replace_na(data20.s$Other.20, 0)
+data20.s$measure <- "Occurrences"
+
+#Registrations
+temp <- tempfile()
+source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+data20.s.2 <- read_excel(temp, sheet=4, range="A5:AU132", col_names=FALSE)
+colnames(data20.s.2) <- c("name", "location", 1:maxweek.s)
+
+data20.s.2 <- data20.s.2 %>% 
+  fill(name, .direction="down") %>% 
+  gather(week, COVID.20, c(3:ncol(.)))
+
+data20.s.3 <- read_excel(temp, sheet=5, range="A5:AU132", col_names=FALSE)
+colnames(data20.s.3) <- c("name", "location", 1:maxweek.s)
+
+data20.s.3 <- data20.s.3 %>% 
+  fill(name, .direction="down") %>% 
+  gather(week, All.20, c(3:ncol(.))) 
+
+data20.s.2 <- data20.s.2 %>% 
+  merge(data20.s.3) %>% 
+  mutate(Other.20=All.20-COVID.20, week=as.numeric(week), 
+         measure="Registrations") %>% 
+  select(name, location, week, COVID.20, Other.20, measure)
+
+data20.s <- bind_rows(data20.s, data20.s.2)
 
 #2015-19 data
+#Occurrences
+temp <- tempfile()
+source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location-15-19.xlsx"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+data1519.s <- read_excel(temp, sheet=2, range="A5:E25207", col_names=FALSE)
+colnames(data1519.s) <- c("week", "name", "location", "year", "deaths")
+data1519.s$week <- as.numeric(data1519.s$week)
+data1519.s$measure <- "Occurrences"
+
+#Registrations
 temp <- tempfile()
 source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-council-areas.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data1519.s <- read_excel(temp, sheet=2, range="A5:E25193", col_names=FALSE)
-colnames(data1519.s) <- c("week", "name", "year", "location", "deaths")
-data1519.s$week <- as.numeric(data1519.s$week)
+data1519.s.2 <- read_excel(temp, sheet=2, range="A4:E25193", col_names=FALSE)
+colnames(data1519.s.2) <- c("week", "name", "year", "location", "deaths")
+data1519.s.2$week <- as.numeric(data1519.s.2$week)
+data1519.s.2$measure <- "Registrations"
+
+data1519.s <- bind_rows(data1519.s, data1519.s.2)
 
 #Take 5 year averages
 data1519.s <- data1519.s %>% 
-  group_by(week, name, location) %>% 
+  group_by(week, name, location, measure) %>% 
   summarise(deaths.1519=mean(deaths)) %>% 
   ungroup()
 
@@ -128,7 +190,7 @@ data.s$location <- case_when(
 )
 
 data.s <- data.s %>% 
-  group_by(week, name, location) %>% 
+  group_by(week, name, location, measure) %>% 
   summarise(deaths.1519=sum(deaths.1519, na.rm=TRUE), 
             across(c("COVID.20", "Other.20"), sum)) %>% 
   mutate(AllCause.20=COVID.20+Other.20) %>% 
@@ -196,14 +258,22 @@ data$Region <- case_when(
   is.na(data$Region) & data$code=="E06000060" ~ "South East",
   TRUE ~ as.character(data$Region))
 
+#Generate regional summaries
+data.reg <- data %>% 
+  filter(country=="England") %>% 
+  group_by(week, Region, location, measure) %>% 
+  summarise(across(c("deaths.1519", "AllCause.20", "COVID.20", "Other.20", "pop"), sum)) %>% 
+  mutate(name=Region, Region="Region", country="England") %>% 
+  ungroup()
+
 #Generate national summaries
 data.nat <- data %>% 
-  group_by(week, country, location) %>% 
-  summarise(across(c("deaths.1519", "AllCause.20", "COVID.20", "Other.20"), sum)) %>% 
+  group_by(week, country, location, measure) %>% 
+  summarise(across(c("deaths.1519", "AllCause.20", "COVID.20", "Other.20", "pop"), sum), country=unique(country)) %>% 
   mutate(name=country, Region="Nation") %>% 
   ungroup()
 
-data <- bind_rows(data, data.nat)
+data <- bind_rows(data, data.reg, data.nat)
 
 #Calculate excesses
 data$allexcess <- case_when(
@@ -248,19 +318,19 @@ casedata.E <- casedata.E %>%
 
 
 #Set up skeleton dataframe, merging City of London and Hackney
-daydata <- data.frame(code=rep(unique(subset(data, !name %in% c("England", "Scotland", "Wales"))$code),
+daydata <- data.frame(code=rep(unique(subset(data, !Region %in% c("Region", "Nation"))$code),
                                each=maxdate-mindate+1),
-                      name=rep(unique(subset(data, !name %in% c("England", "Scotland", "Wales"))$name),
+                      name=rep(unique(subset(data, !Region %in% c("Region", "Nation"))$name),
                                each=maxdate-mindate+1),
                       date=rep(seq.Date(from=mindate, to=maxdate, by="day"), 
-                               times=length(unique(subset(data, !name %in% c("England", "Scotland", "Wales"))$code))))
+                               times=length(unique(subset(data, !Region %in% c("Region", "Nation"))$code))))
 
 #merge in English cases
 daydata <- merge(daydata, casedata.E, by=c("name", "code", "date"), all.x=TRUE)
 
 #Bring in Welsh case data
 temp <- tempfile()
-source <- "http://www2.nphs.wales.nhs.uk:8080/CommunitySurveillanceDocs.nsf/3dc04669c9e1eaa880257062003b246b/77fdb9a33544aee88025855100300cab/$FILE/Rapid%20COVID-19%20surveillance%20data.xlsx"
+source <- "http://www2.nphs.wales.nhs.uk:8080/CommunitySurveillanceDocs.nsf/3dc04669c9e1eaa880257062003b246b/4e819921339b96308025861d004a8769/$FILE/Rapid%20COVID-19%20surveillance%20data.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 casedata.W <- read_excel(temp, sheet=3)[,c(1:3)]
 
@@ -277,7 +347,7 @@ daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S",
 #Need to update this link each day from:
 #https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
 temp <- tempfile()
-source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20201105.csv"
+source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20201111.csv"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 casedata.S <- read.csv(temp)[,c(1,2,4)]
 colnames(casedata.S) <- c("date", "code", "cases")
@@ -295,10 +365,10 @@ daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
 #Need to update this link daily from 
 #https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-november-2020
 temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-051120.xlsx"
+source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-111120.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Need to update the range here too:
-casedata.NI <- read_excel(temp, sheet=3, range="A2:E3228", col_names=FALSE)
+casedata.NI <- read_excel(temp, sheet=3, range="A2:E3308", col_names=FALSE)
 colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
 casedata.NI$date <- as.Date(casedata.NI$date)
 
@@ -347,12 +417,12 @@ admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020
 
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-5-November-2020.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-11-November-2020.xlsx"
 
 #Increment by 7 when each new report is published
 admrange <- "CS"
 #Increment by 1 each day
-deathrange <- "IU"
+deathrange <- "IZ"
 
 #Set latest date of admissions data
 admdate <- as.Date("2020-11-01")
@@ -457,14 +527,31 @@ daydata <- merge(daydata, data.deaths.adm, by.x=c("date", "code"), by.y=c("date"
   #Set admissions data for missing dates to missing
   mutate(admissions=if_else(date>admdate, NA_real_, admissions))
 
+#Bring in regions
+daydata <- merge(daydata, LADtoRegion, all.x=TRUE)
+
+daydata$Region <- case_when(
+  is.na(daydata$Region) & daydata$code %in% c("E06000058", "E06000059", "E07000246") ~ "South West",
+  is.na(daydata$Region) & daydata$code %in% c("E07000244", "E07000245") ~ "East of England",
+  is.na(daydata$Region) & daydata$code=="E06000060" ~ "South East",
+  TRUE ~ as.character(daydata$Region))
+
+#Regional summary (E&W only)
+daydata.reg <- daydata %>% 
+  filter(!is.na(Region)) %>% 
+  group_by(date, Region) %>% 
+  summarise(cases=sum(cases), admissions=sum(admissions), deaths=sum(deaths)) %>% 
+  mutate(name=Region, Region="Region") %>% 
+  ungroup()
+
 #National summary (E&W only)
 daydata.nat <- daydata %>% 
   group_by(date, country) %>% 
   summarise(cases=sum(cases), admissions=sum(admissions), deaths=sum(deaths)) %>% 
-  mutate(name=country) %>% 
+  mutate(name=country, Region="Nation") %>% 
   ungroup()
 
-daydata <- bind_rows(daydata, daydata.nat)
+daydata <- bind_rows(daydata, daydata.reg, daydata.nat)
 
 daydata <- daydata %>% 
   group_by(name) %>% 
@@ -484,18 +571,19 @@ daydata.week <- daydata %>%
   summarise(cases=sum(cases)) %>% 
   ungroup()
 
-data <- merge(data, daydata.week, all.x=TRUE)
+data <- merge(data, daydata.week, all.x=TRUE) %>% 
+  mutate(measure=as.character(measure))
 
 #Calculate total excess deaths
 excess.ew <- data %>% 
   filter(country!="Scotland" & week<=maxweek.ew) %>% 
-  group_by(name) %>% 
+  group_by(name, measure) %>% 
   summarise(excess=sum(allexcess, na.rm=TRUE), hist=sum(deaths.1519), excessprop=excess/hist) %>% 
   ungroup()
 
 excess.s <-  data %>% 
   filter(country=="Scotland" & week<=maxweek.s) %>% 
-  group_by(name) %>% 
+  group_by(name, measure) %>% 
   summarise(excess=sum(allexcess, na.rm=TRUE), hist=sum(deaths.1519), excessprop=excess/hist) %>% 
   ungroup()
 
@@ -504,16 +592,28 @@ excess <- bind_rows(excess.ew, excess.s)
 #Bring in LA populations
 daydata <- merge(daydata, LApop, all.x=TRUE)
 
+#Sort out pops for regions
+regpop <- daydata %>% 
+  filter(!Region %in% c("Region", "Nation") & country=="England") %>% 
+  filter(date=="2020-04-01") %>% 
+  group_by(Region) %>% 
+  summarise(pop=sum(pop)) %>% 
+  ungroup()
+
 #Sort out pops for nations
 natpop <- daydata %>% 
-  filter(!name %in% c("England", "Wales", "Scotland", "Northern Ireland")) %>% 
+  filter(!Region %in% c("Region", "Nation")) %>% 
   filter(date=="2020-04-01") %>% 
   group_by(country) %>% 
   summarise(pop=sum(pop))
 
 daydata <- merge(daydata, natpop, by="country", all.x=TRUE)
 daydata$pop <- if_else(is.na(daydata$pop.x), daydata$pop.y, daydata$pop.x)
-daydata <- daydata[,-c(12,13)]
+daydata <- daydata[,-c(13,14)]
+
+daydata <- merge(daydata, regpop, by.x="name", by.y="Region", all.x=TRUE)
+daydata$pop <- if_else(is.na(daydata$pop.x), daydata$pop.y, daydata$pop.x)
+daydata <- daydata[,-c(13,14)]
 
 daydata$caserate <- daydata$cases*100000/daydata$pop
 daydata$caserate_avg <- daydata$casesroll_avg*100000/daydata$pop

@@ -11,7 +11,10 @@ ui <- fluidPage(
   
   sidebarPanel(
     
-    selectInput('LA', 'Select Nation or Local Authority', c("England", "Scotland", "Wales", "Northern Ireland",
+    selectInput('LA', 'Select Nation, Region or Local Authority', c("England", "Scotland", "Wales", "Northern Ireland",
+                                                                    "East of England", "East Midlands", "London", "North East",
+                                                                    "North West", "South East", "South West", "West Midlands",
+                                                                    "Yorkshire and The Humber",
                                                             sort(as.character(unique(cases$name))), multiple=FALSE,
                 selected="England")),
     selectInput('plottype', 'Select plot', c("Total excess deaths (GB only)"=1,"Excess deaths by cause (GB only)"=2,"Excess deaths by location (GB only)"=3,
@@ -20,6 +23,7 @@ ui <- fluidPage(
                                              "Hospital admission/death numbers (Eng only)"=8, 
                                              "Compare Hospital admission rates (Eng only)"=9,
                                              "Compare Hospital death rates (Eng only)"=10)),
+    radioButtons('measure', "Select deaths data", choices=c("Registrations", "Occurrences"), inline=TRUE),
     checkboxInput('censoring', "Censor incomplete case data\n(remove most recent 3 days' figures, which are heavily underreported)",
                   TRUE),
     radioButtons('scale', "Select y-axis scale for case plots", choices=c("Linear", "Log"), inline=TRUE)

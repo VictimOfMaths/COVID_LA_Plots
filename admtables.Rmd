@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbers of COVID-19 hospital admissions"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "06/11/2020"
+date: "12/11/2020"
 output: html_document
 ---
   ```{r, include = FALSE}
@@ -17,7 +17,8 @@ library(gt)
 ```
 
 ```{r,include= FALSE}
-daydata <- read.csv("LACases.csv")[,-c(1)]
+daydata <- read.csv("LACases.csv")[,-c(1)] %>% 
+  filter(!Region %in% c("Nation", "Region"))
 daydata$date <- as.Date(daydata$date)
 
 #Have to manually enter the maximum date with admissions data
@@ -29,7 +30,7 @@ maxdate <- as.Date("2020-11-01")
 ```{r,include= FALSE}
 shortadm <- daydata %>% 
   as.data.frame() %>% 
-  filter(!name %in% c("England", "Wales", "Scotland", "Northern Ireland") & date<=maxdate-days(3)) %>% 
+  filter(date<=maxdate-days(3)) %>% 
   select(name, date, country, admroll_avg, admrate_avg) %>% 
   arrange(name, date) %>% 
   group_by(name) %>% 

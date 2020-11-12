@@ -3,6 +3,7 @@ rm(list=ls())
 library(tidyverse)
 library(curl)
 library(readxl)
+library(ukcovid19) #remotes::install_github("publichealthengland/coronavirus-dashboard-api-R-sdk")
 library(ggtext)
 library(paletteer)
 library(lubridate)
@@ -10,15 +11,36 @@ library(forcats)
 library(RcppRoll)
 library(gt)
 
-#To do:
+###################
+#Things to updated#
+###################
 
+#England mortality data - updated on Tuesday mornings
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek44.xlsx"
+#Scottish mortality data - updated on Wednesday lunchtime
+ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
+ScotMortRange <- 5392
+ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
+ScotMortRange2 <- "AU"
+#Admissions data which is published weekly (next update on 17th November)
+#https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/Weekly-covid-admissions-and-beds-publication-201112-1.xlsx"
+#Hospital deaths data which is published daily
+#https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-12-November-2020.xlsx"
+#Increment by 7 when each new report is published
+admrange <- "CZ"
+#Increment by 1 each day
+deathrange <- "JA"
+#Set latest date of admissions data
+admdate <- as.Date("2020-11-08")
 
 ###################################################################################
 #Weekly data
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek44.xlsx"
+source <- EngMortUrl
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Occurrences
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
@@ -99,16 +121,14 @@ data.ew <- data.ew %>%
   mutate(Other.20=AllCause.20-COVID.20) %>% 
   ungroup()
 
-#Bring in Scottish deaths data (released by NRS on a Wednesday)
+#Bring in Scottish deaths data 
 #2020 data
 
-#Need to update link and range each week
-#https://www.nrscotland.gov.uk/statistics-and-data/statistics/statistics-by-theme/vital-events/general-publications/weekly-and-monthly-data-on-births-and-deaths/deaths-involving-coronavirus-covid-19-in-scotland/related-statistics
 #Occurrences
 temp <- tempfile()
-source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
+source <- ScotMortUrl
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data20.s <- read_excel(temp, sheet=2, range="A5:E5392", col_names=FALSE)
+data20.s <- read_excel(temp, sheet=2, range=paste0("A5:E", ScotMortRange), col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
 data20.s$week <- as.numeric(data20.s$week)
 
@@ -124,16 +144,16 @@ data20.s$measure <- "Occurrences"
 
 #Registrations
 temp <- tempfile()
-source <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
+source <- ScotMortUrl2
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-data20.s.2 <- read_excel(temp, sheet=4, range="A5:AU132", col_names=FALSE)
+data20.s.2 <- read_excel(temp, sheet=4, range=paste0("A5:", ScotMortRange2,"132"), col_names=FALSE)
 colnames(data20.s.2) <- c("name", "location", 1:maxweek.s)
 
 data20.s.2 <- data20.s.2 %>% 
   fill(name, .direction="down") %>% 
   gather(week, COVID.20, c(3:ncol(.)))
 
-data20.s.3 <- read_excel(temp, sheet=5, range="A5:AU132", col_names=FALSE)
+data20.s.3 <- read_excel(temp, sheet=5, range=paste0("A5:", ScotMortRange2,"132"), col_names=FALSE)
 colnames(data20.s.3) <- c("name", "location", 1:maxweek.s)
 
 data20.s.3 <- data20.s.3 %>% 
@@ -286,36 +306,37 @@ data$othexcess <- case_when(
 data$COVIDrate <- data$COVID.20*100000/data$pop
 
 #############################################################
-#Daily data
+#Daily data from PHE API
+APIdata <- get_data(filters="areaType=ltla", structure=list(date="date",
+                                                             name="areaName",
+                                                             code="areaCode",
+                                                             cases="newCasesBySpecimenDate"))
 
-#Set up daily dataframe
-#Bring in case data
-#Read in cases data for England
-temp <- tempfile()
-source <- "https://coronavirus.data.gov.uk/downloads/csv/coronavirus-cases_latest.csv"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
+casedata <- APIdata %>% 
+  mutate(date=as.Date(date)) %>% 
+  filter(date>as.Date("2020-03-01")) %>% 
+  mutate(cases=if_else(is.na(cases), 0, as.double(cases)))
 
-casedata.E <- read.csv(temp)[,c(1:5)]
-colnames(casedata.E) <- c("name", "code", "geography", "date", "cases")
-casedata.E <- casedata.E %>% filter(geography=="ltla")
-
-mindate <- min(as.Date(casedata.E$date))
-maxdate <- max(as.Date(casedata.E$date))
+mindate <- min(as.Date(casedata$date))
+maxdate <- max(as.Date(casedata$date))
 
 #Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
-casedata.E$name <- if_else(casedata.E$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
-                           "Buckinghamshire", as.character(casedata.E$name))
-casedata.E$code <- if_else(casedata.E$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
-                           "E06000060", as.character(casedata.E$code))
+casedata$name <- if_else(casedata$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
+                           "Buckinghamshire", as.character(casedata$name))
+casedata$code <- if_else(casedata$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
+                           "E06000060", as.character(casedata$code))
 
 #Align names
-casedata.E$name <- if_else(casedata.E$name=="Cornwall and Isles of Scilly", "Cornwall", casedata.E$name)
+casedata$name <- if_else(casedata$name=="Cornwall and Isles of Scilly", "Cornwall", 
+                         casedata$name)
 
-casedata.E <- casedata.E %>% 
+casedata$name <- if_else(casedata$name=="Comhairle nan Eilean Siar", 
+                         "Na h-Eileanan Siar", casedata$name)
+
+casedata <- casedata %>% 
   group_by(name, code, date) %>% 
   summarise(cases=sum(cases)) %>% 
   ungroup()
-
 
 #Set up skeleton dataframe, merging City of London and Hackney
 daydata <- data.frame(code=rep(unique(subset(data, !Region %in% c("Region", "Nation"))$code),
@@ -325,79 +346,18 @@ daydata <- data.frame(code=rep(unique(subset(data, !Region %in% c("Region", "Nat
                       date=rep(seq.Date(from=mindate, to=maxdate, by="day"), 
                                times=length(unique(subset(data, !Region %in% c("Region", "Nation"))$code))))
 
-#merge in English cases
-daydata <- merge(daydata, casedata.E, by=c("name", "code", "date"), all.x=TRUE)
+#Add in NI LTLAs which are missing from deaths data
+NIdaydata <- data.frame(code=rep(unique(subset(casedata, substr(code,1,1)=="N")$code),
+                                 each=maxdate-mindate+1),
+                        name=rep(unique(subset(casedata, substr(code,1,1)=="N")$name),
+                                 each=maxdate-mindate+1),
+                        date=rep(seq.Date(from=mindate, to=maxdate, by="day"), 
+                                 times=length(unique(subset(casedata, substr(code,1,1)=="N")$code))))
 
-#Bring in Welsh case data
-temp <- tempfile()
-source <- "http://www2.nphs.wales.nhs.uk:8080/CommunitySurveillanceDocs.nsf/3dc04669c9e1eaa880257062003b246b/4e819921339b96308025861d004a8769/$FILE/Rapid%20COVID-19%20surveillance%20data.xlsx"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-casedata.W <- read_excel(temp, sheet=3)[,c(1:3)]
+daydata <- bind_rows(daydata, NIdaydata)
 
-colnames(casedata.W) <- c("name", "date", "cases")
-
-daydata <- merge(daydata, casedata.W, by=c("name", "date"), all.x=TRUE)
-
-#Fill in blanks
-daydata$cases <- coalesce(daydata$cases.x, daydata$cases.y)
-daydata <- daydata[,-c(4:5)]
-daydata$cases <- if_else(is.na(daydata$cases) & !substr(daydata$code, 1,1)=="S", 0, daydata$cases)
-
-#Bring in Scottish case data
-#Need to update this link each day from:
-#https://www.opendata.nhs.scot/dataset/covid-19-in-scotland
-temp <- tempfile()
-source <- "https://www.opendata.nhs.scot/dataset/b318bddf-a4dc-4262-971f-0ba329e09b87/resource/427f9a25-db22-4014-a3bc-893b68243055/download/trend_ca_20201111.csv"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-casedata.S <- read.csv(temp)[,c(1,2,4)]
-colnames(casedata.S) <- c("date", "code", "cases")
-
-casedata.S$date <- as.Date(as.character(casedata.S$date), "%Y%m%d")
-
-daydata <- merge(daydata, casedata.S, by=c("date", "code"), all.x=TRUE)
-
-#Fill in blanks
-daydata$cases <- coalesce(daydata$cases.x, daydata$cases.y)
-daydata <- daydata[,-c(4:5)]
-daydata$cases <- if_else(is.na(daydata$cases), 0, daydata$cases)
-
-#Bring in NI case data
-#Need to update this link daily from 
-#https://www.health-ni.gov.uk/publications/daily-dashboard-updates-covid-19-november-2020
-temp <- tempfile()
-source <- "https://www.health-ni.gov.uk/sites/default/files/publications/health/doh-dd-111120.xlsx"
-temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
-#Need to update the range here too:
-casedata.NI <- read_excel(temp, sheet=3, range="A2:E3308", col_names=FALSE)
-colnames(casedata.NI) <- c("date", "name", "tests", "inds", "cases")
-casedata.NI$date <- as.Date(casedata.NI$date)
-
-#Set up skeleton dataframe
-daydata.NI <- data.frame(date=rep(seq.Date(from=mindate, to=maxdate, by="day"), 
-                                  times=length(unique(casedata.NI$name))),
-                         name=rep(unique(casedata.NI$name), each=maxdate-mindate+1))
-
-daydata.NI <- merge(daydata.NI, casedata.NI, all.x=TRUE)
-
-#Fill in blanks and remove missing postcode/NA data
-daydata.NI$cases <- replace_na(daydata.NI$cases, 0)
-daydata.NI <- daydata.NI %>% filter(!name %in% c("Missing Postcode", "NA"))
-
-daydata.NI$code <- case_when(
-  daydata.NI$name=="Antrim and Newtownabbey" ~ "N09000001",
-  daydata.NI$name=="Ards and North Down" ~ "N09000011",
-  daydata.NI$name=="Armagh City, Banbridge and Craigavon" ~ "N09000002",
-  daydata.NI$name=="Belfast" ~ "N09000003",
-  daydata.NI$name=="Causeway Coast and Glens" ~ "N09000004",
-  daydata.NI$name=="Derry City and Strabane" ~ "N09000005",
-  daydata.NI$name=="Fermanagh and Omagh" ~ "N09000006",
-  daydata.NI$name=="Lisburn and Castlereagh" ~ "N09000007",
-  daydata.NI$name=="Mid and East Antrim" ~ "N09000008",
-  daydata.NI$name=="Mid Ulster" ~ "N09000009",
-  daydata.NI$name=="Newry, Mourne and Down" ~ "N09000010"
-)
-
-daydata <- bind_rows(daydata, daydata.NI[,c(2,1,6,5)])
+#merge in cases
+daydata <- merge(daydata, casedata, by=c("name", "code", "date"), all.x=TRUE)
 
 daydata$country <- case_when(
   substr(daydata$code,1,1)=="E" ~ "England",
@@ -411,26 +371,10 @@ daydata$date <- as.Date(daydata$date)
 ###################################################
 #Hospital admissions and deaths in hospitals
 
-#Admissions data which is published weekly (next update on 5th November)
-#https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/Weekly-covid-admissions-and-beds-publication-201105.xlsx"
-
-#Hospital deaths data which is published daily
-#https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-11-November-2020.xlsx"
-
-#Increment by 7 when each new report is published
-admrange <- "CS"
-#Increment by 1 each day
-deathrange <- "IZ"
-
-#Set latest date of admissions data
-admdate <- as.Date("2020-11-01")
-
 #Read in admissions
 temp <- tempfile()
 temp <- curl_download(url=admurl, destfile=temp, quiet=FALSE, mode="wb")
-raw.adm <- read_excel(temp, sheet=1, range=paste0("B26:",admrange,"508"), col_names=FALSE)
+raw.adm <- read_excel(temp, sheet="Hosp ads & diag", range=paste0("B25:",admrange,"508"), col_names=FALSE)
 
 #Tidy up data
 admissions <- raw.adm %>% 

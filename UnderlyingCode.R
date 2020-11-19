@@ -16,22 +16,22 @@ library(gt)
 ###################
 
 #England mortality data - updated on Tuesday mornings
-EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek44.xlsx"
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek45.xlsx"
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
-ScotMortRange <- 5392
+ScotMortRange <- 5542
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
-ScotMortRange2 <- "AU"
+ScotMortRange2 <- "AV"
 #Admissions data which is published weekly (next update on 17th November)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
 admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/Weekly-covid-admissions-and-beds-publication-201112-1.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-12-November-2020.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-16-November-2020.xlsx"
 #Increment by 7 when each new report is published
 admrange <- "CZ"
 #Increment by 1 each day
-deathrange <- "JA"
+deathrange <- "JE"
 #Set latest date of admissions data
 admdate <- as.Date("2020-11-08")
 
@@ -393,6 +393,18 @@ deaths <- raw.deaths %>%
   mutate(date=as.Date("2020-03-01")+days(as.integer(substr(date, 4, 6))-6)) %>% 
   rename(Region=...1, code=...3, name=...4)
 
+#Address mergers which happened in April 2020 (so are included in the admissions data, but not deaths)
+deaths <- deaths %>% 
+  mutate(code=case_when(
+    code %in% c("RDD", "RQ8") ~ "RAJ", 
+    code=="RA3" ~ "RA7",
+    code=="RC1" ~ "RC9",
+    code=="RBA" ~ "RH5",
+    TRUE ~ code)) %>% 
+  group_by(code, Region, name, date) %>% 
+  summarise(deaths=sum(deaths, na.rm=TRUE)) %>% 
+  ungroup()
+
 #Merge together from 1st August 2020 onwards
 data.deaths.adm <- deaths %>% 
   filter(date>=as.Date("2020-08-01")) %>% 
@@ -406,22 +418,75 @@ data.deaths.adm <- deaths %>%
 #MSOA.adm <- read_excel("Data/2020 Trust Catchment Populations_Supplementary MSOA Analysis.xlsx", 
 #                       sheet=2)
 MSOA.adm <- read.csv("COVID_LA_Plots/Trust to MSOA HES data.csv")
+test <- data.frame(msoa=unique(MSOA.adm$msoa))
 
 #Address changes in trust codes - data from https://digital.nhs.uk/services/organisation-data-service/organisation-changes
-MSOA.adm <- MSOA.adm %>% 
+#1st lookup for deaths data which doesn't include any of the 2020 trust changes
+MSOA.adm1 <- MSOA.adm %>% 
   mutate(TrustCode=case_when(
     TrustCode %in% c("RE9", "RLN") ~ "R0B",
     TrustCode=="R1J" ~ "RTQ",
     TrustCode=="RQ6" ~ "REM",
     TrustCode=="RNL" ~ "RNN",
-    #TrustCode %in% c("RQ8", "RDD") ~ "RAJ",
-    TrustCode=="RA3" ~ "RA7",
-    #TrustCode=="RC1" ~ "RC9",
     TrustCode=="RBA" ~ "RH5",
     TRUE ~ as.character(TrustCode))) %>% 
   group_by(CatchmentYear, msoa, TrustCode) %>% 
-  summarise(msoa_total_catchment=sum(msoa_total_catchment)) %>% 
+  summarise(msoa_total_catchment1=sum(msoa_total_catchment)) %>% 
+  ungroup() 
+
+
+#2nd lookup for admissions up to 4th October, when RD3 and RDZ merged to form R0D in the admissions (but not deaths) data
+MSOA.adm2 <- MSOA.adm %>% 
+  mutate(TrustCode=case_when(
+    TrustCode %in% c("RE9", "RLN") ~ "R0B",
+    TrustCode=="R1J" ~ "RTQ",
+    TrustCode=="RQ6" ~ "REM",
+    TrustCode=="RNL" ~ "RNN",
+    TrustCode %in% c("RQ8", "RDD") ~ "RAJ",
+    TrustCode=="RA3" ~ "RA7",
+    TrustCode=="RC1" ~ "RC9",
+    TrustCode=="RBA" ~ "RH5",
+    TRUE ~ as.character(TrustCode))) %>% 
+  group_by(CatchmentYear, msoa, TrustCode) %>% 
+  summarise(msoa_total_catchment2=sum(msoa_total_catchment)) %>% 
+  ungroup() 
+
+#2nd lookup for after 4th October
+MSOA.adm3 <- MSOA.adm %>% 
+  mutate(TrustCode=case_when(
+    TrustCode %in% c("RE9", "RLN") ~ "R0B",
+    TrustCode=="R1J" ~ "RTQ",
+    TrustCode=="RQ6" ~ "REM",
+    TrustCode=="RNL" ~ "RNN",
+    TrustCode %in% c("RQ8", "RDD") ~ "RAJ",
+    TrustCode=="RA3" ~ "RA7",
+    TrustCode=="RC1" ~ "RC9",
+    TrustCode=="RBA" ~ "RH5",
+    TrustCode %in% c("RDZ", "RD3") ~ "R0D",
+    TRUE ~ as.character(TrustCode))) %>% 
+  group_by(CatchmentYear, msoa, TrustCode) %>% 
+  summarise(msoa_total_catchment3=sum(msoa_total_catchment)) %>% 
   ungroup()
+
+#get a list of *all* trust codes 
+temp1 <- data.frame(TrustCode=unique(MSOA.adm1$TrustCode))
+temp2 <- data.frame(TrustCode=unique(MSOA.adm2$TrustCode))
+temp3 <- data.frame(TrustCode=unique(MSOA.adm3$TrustCode))
+temp <- bind_rows(temp1, temp2, temp3) %>%
+  unique()
+
+MSOA.adm <- merge(temp, MSOA.adm1, by="TrustCode", all=TRUE) %>% 
+  merge(., MSOA.adm2, all=TRUE) %>% 
+  merge(., MSOA.adm3, all=TRUE)
+
+
+
+
+
+
+
+
+
 
 #Bring in MSOA to LTLA lookup
 temp <- tempfile()
@@ -429,28 +494,38 @@ source <- "http://geoportal1-ons.opendata.arcgis.com/datasets/0b3c76d1eb5e4ffd98
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 MSOA.lookup <- read.csv(temp) %>% 
   select(MSOA11CD, LAD19CD) %>% 
-  unique()
+  unique() %>% 
+  rename(msoa=MSOA11CD)
 
 #Merge into PHE lookup
-MSOA.adm <- merge(MSOA.adm, MSOA.lookup, by.x="msoa", by.y="MSOA11CD", all.x=TRUE)
+MSOA.adm <- merge(MSOA.adm, MSOA.lookup, by="msoa", all.x=TRUE)
 
 #Convert to the lookup we want (trust to LTLA), averaging across last 3 years in data (2016-18)
 trust.lookup <- MSOA.adm %>% 
   filter(CatchmentYear>=2016) %>% 
   group_by(TrustCode, LAD19CD) %>% 
-  summarise(catchment=sum(msoa_total_catchment)) %>% 
+  summarise(catchment1=sum(msoa_total_catchment1, na.rm=TRUE),
+            catchment2=sum(msoa_total_catchment2, na.rm=TRUE),
+            catchment3=sum(msoa_total_catchment3, na.rm=TRUE)) %>% 
   ungroup() %>% 
   group_by(TrustCode) %>% 
-  mutate(pop=sum(catchment), popprop=catchment/pop) %>% 
-  ungroup()
+  mutate(pop1=sum(catchment1, na.rm=TRUE), popprop1=catchment1/pop1,
+         pop2=sum(catchment2, na.rm=TRUE), popprop2=catchment2/pop2,
+         pop3=sum(catchment3, na.rm=TRUE), popprop3=catchment3/pop3) %>% 
+  ungroup() %>% 
+  rename(code=TrustCode)
 
 #Bring lookup into admissions and deaths data
-data.deaths.adm <- merge(data.deaths.adm, trust.lookup, by.x="code", by.y="TrustCode", all.x=TRUE)
+data.deaths.adm <-
+  merge(data.deaths.adm, trust.lookup, by.x="code", by.y="code", all=TRUE)
 
 #Allocate admissions and deaths to LTLA based on population proportions and 
 #aggregate up to LTLA level
 data.deaths.adm <- data.deaths.adm %>% 
-  mutate(LA.deaths=deaths*popprop, LA.admissions=admissions*popprop) %>% 
+  mutate(LA.deaths=deaths*popprop1, 
+         LA.admissions=case_when(
+           date<=as.Date("2020-10-04") ~ admissions*popprop2,
+           TRUE ~ admissions*popprop3)) %>% 
   group_by(LAD19CD, date) %>% 
   summarise(deaths=sum(LA.deaths, na.rm=TRUE), admissions=sum(LA.admissions, na.rm=TRUE)) %>% 
   ungroup() %>% 

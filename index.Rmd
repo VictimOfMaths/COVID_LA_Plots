@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbers of COVID-19 cases"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "16/11/2020"
+date: "19/11/2020"
 output: html_document
 ---
 ```{r, include = FALSE}
@@ -32,8 +32,8 @@ shortcases <- daydata %>%
   group_by(name) %>% 
   mutate(cases_change=casesroll_avg-lag(casesroll_avg, 7),
          caserate_change=caserate_avg-lag(caserate_avg, 7)) %>% 
-  #censor data from last 4 days due to underreporting
-  slice_tail(n=5) %>% 
+  #censor data from last 5 days due to underreporting
+  slice_tail(n=6) %>% 
   slice_head(n=1) %>% 
   as.data.frame()
 
@@ -42,7 +42,7 @@ down_arrow <- "<span style=\"color:green\">&#9660;</span>"
 
 #Code for sparklines adapted from Tom Mock's excellent blog
 #https://themockup.blog/posts/2020-09-04-10-table-rules-in-r/
-maxdate=as.Date("2020-10-30")#max(shortcases$date)
+maxdate=max(shortcases$date)
 ```
 
 ```{r, include=FALSE}

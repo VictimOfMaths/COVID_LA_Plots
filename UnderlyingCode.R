@@ -17,23 +17,28 @@ library(gt)
 
 #England mortality data - updated on Tuesday mornings
 EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek45.xlsx"
+#English/Welsh deaths by occurrence - updated monthly
+#https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/monthlymortalityanalysisenglandandwales
+EWMortOccUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fbirthsdeathsandmarriages%2fdeaths%2fdatasets%2fmonthlymortalityanalysisenglandandwales%2foctober2020/monthlymortalityanalysisoctober.xlsx"
+EWMortOccRange <- 318
+EWLastFullWeek <- 43
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
 ScotMortRange <- 5542
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
 ScotMortRange2 <- "AV"
-#Admissions data which is published weekly (next update on 17th November)
+#Admissions data which is published weekly (next update on 19th November)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/Weekly-covid-admissions-and-beds-publication-201112-1.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/Weekly-covid-admissions-and-beds-publication-201119.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-16-November-2020.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-18-November-2020.xlsx"
 #Increment by 7 when each new report is published
-admrange <- "CZ"
+admrange <- "DG"
 #Increment by 1 each day
-deathrange <- "JE"
+deathrange <- "JG"
 #Set latest date of admissions data
-admdate <- as.Date("2020-11-08")
+admdate <- as.Date("2020-11-15")
 
 ###################################################################################
 #Weekly data
@@ -69,7 +74,7 @@ data20 <- bind_rows(data20, data20.2)
 data20 <- pivot_wider(data20, names_from="cause", values_from="deaths.20")
 
 #Read in 2015-19 historic data for England & Wales
-#Historic data is only available for registrations
+#Historic data is only available for registrations at subnational level
 temp <- tempfile()
 source <- "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/adhocs/11826fiveyearaverageweeklydeathsbylocalauthorityandplaceofoccurrenceenglandandwalesdeathsregistered2015to2019/weeklyfiveyearaveragesbylaandplaceofoccurrence20152019.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
@@ -295,6 +300,30 @@ data.nat <- data %>%
 
 data <- bind_rows(data, data.reg, data.nat)
 
+#Replace overall occurrences data for England & Wales with actual data from monthly mortality analysis file
+#(rather than using registrations as a proxy)
+temp <- tempfile()
+temp <- curl_download(url=EWMortOccUrl, destfile=temp, quiet=FALSE, mode="wb")
+
+Eng.occ <- read_excel(temp, sheet="Table 12", range=paste0("A13:B", EWMortOccRange))
+colnames(Eng.occ) <- c("date", "deaths.1519")
+Eng.occ$name <- "England"
+
+Wal.occ <- read_excel(temp, sheet="Table 12", range=paste0("A13:G", EWMortOccRange))[,c(1,7)]
+colnames(Wal.occ) <- c("date", "deaths.1519")
+Wal.occ$name <- "Wales"
+
+Occ.data <- bind_rows(Eng.occ, Wal.occ) %>% 
+  mutate(week=floor((as.Date(date)-as.Date("2020-01-04"))/7)+2) %>% 
+  group_by(name, week) %>% 
+  summarise(death.1519v2=sum(deaths.1519)) %>% 
+  filter(week<=EWLastFullWeek & week>1) %>% 
+  ungroup() %>% 
+#Add in a dummy location (since we're only going to use this data in the aggregate graph)
+  mutate(location="Home/Other", measure="Occurrences")
+
+data <- merge(data, Occ.data, by=c("week", "name", "location", "measure"), all.x=TRUE)
+
 #Calculate excesses
 data$allexcess <- case_when(
   data$country=="Scotland" & data$week<=maxweek.s ~ data$AllCause.20-data$deaths.1519,
@@ -357,7 +386,8 @@ NIdaydata <- data.frame(code=rep(unique(subset(casedata, substr(code,1,1)=="N")$
 daydata <- bind_rows(daydata, NIdaydata)
 
 #merge in cases
-daydata <- merge(daydata, casedata, by=c("name", "code", "date"), all.x=TRUE)
+daydata <- merge(daydata, casedata, by=c("name", "code", "date"), all.x=TRUE) %>% 
+  mutate(cases=if_else(is.na(cases), 0, as.double(cases)))
 
 daydata$country <- case_when(
   substr(daydata$code,1,1)=="E" ~ "England",
@@ -415,10 +445,7 @@ data.deaths.adm <- deaths %>%
   select(-c("name.x", "name.y"))
 
 #Bring in PHE data summarising admissions in HES to each trust by MSOA
-#MSOA.adm <- read_excel("Data/2020 Trust Catchment Populations_Supplementary MSOA Analysis.xlsx", 
-#                       sheet=2)
 MSOA.adm <- read.csv("COVID_LA_Plots/Trust to MSOA HES data.csv")
-test <- data.frame(msoa=unique(MSOA.adm$msoa))
 
 #Address changes in trust codes - data from https://digital.nhs.uk/services/organisation-data-service/organisation-changes
 #1st lookup for deaths data which doesn't include any of the 2020 trust changes
@@ -479,15 +506,6 @@ MSOA.adm <- merge(temp, MSOA.adm1, by="TrustCode", all=TRUE) %>%
   merge(., MSOA.adm2, all=TRUE) %>% 
   merge(., MSOA.adm3, all=TRUE)
 
-
-
-
-
-
-
-
-
-
 #Bring in MSOA to LTLA lookup
 temp <- tempfile()
 source <- "http://geoportal1-ons.opendata.arcgis.com/datasets/0b3c76d1eb5e4ffd98a3679ab8dea605_0.csv"
@@ -542,7 +560,7 @@ data.deaths.adm <- data.deaths.adm %>%
 
 #Merge into case data
 daydata <- merge(daydata, data.deaths.adm, by.x=c("date", "code"), by.y=c("date", "LAD19CD"), 
-                 all.x=TRUE, all.y=TRUE) %>% 
+                 all.x=TRUE) %>% 
   #Set admissions data for missing dates to missing
   mutate(admissions=if_else(date>admdate, NA_real_, admissions))
 

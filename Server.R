@@ -61,19 +61,31 @@ server <- function(input, output) {
     
     #Excess deaths graph
     if (input$plottype == 1){
-      subtitle=if_else(input$measure=="Registrations",
-                       paste0("Weekly deaths (by date of registration) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate),
-                       paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of death data can have substantial reporting delays.<br>Around 5% of deaths are not included in this data until at least 3 months from when the death occurs."))
+      if (LA %in% c("England", "Wales") & input$measure=="Occurrences") {
+        lab <- ""
+      }
+      subtitle=case_when(input$measure=="Registrations" ~ paste0("Weekly deaths (by date of registration) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate),
+                         input$measure=="Occurrences" & LA %in% c("England", "Wales") ~ paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,<br>e.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data."),
+                         input$measure=="Occurrences" & LAdaydata$country[1]=="Scotland" ~ paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,<br>when a significant proportion of the deaths that have happened will be missing from the most recent weeks of data."),
+                         TRUE ~ paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,<br>e.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data. <br> 2015-19 data by date of occurrence is not available at subnational level for England & Wales,<br>so 2015-19 registrations data are used here as the comparator. The impact of this is likely to be very small."))
       p <- LAdata %>% 
         group_by(week) %>% 
-        summarise(deaths.1519=sum(deaths.1519), AllCause.20=sum(AllCause.20)) %>% 
+        summarise(deaths.1519=case_when(
+          LA %in% c("England", "Wales") & input$measure=="Occurrences" & week>1 & week<=43 ~ sum(death.1519v2, na.rm=TRUE),
+          LA %in% c("England", "Wales") & input$measure=="Occurrences" & (week==1 | week>43) ~ NA_real_,
+          TRUE ~sum(deaths.1519)), 
+          AllCause.20=sum(AllCause.20)) %>% 
+        #mutate(deaths.1519=case_when(
+        #  LA %in% c("England", "Wales") & input$measure=="Occurrences" & deaths1519==0) ~ NA_real_,
+        #  TRUE ~ deaths.1519) %>%
         ggplot()+
         geom_line(aes(x=week, y=deaths.1519), colour="skyblue4")+
         geom_line(aes(x=week, y=AllCause.20), colour="red")+
         scale_x_continuous(name="Week")+
         scale_y_continuous(name="Deaths", limits=c(0,NA))+
         theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
+        theme(plot.subtitle=element_markdown(), plot.title.position="plot",
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         annotate("text", x=week(enddate)-15, y=max(labpos*1.5, labpos+20), 
                  label=lab,
                  hjust=0, colour="red", size=rel(5))+
@@ -86,9 +98,9 @@ server <- function(input, output) {
     if (input$plottype == 2){
       subtitle=if_else(input$measure=="Registrations",
                        paste0("Excess deaths by date of registration in 2020 vs. 2015-19 average by cause.\nData up to ", enddate),
-                       paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by cause.\nData up to ", enddate, ". Date of death data can have substantial reporting delays.\nAround 5% of deaths are not included in this data until at least 3 months from when the death occurs."))
+                       paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by cause.\nData up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,\ne.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data."))
       p <- LAdata %>% 
-        gather(cause, excess, c(9,16)) %>% 
+        gather(cause, excess, c(9,17)) %>% 
         group_by(week, cause) %>% 
         summarise(excess=sum(excess)) %>% 
         ggplot(aes(x=week, y=excess, fill=cause))+
@@ -98,7 +110,8 @@ server <- function(input, output) {
         scale_y_continuous(name="Excess deaths vs. 2015-19 average")+
         scale_fill_paletteer_d("LaCroixColoR::PinaFraise", name="Cause", labels=c("COVID-19", "Other causes"))+
         theme_classic(base_size=16)+
-        theme(plot.title.position="plot")+
+        theme(plot.title.position="plot",
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=subtitle,
              caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
@@ -109,7 +122,7 @@ server <- function(input, output) {
     if (input$plottype == 3){
       subtitle=if_else(input$measure=="Registrations",
                        paste0("Excess deaths by date of registration in 2020 vs. 2015-19 average by location\nData up to ", enddate),
-                       paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by location\nData up to ", enddate, ". Date of death data can have substantial reporting delays.\nAround 5% of deaths are not included in this data until at least 3 months from when the death occurs."))
+                       paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by location\nData up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,\ne.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data."))
       
       p <- ggplot(LAdata, aes(x=week, y=allexcess, fill=location))+
         geom_col()+
@@ -118,7 +131,8 @@ server <- function(input, output) {
         scale_y_continuous(name="Excess deaths vs. 2015-19 average")+
         scale_fill_paletteer_d("ggsci::planetexpress_futurama", name="Place of death")+
         theme_classic(base_size=16)+
-        theme(plot.title.position="plot")+
+        theme(plot.title.position="plot",
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=subtitle,
              caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
@@ -139,7 +153,8 @@ server <- function(input, output) {
         scale_x_continuous(name="Week", limits=c(0,maxweek+1))+
         scale_y_continuous(name="")+
         theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
+        theme(plot.subtitle=element_markdown(), plot.title.position="plot",
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("Timeline of COVID-19 in ", LA),
              subtitle=subtitle,
              caption=paste0("Data from ", source," & ", source2 ," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
@@ -159,7 +174,8 @@ server <- function(input, output) {
         scale_x_date(name="Date")+
         scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown(), plot.title.position="plot")+
+        theme(plot.subtitle=element_markdown(), plot.title.position="plot",
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("Confirmed new COVID cases in ",LA),
              subtitle="Confirmed new COVID-19 cases identified through combined pillar 1 & 2 testing<br>and the <span style='color:Red;'>7-day rolling average",
              caption=paste0("Data from ", source2, " | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
@@ -180,7 +196,8 @@ server <- function(input, output) {
         scale_x_date(name="Date")+
         scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown())+
+        theme(plot.subtitle=element_markdown(),
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales, Scotland & Northern Ireland"),
              caption="Data from PHE, PHW, ScotGov & DoHNI | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -200,7 +217,8 @@ server <- function(input, output) {
         scale_x_date(name="Date")+
         scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown())+
+        theme(plot.subtitle=element_markdown(),
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("Number of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales, Scotland & Northern Ireland"),
              caption="Data from PHE, PHW, ScotGov & DoHNI | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -225,9 +243,10 @@ server <- function(input, output) {
         annotate("text", x=as.Date("2020-08-20"), y=-max(daydata$deaths[daydata$name==LA], na.rm=TRUE),
                  label="Daily hospital deaths", size=rel(5))+
         theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown())+
+        theme(plot.subtitle=element_markdown(),
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("NHS England data on COVID-19 in hospitals in ", LA),
-             subtitle="Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br> Admissions data is published weekly, so may by missing for more recent days.<br> Data for the most recent days for both measures may be an undercount due to delays in processing tests.",
+             subtitle="Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths and admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days.<br> Data for the most recent days for both measures may be an undercount due to delays in processing tests.",
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     
@@ -242,7 +261,8 @@ server <- function(input, output) {
         scale_y_continuous(name="Daily confirmed new hospital admissions per 100,000", 
                            position="right")+
         theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown())+
+        theme(plot.subtitle=element_markdown(),
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("COVID-19 cases in hospitals in ", LA, " vs. the rest of England"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 admissions per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -258,7 +278,8 @@ server <- function(input, output) {
         scale_x_date(name="Date", limits=c(as.Date("2020-08-01"), NA))+
         scale_y_continuous(name="Daily confirmed hospital deaths per 100,000", position="right")+
         theme_classic(base_size=16)+
-        theme(plot.subtitle=element_markdown())+
+        theme(plot.subtitle=element_markdown(),
+              plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("COVID-19 hospitals deaths in ", LA, " vs. the rest of England"),
              subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England. Data for recent days may be undercounted due to delays in processing tests."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")

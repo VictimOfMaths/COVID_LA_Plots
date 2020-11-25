@@ -16,5 +16,5 @@ The app produces 10 different sets of plots for England, Northern Ireland Scotla
 ![Comparative case rates](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/LAPlots7.PNG)
 ![Comparative case rates](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/LAPlots8.PNG)
 ![Comparative case rates](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/LAPlots9.PNG)
-![Comparative case rates](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/LAPlots10.PNG)
+![Comparative case rates](https://github.com/VictimOfMaths/COVID_LA_Plots/blob/master/LAPLots10.PNG)
 

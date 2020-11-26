@@ -40,6 +40,16 @@ server <- function(input, output) {
     LAv1 <- as.numeric(LAexcess[4])
     LAv2 <- as.numeric(LAexcess[6])
     
+    #Set up flag for LAs heavily affected by trust mergers in NHS data
+    merger <- case_when(
+      LA %in% c("Bath and North East Somerset", "Bristol, City of", "North Somerset",
+                "South Gloucestershire", "Cornwall", "Wiltshire", "Stroud",
+                "Sedgemoor", "South Somerset", "Southend-on-Sea", "Thurrock",
+                "Basildon", "Castle Point", "Rochford", "Luton", "Milton Keynes",
+                "Bedford", "Buckinghamshire", "Dacorum", "St Albans") ~ 1,
+      TRUE ~ 0
+    )
+    
     enddate <- if_else(LAdata$country[1]=="Scotland", enddate.s, enddate.ew)
     source <- if_else(LAdata$country[1]=="Scotland", "NRS", "ONS")
     source2 <- case_when(
@@ -226,6 +236,10 @@ server <- function(input, output) {
     
     #Hospital admissions and deaths data
     if (input$plottype == 8){
+      subtitle=case_when(
+        merger==0 ~ "Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths and admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days.<br> Data for the most recent days for both measures may be an undercount due to delays in processing tests.",
+        TRUE ~  "Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>This LA has been affected by a recent NHS trust merger, which NHS Digital reflect in admissions, but not deaths data.<br>As a result, the process for estimating the two series is slightly different and they should be compared with caution.<br>A small number of deaths and admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days.<br> Data for the most recent days for both measures may be an undercount due to delays in processing tests."
+        )
       p <- ggplot()+
         geom_col(data=subset(daydata, name==LA), 
                   aes(x=date, y=admissions), fill="#6EA5CF")+
@@ -246,7 +260,7 @@ server <- function(input, output) {
         theme(plot.subtitle=element_markdown(),
               plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("NHS England data on COVID-19 in hospitals in ", LA),
-             subtitle="Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths and admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days.<br> Data for the most recent days for both measures may be an undercount due to delays in processing tests.",
+             subtitle=subtitle,
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     
@@ -264,7 +278,7 @@ server <- function(input, output) {
         theme(plot.subtitle=element_markdown(),
               plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("COVID-19 cases in hospitals in ", LA, " vs. the rest of England"),
-             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 admissions per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England."),
+             subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 admissions per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     
@@ -281,7 +295,7 @@ server <- function(input, output) {
         theme(plot.subtitle=element_markdown(),
               plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("COVID-19 hospitals deaths in ", LA, " vs. the rest of England"),
-             subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England. Data for recent days may be undercounted due to delays in processing tests."),
+             subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths from mental health specialist trusts are excluded from these plots.<br> Data for the most recent days may be an undercount due to delays in processing tests."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     p     

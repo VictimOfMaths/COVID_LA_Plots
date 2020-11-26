@@ -22,7 +22,7 @@ daydata <- read.csv("LACases.csv")[,-c(1)] %>%
 daydata$date <- as.Date(daydata$date)
 
 #Have to manually enter the maximum date with admissions data
-maxdate <- as.Date("2020-11-15")
+maxdate <- as.Date("2020-11-22")
 
 ```
 
@@ -146,7 +146,7 @@ admratetable <- shortadm %>%
   tab_footnote(footnote="Data is only released once a week", locations=cells_column_labels(columns=vars(date))) %>% 
   cols_label(date="Data up to", country="Country", admroll_avg="Total",
              admrate_avg="Rate per 100,000", adm_change="Total", 
-             adm_change="Rate per 100,000", ggplot="Last month") %>% 
+             admrate_change="Rate per 100,000", ggplot="Last month") %>% 
   fmt_date(columns=vars(date), date_style=9) %>% 
   fmt_number(columns=vars(admroll_avg, admrate_avg, adm_change, admrate_change),
              decimals=1) %>% 

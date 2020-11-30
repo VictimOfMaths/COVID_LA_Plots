@@ -27,16 +27,16 @@ ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-d
 ScotMortRange <- 5693
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
 ScotMortRange2 <- "AW"
-#Admissions data which is published weekly (next update on 26th November)
+#Admissions data which is published weekly (next update on 3rd December)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
 admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/Weekly-covid-admissions-and-beds-publication-201126.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-26-November-2020.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/11/COVID-19-total-announced-deaths-29-November-2020.xlsx"
 #Increment by 7 when each new report is published
 admrange <- "DN"
 #Increment by 1 each day
-deathrange <- "JO"
+deathrange <- "JR"
 #Set latest date of admissions data
 admdate <- as.Date("2020-11-22")
 

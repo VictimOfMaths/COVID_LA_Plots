@@ -1,7 +1,7 @@
 ---
 title: "Local Authorities in the UK with high rates or numbers of COVID-19 cases"
 author: "Analysis by Colin Angus with thanks to Francisco Rowe for helping me work GitHub Pages"
-date: "03/12/2020"
+date: "06/01/2020"
 output: html_document
 ---
 ```{r, include = FALSE}
@@ -64,7 +64,7 @@ sparknamedata1$name <- fct_inorder(sparknamedata1$name)
 
 spark_plots1 <- daydata %>% 
   as.data.frame() %>% 
-  filter(name %in% unique(sparknamedata1$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
+  filter(name %in% unique(sparknamedata1$name) & date>if_else(is.na(maxdate-months(1)), maxdate-days(31), maxdate-months(1)) & date<=maxdate-days(3)) %>% 
   select(name, date, country, casesroll_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata1$name))) %>% 
   arrange(name, date) %>% 
@@ -124,7 +124,7 @@ sparknamedata2$name <- fct_inorder(sparknamedata2$name)
 
 spark_plots2 <- daydata %>% 
   as.data.frame() %>% 
-  filter(name %in% unique(sparknamedata2$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
+  filter(name %in% unique(sparknamedata2$name) & date>if_else(is.na(maxdate-months(1)), maxdate-days(31), maxdate-months(1))) %>% 
   select(name, date, country, caserate_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata2$name))) %>% 
   arrange(name, date) %>% 
@@ -184,7 +184,7 @@ sparknamedata3$name <- fct_inorder(sparknamedata3$name)
 
 spark_plots3 <- daydata %>% 
   as.data.frame() %>% 
-  filter(name %in% unique(sparknamedata3$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
+  filter(name %in% unique(sparknamedata3$name) & date>if_else(is.na(maxdate-months(1)), maxdate-days(31), maxdate-months(1))) %>% 
   select(name, date, country, casesroll_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata3$name))) %>% 
   arrange(name, date) %>% 
@@ -245,7 +245,7 @@ sparknamedata4$name <- fct_inorder(sparknamedata4$name)
 
 spark_plots4 <- daydata %>% 
   as.data.frame() %>% 
-  filter(name %in% unique(sparknamedata4$name) & date>maxdate-months(1) & date<=maxdate-days(3)) %>% 
+  filter(name %in% unique(sparknamedata4$name) & date>if_else(is.na(maxdate-months(1)), maxdate-days(31), maxdate-months(1))) %>% 
   select(name, date, country, caserate_avg) %>% 
   mutate(name=factor(name, levels=unique(sparknamedata4$name))) %>% 
   arrange(name, date) %>% 

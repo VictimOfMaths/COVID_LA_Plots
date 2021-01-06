@@ -1,694 +1,694 @@
 "","name","measure","excess","hist","excessprop"
-"1","Adur","Occurrences",5.2,685.8,0.00758238553514144
-"2","Adur","Registrations",18.2,685.8,0.026538349372995
-"3","Allerdale","Occurrences",123.4,1086.6,0.113565249401804
-"4","Allerdale","Registrations",164.4,1086.6,0.151297625621204
-"5","Amber Valley","Occurrences",95.6,1259.4,0.0759091630935366
-"6","Amber Valley","Registrations",168.6,1259.4,0.133873272987137
-"7","Arun","Occurrences",49.4,2115.6,0.0233503497825676
-"8","Arun","Registrations",91.4,2115.6,0.043202873889204
-"9","Ashfield","Occurrences",73.4,1227.6,0.0597914630172695
-"10","Ashfield","Registrations",142.4,1227.6,0.115998696643858
-"11","Ashford","Occurrences",127.4,1076.6,0.118335500650195
-"12","Ashford","Registrations",183.4,1076.6,0.1703511053316
-"13","Babergh","Occurrences",102.2,969.8,0.105382553103733
-"14","Babergh","Registrations",125.2,969.8,0.129098783254279
-"15","Barking and Dagenham","Occurrences",142.4,1205.6,0.118115461181155
-"16","Barking and Dagenham","Registrations",215.4,1205.6,0.178666224286662
-"17","Barnet","Occurrences",437,2307,0.189423493714781
-"18","Barnet","Registrations",496,2307,0.214997832683138
-"19","Barnsley","Occurrences",458.2,2398.8,0.191012172753043
-"20","Barnsley","Registrations",545.2,2398.8,0.227280306820077
-"21","Barrow-in-Furness","Occurrences",105.8,744.2,0.142166084385918
-"22","Barrow-in-Furness","Registrations",151.8,744.2,0.203977425423273
-"23","Basildon","Occurrences",153.8,1545.2,0.0995340409008543
-"24","Basildon","Registrations",194.8,1545.2,0.126067822935542
-"25","Basingstoke and Deane","Occurrences",172.2,1315.8,0.130870953032376
-"26","Basingstoke and Deane","Registrations",218.2,1315.8,0.165830673354613
-"27","Bassetlaw","Occurrences",109.6,1189.4,0.0921473011602489
-"28","Bassetlaw","Registrations",156.6,1189.4,0.131663023373129
-"29","Bath and North East Somerset","Occurrences",80,1601,0.0499687695190506
-"30","Bath and North East Somerset","Registrations",137,1601,0.0855715178013741
-"31","Bedford","Occurrences",147.8,1426.2,0.10363202916842
-"32","Bedford","Registrations",215.8,1426.2,0.151311176553078
-"33","Bexley","Occurrences",107.8,1981.2,0.0544114677972946
-"34","Bexley","Registrations",169.8,1981.2,0.0857056329497274
-"35","Birmingham","Occurrences",1490.2,8178.8,0.182202768132244
-"36","Birmingham","Registrations",1748.2,8178.8,0.213747738054482
-"37","Blaby","Occurrences",106.4,811.6,0.131099063578117
-"38","Blaby","Registrations",138.4,811.6,0.170527353376047
-"39","Blackburn with Darwen","Occurrences",176.6,1245.4,0.141801830737113
-"40","Blackburn with Darwen","Registrations",216.6,1245.4,0.173920025694556
-"41","Blackpool","Occurrences",75.6,1820.4,0.041529334212261
-"42","Blackpool","Registrations",176.6,1820.4,0.0970116457921336
-"43","Blaenau Gwent","Occurrences",99.4,791.6,0.125568468923699
-"44","Blaenau Gwent","Registrations",131.4,791.6,0.165992925720061
-"45","Bolsover","Occurrences",37.4,839.6,0.0445450214387804
-"46","Bolsover","Registrations",84.4,839.6,0.10052405907575
-"47","Bolton","Occurrences",396.6,2515.4,0.157668760435716
-"48","Bolton","Registrations",489.6,2515.4,0.194641011369961
-"49","Boston","Occurrences",93.6,736.4,0.127104834329169
-"50","Boston","Registrations",113.6,736.4,0.154263986963607
-"51","Bournemouth, Christchurch and Poole","Occurrences",19.2,4202.8,0.0045683829827734
-"52","Bournemouth, Christchurch and Poole","Registrations",221.2,4202.8,0.0526315789473684
-"53","Bracknell Forest","Occurrences",60,700,0.0857142857142857
-"54","Bracknell Forest","Registrations",104,700,0.148571428571429
-"55","Bradford","Occurrences",747,4343,0.172000921022335
-"56","Bradford","Registrations",847,4343,0.195026479392125
-"57","Braintree","Occurrences",18.8,1461.2,0.0128661374212976
-"58","Braintree","Registrations",60.8,1461.2,0.0416096359156857
-"59","Breckland","Occurrences",56,1562,0.0358514724711908
-"60","Breckland","Registrations",133,1562,0.0851472471190781
-"61","Brent","Occurrences",407.4,1661.6,0.245185363505055
-"62","Brent","Registrations",487.4,1661.6,0.293331728454502
-"63","Brentwood","Occurrences",51.8,737.2,0.0702658708627238
-"64","Brentwood","Registrations",75.8,737.2,0.102821486706457
-"65","Bridgend","Occurrences",189.2,1536.8,0.123112961998959
-"66","Bridgend","Registrations",242.2,1536.8,0.157600208224883
-"67","Brighton and Hove","Occurrences",-45.4,2081.4,-0.0218122417603536
-"68","Brighton and Hove","Registrations",47.6,2081.4,0.0228692226386086
-"69","Bristol, City of","Occurrences",-11.4,3249.4,-0.003508340001231
-"70","Bristol, City of","Registrations",152.6,3249.4,0.0469625161568289
-"71","Broadland","Occurrences",42.8,1418.2,0.0301791002679453
-"72","Broadland","Registrations",78.8,1418.2,0.055563390212946
-"73","Bromley","Occurrences",150,2542,0.0590086546026751
-"74","Bromley","Registrations",192,2542,0.0755310778914241
-"75","Bromsgrove","Occurrences",73.6,1048.4,0.0702022128958413
-"76","Bromsgrove","Registrations",87.6,1048.4,0.0835558946966807
-"77","Broxbourne","Occurrences",151.4,739.6,0.204705246078962
-"78","Broxbourne","Registrations",177.4,739.6,0.239859383450514
-"79","Broxtowe","Occurrences",55.2,1103.8,0.0500090596122486
-"80","Broxtowe","Registrations",109.2,1103.8,0.0989309657546657
-"81","Buckinghamshire","Occurrences",403,4114,0.0979581915410792
-"82","Buckinghamshire","Registrations",557,4114,0.135391346621293
-"83","Burnley","Occurrences",156.2,892.8,0.174955197132616
-"84","Burnley","Registrations",188.2,892.8,0.210797491039427
-"85","Bury","Occurrences",216.8,1744.2,0.124297672285288
-"86","Bury","Registrations",349.8,1744.2,0.200550395596835
-"87","Caerphilly","Occurrences",177.4,1758.6,0.100875696576822
-"88","Caerphilly","Registrations",236.4,1758.6,0.134425110883657
-"89","Calderdale","Occurrences",161.8,1894.2,0.0854186463942562
-"90","Calderdale","Registrations",221.8,1894.2,0.117094287825995
-"91","Cambridge","Occurrences",-59.4,804.4,-0.073843858776728
-"92","Cambridge","Registrations",-19.4,804.4,-0.0241173545499751
-"93","Camden","Occurrences",73.4,1100.6,0.0666908958749773
-"94","Camden","Registrations",167.4,1100.6,0.152098855169907
-"95","Cannock Chase","Occurrences",51.2,909.8,0.0562761046383821
-"96","Cannock Chase","Registrations",83.2,909.8,0.0914486700373709
-"97","Canterbury","Occurrences",-1.19999999999999,1598.2,-0.000750844700287821
-"98","Canterbury","Registrations",65.8,1598.2,0.041171317732449
-"99","Cardiff","Occurrences",129.8,2727.2,0.0475946025227339
-"100","Cardiff","Registrations",241.8,2727.2,0.0886623643297155
-"101","Carlisle","Occurrences",133,1134,0.117283950617284
-"102","Carlisle","Registrations",209,1134,0.184303350970018
-"103","Carmarthenshire","Occurrences",58.2,2173.8,0.0267733922163953
-"104","Carmarthenshire","Registrations",104.2,2173.8,0.0479344925936149
-"105","Castle Point","Occurrences",75,1015,0.0738916256157636
-"106","Castle Point","Registrations",103,1015,0.101477832512315
-"107","Central Bedfordshire","Occurrences",263.2,2038.8,0.129095546399843
-"108","Central Bedfordshire","Registrations",337.2,2038.8,0.165391406709829
-"109","Ceredigion","Occurrences",59,761,0.0775295663600526
-"110","Ceredigion","Registrations",76,761,0.0998685939553219
-"111","Charnwood","Occurrences",134.6,1428.4,0.0942313077569308
-"112","Charnwood","Registrations",188.6,1428.4,0.132035844301316
-"113","Chelmsford","Occurrences",78.2,1445.8,0.0540877023101397
-"114","Chelmsford","Registrations",127.2,1445.8,0.0879789735786416
-"115","Cheltenham","Occurrences",126.2,1113.8,0.113305799964087
-"116","Cheltenham","Registrations",157.2,1113.8,0.141138444963189
-"117","Cherwell","Occurrences",169.4,1188.6,0.142520612485277
-"118","Cherwell","Registrations",212.4,1188.6,0.178697627460878
-"119","Cheshire East","Occurrences",362.8,3828.2,0.0947703881719868
-"120","Cheshire East","Registrations",470.8,3828.2,0.122982080351079
-"121","Cheshire West and Chester","Occurrences",288.4,3303.6,0.0872987044436372
-"122","Cheshire West and Chester","Registrations",395.4,3303.6,0.119687613512532
-"123","Chesterfield","Occurrences",39.6,1149.4,0.0344527579606751
-"124","Chesterfield","Registrations",89.6,1149.4,0.0779537149817296
-"125","Chichester","Occurrences",128.2,1427.8,0.0897884857823224
-"126","Chichester","Registrations",176.2,1427.8,0.123406639585376
-"127","Chorley","Occurrences",197.4,1059.6,0.186296715741789
-"128","Chorley","Registrations",249.4,1059.6,0.235371838429596
-"129","Colchester","Occurrences",-3.79999999999999,1535.8,-0.00247428050527412
-"130","Colchester","Registrations",48.2,1535.8,0.031384294830056
-"131","Conwy","Occurrences",-25.2,1486.2,-0.01695599515543
-"132","Conwy","Registrations",32.8,1486.2,0.0220697079800834
-"133","Copeland","Occurrences",65.6,742.4,0.0883620689655172
-"134","Copeland","Registrations",103.6,742.4,0.139547413793103
-"135","Corby","Occurrences",53,557,0.0951526032315978
-"136","Corby","Registrations",73,557,0.131059245960503
-"137","Cornwall","Occurrences",-94.4000000000001,6088.4,-0.0155048945535773
-"138","Cornwall","Registrations",183.6,6088.4,0.0301557059325931
-"139","Cotswold","Occurrences",107.6,890.4,0.120844564240791
-"140","Cotswold","Registrations",140.6,890.4,0.157906558849955
-"141","County Durham","Occurrences",675.2,5401.8,0.124995371913066
-"142","County Durham","Registrations",933.2,5401.8,0.172757229071791
-"143","Coventry","Occurrences",276,2688,0.102678571428571
-"144","Coventry","Registrations",424,2688,0.157738095238095
-"145","Craven","Occurrences",79.8,616.2,0.129503407984421
-"146","Craven","Registrations",93.8,616.2,0.152223304122038
-"147","Crawley","Occurrences",12.6,731.4,0.0172272354388843
-"148","Crawley","Registrations",50.6,731.4,0.0691823899371069
-"149","Croydon","Occurrences",401.8,2429.2,0.165404248312202
-"150","Croydon","Registrations",482.8,2429.2,0.198748559196443
-"151","Dacorum","Occurrences",144.4,1202.6,0.120073174787959
-"152","Dacorum","Registrations",188.4,1202.6,0.15666056876767
-"153","Darlington","Occurrences",130.8,1107.2,0.118135838150289
-"154","Darlington","Registrations",200.8,1107.2,0.18135838150289
-"155","Dartford","Occurrences",31.2,866.8,0.0359944623904015
-"156","Dartford","Registrations",73.2,866.8,0.0844485463774804
-"157","Daventry","Occurrences",89.4,690.6,0.129452649869679
-"158","Daventry","Registrations",111.4,690.6,0.161309006660875
-"159","Denbighshire","Occurrences",49.4,1165.6,0.0423816060398078
-"160","Denbighshire","Registrations",106.4,1165.6,0.091283459162663
-"161","Derby","Occurrences",230.6,2247.4,0.102607457506452
-"162","Derby","Registrations",370.6,2247.4,0.164901664145234
-"163","Derbyshire Dales","Occurrences",19.8,777.2,0.0254760679361812
-"164","Derbyshire Dales","Registrations",51.8,777.2,0.0666495110653628
-"165","Doncaster","Occurrences",450.8,3037.2,0.148426182009746
-"166","Doncaster","Registrations",618.8,3037.2,0.203740287106545
-"167","Dorset","Occurrences",117.4,4412.6,0.0266056293341794
-"168","Dorset","Registrations",316.4,4412.6,0.0717037574219281
-"169","Dover","Occurrences",107.4,1256.6,0.0854687251313067
-"170","Dover","Registrations",165.4,1256.6,0.131625019894955
-"171","Dudley","Occurrences",450,3087,0.145772594752187
-"172","Dudley","Registrations",539,3087,0.174603174603175
-"173","Ealing","Occurrences",430.8,1888.2,0.228153797267239
-"174","Ealing","Registrations",515.8,1888.2,0.273170215019595
-"175","East Cambridgeshire","Occurrences",64,716,0.0893854748603352
-"176","East Cambridgeshire","Registrations",97,716,0.135474860335196
-"177","East Devon","Occurrences",-119.4,1837.4,-0.0649831283335147
-"178","East Devon","Registrations",-49.4,1837.4,-0.0268858169152063
-"179","East Hampshire","Occurrences",41.6,1137.4,0.0365746439247406
-"180","East Hampshire","Registrations",78.6,1137.4,0.0691049762616494
-"181","East Hertfordshire","Occurrences",146.4,1080.6,0.135480288728484
-"182","East Hertfordshire","Registrations",176.4,1080.6,0.163242642976124
-"183","East Lindsey","Occurrences",192,1911,0.100470957613815
-"184","East Lindsey","Registrations",286,1911,0.149659863945578
-"185","East Midlands","Occurrences",3916.6,43439.4,0.0901623871416272
-"186","East Midlands","Registrations",6020.6,43439.4,0.138597678605137
-"187","East Northamptonshire","Occurrences",80,846,0.0945626477541371
-"188","East Northamptonshire","Registrations",121,846,0.143026004728132
-"189","East of England","Occurrences",3580.4,55182.6,0.0648827710184007
-"190","East of England","Registrations",5863.4,55182.6,0.106254507761505
-"191","East Riding of Yorkshire","Occurrences",354.4,3756.6,0.09434062716286
-"192","East Riding of Yorkshire","Registrations",477.4,3756.6,0.127083000585636
-"193","East Staffordshire","Occurrences",177,1078,0.164192949907236
-"194","East Staffordshire","Registrations",208,1078,0.192949907235622
-"195","East Suffolk","Occurrences",96.8,2898.2,0.03340004140501
-"196","East Suffolk","Registrations",256.8,2898.2,0.088606721413291
-"197","Eastbourne","Occurrences",-52.4,1269.4,-0.0412793445722388
-"198","Eastbourne","Registrations",-1.39999999999999,1269.4,-0.00110288325193004
-"199","Eastleigh","Occurrences",88.2,1030.8,0.0855646100116415
-"200","Eastleigh","Registrations",116.2,1030.8,0.112727978269305
-"201","Eden","Occurrences",13.4,520.6,0.0257395313100269
-"202","Eden","Registrations",40.4,520.6,0.0776027660391855
-"203","Elmbridge","Occurrences",82.8,1054.2,0.0785429709732498
-"204","Elmbridge","Registrations",125.8,1054.2,0.119332195029406
-"205","Enfield","Occurrences",384.2,1982.8,0.193766390962276
-"206","Enfield","Registrations",472.2,1982.8,0.238148073431511
-"207","England","Occurrences",44066.6,478421.4,0.0921083379631429
-"208","England","Registrations",64882.6,478421.4,0.135618097350996
-"209","Epping Forest","Occurrences",134.6,1231.4,0.10930648042878
-"210","Epping Forest","Registrations",184.6,1231.4,0.149910670781225
-"211","Epsom and Ewell","Occurrences",75.6,565.4,0.133710647329324
-"212","Epsom and Ewell","Registrations",106.6,565.4,0.188539087371772
-"213","Erewash","Occurrences",142.4,1110.6,0.128218980731136
-"214","Erewash","Registrations",196.4,1110.6,0.176841347019629
-"215","Exeter","Occurrences",-66.8,1055.8,-0.0632695586285281
-"216","Exeter","Registrations",-1.80000000000001,1055.8,-0.00170486834627771
-"217","Fareham","Occurrences",98.2,1124.8,0.0873044096728307
-"218","Fareham","Registrations",137.2,1124.8,0.121977240398293
-"219","Fenland","Occurrences",51,1125,0.0453333333333333
-"220","Fenland","Registrations",127,1125,0.112888888888889
-"221","Flintshire","Occurrences",176,1454,0.121045392022008
-"222","Flintshire","Registrations",237,1454,0.162998624484182
-"223","Folkestone and Hythe","Occurrences",57.2,1276.8,0.0447994987468672
-"224","Folkestone and Hythe","Registrations",120.2,1276.8,0.0941416040100251
-"225","Forest of Dean","Occurrences",44.8,894.2,0.0501006486244688
-"226","Forest of Dean","Registrations",53.8,894.2,0.0601655110713487
-"227","Fylde","Occurrences",85.4,1039.6,0.0821469796075414
-"228","Fylde","Registrations",125.4,1039.6,0.120623316660254
-"229","Gateshead","Occurrences",256.8,2088.2,0.122976726367206
-"230","Gateshead","Registrations",340.8,2088.2,0.163202758356479
-"231","Gedling","Occurrences",125.2,1141.8,0.109651427570503
-"232","Gedling","Registrations",178.2,1141.8,0.15606936416185
-"233","Gloucester","Occurrences",97.4,1101.6,0.0884168482207698
-"234","Gloucester","Registrations",144.4,1101.6,0.131082062454611
-"235","Gosport","Occurrences",22.6,810.4,0.0278874629812438
-"236","Gosport","Registrations",60.6,810.4,0.0747778874629813
-"237","Gravesham","Occurrences",147.4,867.6,0.169893960350392
-"238","Gravesham","Registrations",185.4,867.6,0.213692946058091
-"239","Great Yarmouth","Occurrences",0.400000000000001,1132.6,0.000353169698039909
-"240","Great Yarmouth","Registrations",55.4,1132.6,0.0489140031785273
-"241","Greenwich","Occurrences",131,1528,0.0857329842931937
-"242","Greenwich","Registrations",259,1528,0.169502617801047
-"243","Guildford","Occurrences",38.6,1029.4,0.037497571400816
-"244","Guildford","Registrations",100.6,1029.4,0.0977268311637847
-"245","Gwynedd","Occurrences",0.800000000000006,1330.2,0.000601413321305071
-"246","Gwynedd","Registrations",38.8,1330.2,0.0291685460832957
-"247","Hackney and City of London","Occurrences",205.4,1096.6,0.187306219223053
-"248","Hackney and City of London","Registrations",268.4,1096.6,0.244756520153201
-"249","Halton","Occurrences",105.2,1173.8,0.0896234452206509
-"250","Halton","Registrations",157.2,1173.8,0.133924007497018
-"251","Hambleton","Occurrences",52.8,903.2,0.058458813108946
-"252","Hambleton","Registrations",102.8,903.2,0.113817537643933
-"253","Hammersmith and Fulham","Occurrences",154.2,895.8,0.172136637642331
-"254","Hammersmith and Fulham","Registrations",259.2,895.8,0.289350301406564
-"255","Harborough","Occurrences",125.2,783.8,0.159734626180148
-"256","Harborough","Registrations",159.2,783.8,0.203113039040572
-"257","Haringey","Occurrences",265,1176,0.225340136054422
-"258","Haringey","Registrations",329,1176,0.279761904761905
-"259","Harlow","Occurrences",46.6,714.4,0.0652295632698768
-"260","Harlow","Registrations",60.6,714.4,0.0848264277715566
-"261","Harrogate","Occurrences",166.6,1578.4,0.105549923973644
-"262","Harrogate","Registrations",215.6,1578.4,0.13659401926001
-"263","Harrow","Occurrences",348.4,1454.6,0.239516018149319
-"264","Harrow","Registrations",407.4,1454.6,0.280076997112608
-"265","Hart","Occurrences",-19,690,-0.027536231884058
-"266","Hart","Registrations",12,690,0.0173913043478261
-"267","Hartlepool","Occurrences",76.6,979.4,0.0782111496834797
-"268","Hartlepool","Registrations",122.6,979.4,0.125178680824995
-"269","Hastings","Occurrences",-26.2,969.2,-0.0270326042096574
-"270","Hastings","Registrations",8.8,969.2,0.00907965332232769
-"271","Havant","Occurrences",92.2,1294.8,0.0712079085573061
-"272","Havant","Registrations",161.2,1294.8,0.124497991967871
-"273","Havering","Occurrences",345.8,2288.2,0.151123153570492
-"274","Havering","Registrations",433.8,2288.2,0.189581330303295
-"275","Herefordshire, County of","Occurrences",110,2033,0.0541072306935563
-"276","Herefordshire, County of","Registrations",195,2033,0.0959173635022135
-"277","Hertsmere","Occurrences",187.6,898.4,0.208815672306322
-"278","Hertsmere","Registrations",214.6,898.4,0.23886910062333
-"279","High Peak","Occurrences",112.8,855.2,0.131898971000935
-"280","High Peak","Registrations",167.8,855.2,0.19621141253508
-"281","Hillingdon","Occurrences",239,1918,0.124608967674661
-"282","Hillingdon","Registrations",291,1918,0.151720542231491
-"283","Hinckley and Bosworth","Occurrences",102,1009,0.101090188305253
-"284","Hinckley and Bosworth","Registrations",133,1009,0.13181367690783
-"285","Horsham","Occurrences",185,1261,0.146708961141951
-"286","Horsham","Registrations",226,1261,0.179222839016653
-"287","Hounslow","Occurrences",252.6,1454.4,0.173679867986799
-"288","Hounslow","Registrations",338.6,1454.4,0.232810781078108
-"289","Huntingdonshire","Occurrences",118.2,1421.8,0.0831340554227036
-"290","Huntingdonshire","Registrations",190.2,1421.8,0.133774089182726
-"291","Hyndburn","Occurrences",60.6,811.4,0.0746857283707173
-"292","Hyndburn","Registrations",75.6,811.4,0.0931722947991126
-"293","Ipswich","Occurrences",0.20000000000001,1154.8,0.000173190162798762
-"294","Ipswich","Registrations",55.2,1154.8,0.0478004849324558
-"295","Isle of Anglesey","Occurrences",20.2,798.8,0.0252879318978468
-"296","Isle of Anglesey","Registrations",45.2,798.8,0.056584877315974
-"297","Isle of Wight","Occurrences",-17.4,1719.4,-0.0101198092357799
-"298","Isle of Wight","Registrations",161.6,1719.4,0.0939862742817262
-"299","Islington","Occurrences",64.6,1048.4,0.0616177031667302
-"300","Islington","Registrations",126.6,1048.4,0.120755436856162
-"301","Kensington and Chelsea","Occurrences",26,783,0.033205619412516
-"302","Kensington and Chelsea","Registrations",87,783,0.111111111111111
-"303","Kettering","Occurrences",96.8,867.2,0.111623616236162
-"304","Kettering","Registrations",141.8,867.2,0.163514760147601
-"305","King's Lynn and West Norfolk","Occurrences",61.4,1731.6,0.0354585354585355
-"306","King's Lynn and West Norfolk","Registrations",129.4,1731.6,0.0747285747285747
-"307","Kingston upon Hull, City of","Occurrences",171.8,2454.2,0.0700024447885258
-"308","Kingston upon Hull, City of","Registrations",287.8,2454.2,0.117268356287181
-"309","Kingston upon Thames","Occurrences",27.2,1054.8,0.0257868790291998
-"310","Kingston upon Thames","Registrations",74.2,1054.8,0.0703450891164202
-"311","Kirklees","Occurrences",501,3715,0.13485868102288
-"312","Kirklees","Registrations",615,3715,0.165545087483176
-"313","Knowsley","Occurrences",169.2,1518.8,0.111403739794575
-"314","Knowsley","Registrations",223.2,1518.8,0.146958124835396
-"315","Lambeth","Occurrences",211.8,1399.2,0.151372212692967
-"316","Lambeth","Registrations",297.8,1399.2,0.212835906232133
-"317","Lancaster","Occurrences",29.4,1431.6,0.020536462699078
-"318","Lancaster","Registrations",72.4,1431.6,0.050572785694328
-"319","Leeds","Occurrences",435.6,6495.4,0.0670628444745512
-"320","Leeds","Registrations",692.6,6495.4,0.10662930689411
-"321","Leicester","Occurrences",338,2438,0.138638228055783
-"322","Leicester","Registrations",452,2438,0.185397867104184
-"323","Lewes","Occurrences",132.2,1087.8,0.121529692958264
-"324","Lewes","Registrations",167.2,1087.8,0.153704725133297
-"325","Lewisham","Occurrences",164.6,1490.4,0.110440150295223
-"326","Lewisham","Registrations",295.6,1490.4,0.198336017176597
-"327","Lichfield","Occurrences",159.4,1033.6,0.15421826625387
-"328","Lichfield","Registrations",177.4,1033.6,0.171633126934985
-"329","Lincoln","Occurrences",8.2,876.8,0.0093521897810219
-"330","Lincoln","Registrations",56.2,876.8,0.0640967153284672
-"331","Liverpool","Occurrences",779.2,4315.8,0.180545901107558
-"332","Liverpool","Registrations",909.2,4315.8,0.210667778859076
-"333","London","Occurrences",6715,47702,0.140769779044904
-"334","London","Registrations",9192,47702,0.192696323005325
-"335","Luton","Occurrences",187.8,1415.2,0.132702091577162
-"336","Luton","Registrations",268.8,1415.2,0.189937817976258
-"337","Maidstone","Occurrences",67.6,1467.4,0.0460678751533324
-"338","Maidstone","Registrations",127.6,1467.4,0.0869565217391304
-"339","Maldon","Occurrences",37.6,653.4,0.0575451484542394
-"340","Maldon","Registrations",47.6,653.4,0.0728497092133456
-"341","Malvern Hills","Occurrences",14.6,984.4,0.0148313693620479
-"342","Malvern Hills","Registrations",37.6,984.4,0.0381958553433564
-"343","Manchester","Occurrences",132.2,3369.8,0.0392308148851564
-"344","Manchester","Registrations",665.2,3369.8,0.197400439195204
-"345","Mansfield","Occurrences",92.4,1101.6,0.0838779956427015
-"346","Mansfield","Registrations",155.4,1101.6,0.141067538126362
-"347","Medway","Occurrences",207.2,2164.8,0.0957132298595713
-"348","Medway","Registrations",281.2,2164.8,0.12989652623799
-"349","Melton","Occurrences",65,458,0.141921397379913
-"350","Melton","Registrations",86,458,0.187772925764192
-"351","Mendip","Occurrences",63,1130,0.0557522123893805
-"352","Mendip","Registrations",100,1130,0.0884955752212389
-"353","Merthyr Tydfil","Occurrences",86.8,612.2,0.141783730806926
-"354","Merthyr Tydfil","Registrations",105.8,612.2,0.17281934008494
-"355","Merton","Occurrences",184,1183,0.155536770921386
-"356","Merton","Registrations",259,1183,0.218934911242604
-"357","Mid Devon","Occurrences",12.6,777.4,0.0162078723951634
-"358","Mid Devon","Registrations",45.6,777.4,0.0586570620015436
-"359","Mid Suffolk","Occurrences",86.8,950.2,0.0913491896442854
-"360","Mid Suffolk","Registrations",125.8,950.2,0.132393180383077
-"361","Mid Sussex","Occurrences",139.8,1313.2,0.106457508376485
-"362","Mid Sussex","Registrations",172.8,1313.2,0.131586963143466
-"363","Middlesbrough","Occurrences",119,1409,0.0844570617459191
-"364","Middlesbrough","Registrations",199,1409,0.141234918381831
-"365","Milton Keynes","Occurrences",156.2,1705.8,0.0915699378590691
-"366","Milton Keynes","Registrations",239.2,1705.8,0.140227459256654
-"367","Mole Valley","Occurrences",166.6,810.4,0.205577492596249
-"368","Mole Valley","Registrations",219.6,810.4,0.270977295162883
-"369","Monmouthshire","Occurrences",-2,962,-0.00207900207900208
-"370","Monmouthshire","Registrations",39,962,0.0405405405405405
-"371","Neath Port Talbot","Occurrences",93.4,1593.6,0.058609437751004
-"372","Neath Port Talbot","Registrations",170.4,1593.6,0.106927710843374
-"373","New Forest","Occurrences",114.6,2100.4,0.0545610359931442
-"374","New Forest","Registrations",217.6,2100.4,0.103599314416302
-"375","Newark and Sherwood","Occurrences",62.2,1194.8,0.052058921995313
-"376","Newark and Sherwood","Registrations",143.2,1194.8,0.119852695011717
-"377","Newcastle-under-Lyme","Occurrences",172.6,1248.4,0.138256968920218
-"378","Newcastle-under-Lyme","Registrations",228.6,1248.4,0.183114386414611
-"379","Newcastle upon Tyne","Occurrences",134.2,2417.8,0.0555050045495905
-"380","Newcastle upon Tyne","Registrations",320.2,2417.8,0.132434444536355
-"381","Newham","Occurrences",275.4,1295.6,0.212565606668725
-"382","Newham","Registrations",381.4,1295.6,0.294380981784501
-"383","Newport","Occurrences",118.2,1420.8,0.0831925675675676
-"384","Newport","Registrations",178.2,1420.8,0.125422297297297
-"385","North Devon","Occurrences",-26.4,1096.4,-0.0240788033564393
-"386","North Devon","Registrations",21.6,1096.4,0.0197008391098139
-"387","North East","Occurrences",2524.8,26923.2,0.0937778570155108
-"388","North East","Registrations",3705.8,26923.2,0.137643370773162
-"389","North East Derbyshire","Occurrences",67.8,1132.2,0.0598834128245893
-"390","North East Derbyshire","Registrations",128.8,1132.2,0.113760819643173
-"391","North East Lincolnshire","Occurrences",145.6,1669.4,0.0872169641787468
-"392","North East Lincolnshire","Registrations",169.6,1669.4,0.101593386845573
-"393","North Hertfordshire","Occurrences",0.00000000000000532907051820075,1203,0.00000000000000000442981755461409
-"394","North Hertfordshire","Registrations",36,1203,0.029925187032419
-"395","North Kesteven","Occurrences",105,1157,0.0907519446845289
-"396","North Kesteven","Registrations",157,1157,0.135695764909248
-"397","North Lincolnshire","Occurrences",77.6,1718.4,0.0451582867783985
-"398","North Lincolnshire","Registrations",133.6,1718.4,0.0777467411545624
-"399","North Norfolk","Occurrences",142.8,1375.2,0.103839441535777
-"400","North Norfolk","Registrations",187.8,1375.2,0.136561954624782
-"401","North Somerset","Occurrences",58,2275,0.0254945054945055
-"402","North Somerset","Registrations",145,2275,0.0637362637362637
-"403","North Tyneside","Occurrences",44.2,2129.8,0.0207531223589069
-"404","North Tyneside","Registrations",145.2,2129.8,0.0681754155319748
-"405","North Warwickshire","Occurrences",97.8,690.2,0.141698058533758
-"406","North Warwickshire","Registrations",118.8,690.2,0.172124022022602
-"407","North West","Occurrences",8090.2,68853.8,0.117498235391511
-"408","North West","Registrations",11525.2,68853.8,0.167386549471489
-"409","North West Leicestershire","Occurrences",99.2,873.8,0.113527122911421
-"410","North West Leicestershire","Registrations",147.2,873.8,0.168459601739528
-"411","Northampton","Occurrences",277.8,1729.2,0.160652324774462
-"412","Northampton","Registrations",345.8,1729.2,0.199976867915799
-"413","Northumberland","Occurrences",181.8,3497.2,0.051984444698616
-"414","Northumberland","Registrations",259.8,3497.2,0.0742880018300355
-"415","Norwich","Occurrences",78.8,1094.2,0.0720160848108207
-"416","Norwich","Registrations",146.8,1094.2,0.134161944799854
-"417","Nottingham","Occurrences",182.8,2279.2,0.0802035802035802
-"418","Nottingham","Registrations",309.8,2279.2,0.135924885924886
-"419","Nuneaton and Bedworth","Occurrences",178.6,1224.4,0.145867363606664
-"420","Nuneaton and Bedworth","Registrations",217.6,1224.4,0.177719699444626
-"421","Oadby and Wigston","Occurrences",97.2,568.8,0.170886075949367
-"422","Oadby and Wigston","Registrations",126.2,568.8,0.221870604781997
-"423","Oldham","Occurrences",216.4,2048.6,0.105633115298252
-"424","Oldham","Registrations",366.4,2048.6,0.17885385141072
-"425","Oxford","Occurrences",33.8,886.2,0.0381403746332656
-"426","Oxford","Registrations",61.8,886.2,0.0697359512525389
-"427","Pembrokeshire","Occurrences",-4.79999999999998,1436.8,-0.00334075723830734
-"428","Pembrokeshire","Registrations",20.2,1436.8,0.0140590200445434
-"429","Pendle","Occurrences",127.4,841.6,0.151378326996198
-"430","Pendle","Registrations",157.4,841.6,0.187024714828897
-"431","Peterborough","Occurrences",5,1520,0.00328947368421052
-"432","Peterborough","Registrations",110,1520,0.0723684210526316
-"433","Plymouth","Occurrences",-60.2,2426.2,-0.0248124639353722
-"434","Plymouth","Registrations",72.8,2426.2,0.0300057703404501
-"435","Portsmouth","Occurrences",-131.6,1692.6,-0.0777502067824648
-"436","Portsmouth","Registrations",-42.6,1692.6,-0.0251683800070897
-"437","Powys","Occurrences",54,1552,0.0347938144329897
-"438","Powys","Registrations",95,1552,0.0612113402061856
-"439","Preston","Occurrences",218,1182,0.184433164128596
-"440","Preston","Registrations",272,1182,0.230118443316413
-"441","Reading","Occurrences",188.6,1050.4,0.17955064737243
-"442","Reading","Registrations",255.6,1050.4,0.243335872048743
-"443","Redbridge","Occurrences",371.8,1693.2,0.219584219229861
-"444","Redbridge","Registrations",449.8,1693.2,0.265650838648712
-"445","Redcar and Cleveland","Occurrences",183.2,1504.8,0.121743753322701
-"446","Redcar and Cleveland","Registrations",259.2,1504.8,0.172248803827751
-"447","Redditch","Occurrences",146.4,664.6,0.220282876918447
-"448","Redditch","Registrations",169.4,664.6,0.254890159494433
-"449","Reigate and Banstead","Occurrences",88.2,1296.8,0.0680135718692165
-"450","Reigate and Banstead","Registrations",177.2,1296.8,0.136644046884639
-"451","Rhondda Cynon Taf","Occurrences",394.4,2446.6,0.161203302542304
-"452","Rhondda Cynon Taf","Registrations",472.4,2446.6,0.193084280225619
-"453","Ribble Valley","Occurrences",123.2,573.8,0.214708957825026
-"454","Ribble Valley","Registrations",133.2,573.8,0.232136632973161
-"455","Richmond upon Thames","Occurrences",42.6,1179.4,0.0361200610479905
-"456","Richmond upon Thames","Registrations",101.6,1179.4,0.0861454977107004
-"457","Richmondshire","Occurrences",77.2,460.8,0.167534722222222
-"458","Richmondshire","Registrations",89.2,460.8,0.193576388888889
-"459","Rochdale","Occurrences",268.6,1957.4,0.137222846633289
-"460","Rochdale","Registrations",434.6,1957.4,0.222029222437928
-"461","Rochford","Occurrences",81.6,809.4,0.100815418828762
-"462","Rochford","Registrations",116.6,809.4,0.144057326414628
-"463","Rossendale","Occurrences",83.4,640.6,0.130190446456447
-"464","Rossendale","Registrations",111.4,640.6,0.17389946924758
-"465","Rother","Occurrences",83,1315,0.0631178707224335
-"466","Rother","Registrations",96,1315,0.0730038022813688
-"467","Rotherham","Occurrences",486.6,2636.4,0.184569868001821
-"468","Rotherham","Registrations",630.6,2636.4,0.239189804278562
-"469","Rugby","Occurrences",78.6,940.4,0.0835814547001276
-"470","Rugby","Registrations",114.6,940.4,0.12186303700553
-"471","Runnymede","Occurrences",92.8,692.2,0.134065299046518
-"472","Runnymede","Registrations",116.8,692.2,0.168737359144756
-"473","Rushcliffe","Occurrences",5.79999999999999,1037.2,0.00559197840339374
-"474","Rushcliffe","Registrations",60.8,1037.2,0.0586193598148862
-"475","Rushmoor","Occurrences",58,659,0.0880121396054628
-"476","Rushmoor","Registrations",82,659,0.12443095599393
-"477","Rutland","Occurrences",26.8,366.2,0.0731840524303659
-"478","Rutland","Registrations",34.8,366.2,0.0950300382304752
-"479","Ryedale","Occurrences",31.6,563.4,0.0560880369187078
-"480","Ryedale","Registrations",44.6,563.4,0.0791622293219737
-"481","Salford","Occurrences",281.8,2107.2,0.133731966590737
-"482","Salford","Registrations",392.8,2107.2,0.186408504176158
-"483","Sandwell","Occurrences",531.2,2865.8,0.185358364156605
-"484","Sandwell","Registrations",628.2,2865.8,0.219205806406588
-"485","Scarborough","Occurrences",67.2,1343.8,0.050007441583569
-"486","Scarborough","Registrations",119.2,1343.8,0.0887036761422831
-"487","Sedgemoor","Occurrences",171,1225,0.139591836734694
-"488","Sedgemoor","Registrations",220,1225,0.179591836734694
-"489","Sefton","Occurrences",624.4,3138.6,0.198942203530236
-"490","Sefton","Registrations",728.4,3138.6,0.232077996558975
-"491","Selby","Occurrences",7,766,0.00913838120104438
-"492","Selby","Registrations",27,766,0.0352480417754569
-"493","Sevenoaks","Occurrences",63.2,1054.8,0.0599165718619644
-"494","Sevenoaks","Registrations",116.2,1054.8,0.110163064087979
-"495","Sheffield","Occurrences",380.6,4836.4,0.0786948970308494
-"496","Sheffield","Registrations",678.6,4836.4,0.14031097510545
-"497","Shropshire","Occurrences",270.6,3374.4,0.0801920341394026
-"498","Shropshire","Registrations",367.6,3374.4,0.108937885253675
-"499","Slough","Occurrences",43,797,0.0539523212045169
-"500","Slough","Registrations",98,797,0.122961104140527
-"501","Solihull","Occurrences",403,1965,0.205089058524173
-"502","Solihull","Registrations",443,1965,0.225445292620865
-"503","Somerset West and Taunton","Occurrences",46.2,1771.8,0.0260751777853031
-"504","Somerset West and Taunton","Registrations",101.2,1771.8,0.0571170561011401
-"505","South Cambridgeshire","Occurrences",28,1154,0.024263431542461
-"506","South Cambridgeshire","Registrations",71,1154,0.061525129982669
-"507","South Derbyshire","Occurrences",94,850,0.110588235294118
-"508","South Derbyshire","Registrations",141,850,0.165882352941176
-"509","South East","Occurrences",5322.4,78349.6,0.067931425304022
-"510","South East","Registrations",8701.4,78349.6,0.111058639737791
-"511","South Gloucestershire","Occurrences",208.2,2189.8,0.095077175997808
-"512","South Gloucestershire","Registrations",286.2,2189.8,0.130696867293817
-"513","South Hams","Occurrences",-57,908,-0.0627753303964758
-"514","South Hams","Registrations",-17,908,-0.0187224669603524
-"515","South Holland","Occurrences",49.8,1044.2,0.0476920130243248
-"516","South Holland","Registrations",95.8,1044.2,0.0917448764604482
-"517","South Kesteven","Occurrences",53.8,1380.2,0.0389798579915954
-"518","South Kesteven","Registrations",125.8,1380.2,0.0911462106941023
-"519","South Lakeland","Occurrences",228.6,1162.4,0.196662078458362
-"520","South Lakeland","Registrations",281.6,1162.4,0.242257398485891
-"521","South Norfolk","Occurrences",39.8,1320.2,0.0301469474322072
-"522","South Norfolk","Registrations",89.8,1320.2,0.068019996970156
-"523","South Northamptonshire","Occurrences",-6.4,730.4,-0.00876232201533407
-"524","South Northamptonshire","Registrations",25.6,730.4,0.0350492880613363
-"525","South Oxfordshire","Occurrences",16.8,1180.2,0.0142348754448399
-"526","South Oxfordshire","Registrations",45.8,1180.2,0.0388069818674801
-"527","South Ribble","Occurrences",92.4,995.6,0.0928083567697871
-"528","South Ribble","Registrations",113.4,995.6,0.113901165126557
-"529","South Somerset","Occurrences",-15.4,1772.4,-0.00868878357030015
-"530","South Somerset","Registrations",31.6,1772.4,0.0178289325208757
-"531","South Staffordshire","Occurrences",176,1153,0.152645273200347
-"532","South Staffordshire","Registrations",219,1153,0.189939288811795
-"533","South Tyneside","Occurrences",156,1673,0.0932456664674238
-"534","South Tyneside","Registrations",196,1673,0.117154811715481
-"535","South West","Occurrences",1358.6,54867.4,0.0247615159457164
-"536","South West","Registrations",3566.6,54867.4,0.0650039914411837
-"537","Southampton","Occurrences",15.2,1800.8,0.00844069302532208
-"538","Southampton","Registrations",116.2,1800.8,0.0645268769435806
-"539","Southend-on-Sea","Occurrences",77.4,1892.6,0.0408961217372926
-"540","Southend-on-Sea","Registrations",160.4,1892.6,0.0847511360033816
-"541","Southwark","Occurrences",150.2,1310.8,0.114586512053708
-"542","Southwark","Registrations",249.2,1310.8,0.190112908147696
-"543","Spelthorne","Occurrences",11.2,857.8,0.0130566565633015
-"544","Spelthorne","Registrations",55.2,857.8,0.0643506644905572
-"545","St Albans","Occurrences",160.2,1067.8,0.150028095148904
-"546","St Albans","Registrations",197.2,1067.8,0.184678778797528
-"547","St. Helens","Occurrences",175.2,1879.8,0.0932014044047239
-"548","St. Helens","Registrations",224.2,1879.8,0.119268007234812
-"549","Stafford","Occurrences",178.6,1256.4,0.142152180834129
-"550","Stafford","Registrations",241.6,1256.4,0.192295447309774
-"551","Staffordshire Moorlands","Occurrences",78.4,1069.6,0.0732984293193717
-"552","Staffordshire Moorlands","Registrations",133.4,1069.6,0.12471952131638
-"553","Stevenage","Occurrences",23.4,727.6,0.0321605277625069
-"554","Stevenage","Registrations",53.4,727.6,0.0733919736118746
-"555","Stockport","Occurrences",231.4,2698.6,0.0857481657155562
-"556","Stockport","Registrations",391.4,2698.6,0.145038167938931
-"557","Stockton-on-Tees","Occurrences",151.8,1821.2,0.0833516362837689
-"558","Stockton-on-Tees","Registrations",224.8,1821.2,0.123435097737755
-"559","Stoke-on-Trent","Occurrences",239,2495,0.0957915831663327
-"560","Stoke-on-Trent","Registrations",388,2495,0.155511022044088
-"561","Stratford-on-Avon","Occurrences",159.6,1322.4,0.120689655172414
-"562","Stratford-on-Avon","Registrations",203.6,1322.4,0.153962492437992
-"563","Stroud","Occurrences",64.2,1195.8,0.053687907676869
-"564","Stroud","Registrations",97.2,1195.8,0.0812844957350728
-"565","Sunderland","Occurrences",415.2,2893.8,0.143479162347087
-"566","Sunderland","Registrations",504.2,2893.8,0.174234570460986
-"567","Surrey Heath","Occurrences",112.4,746.6,0.150549156174658
-"568","Surrey Heath","Registrations",158.4,746.6,0.212161800160729
-"569","Sutton","Occurrences",183.6,1426.4,0.128715647784633
-"570","Sutton","Registrations",213.6,1426.4,0.149747616376893
-"571","Swale","Occurrences",220.8,1292.2,0.170871382138988
-"572","Swale","Registrations",269.8,1292.2,0.208791208791209
-"573","Swansea","Occurrences",190,2513,0.0756068444090728
-"574","Swansea","Registrations",319,2513,0.126939912455233
-"575","Swindon","Occurrences",200.2,1664.8,0.120254685247477
-"576","Swindon","Registrations",242.2,1664.8,0.145482940893801
-"577","Tameside","Occurrences",270.8,2213.2,0.122356768480029
-"578","Tameside","Registrations",429.8,2213.2,0.194198445689499
-"579","Tamworth","Occurrences",100.4,622.6,0.161259235464182
-"580","Tamworth","Registrations",124.4,622.6,0.199807259877931
-"581","Tandridge","Occurrences",63.8,790.2,0.0807390534042015
-"582","Tandridge","Registrations",119.8,790.2,0.151607188053657
-"583","Teignbridge","Occurrences",-0.599999999999999,1499.6,-0.000400106695118698
-"584","Teignbridge","Registrations",47.4,1499.6,0.0316084289143772
-"585","Telford and Wrekin","Occurrences",195.4,1454.6,0.134332462532655
-"586","Telford and Wrekin","Registrations",237.4,1454.6,0.163206379760759
-"587","Tendring","Occurrences",72.4,2122.6,0.0341091114670687
-"588","Tendring","Registrations",157.4,2122.6,0.0741543390181852
-"589","Test Valley","Occurrences",125.6,1084.4,0.115824419033567
-"590","Test Valley","Registrations",164.6,1084.4,0.151789007746219
-"591","Tewkesbury","Occurrences",30.2,829.8,0.0363943118823813
-"592","Tewkesbury","Registrations",55.2,829.8,0.0665220535068691
-"593","Thanet","Occurrences",205,1672,0.122607655502392
-"594","Thanet","Registrations",273,1672,0.163277511961722
-"595","Three Rivers","Occurrences",6.8,778.2,0.00873811359547674
-"596","Three Rivers","Registrations",34.8,778.2,0.0447185813415574
-"597","Thurrock","Occurrences",136,1202,0.113144758735441
-"598","Thurrock","Registrations",205,1202,0.170549084858569
-"599","Tonbridge and Malling","Occurrences",98.2,1017.8,0.0964826095500098
-"600","Tonbridge and Malling","Registrations",127.2,1017.8,0.124975437217528
-"601","Torbay","Occurrences",-35.6,1743.6,-0.0204175269557238
-"602","Torbay","Registrations",36.4,1743.6,0.0208763477861895
-"603","Torfaen","Occurrences",91.4,972.6,0.0939749126053876
-"604","Torfaen","Registrations",117.4,972.6,0.120707382274316
-"605","Torridge","Occurrences",-26.8,804.8,-0.0333001988071571
-"606","Torridge","Registrations",15.2,804.8,0.0188866799204771
-"607","Tower Hamlets","Occurrences",130,1024,0.126953125
-"608","Tower Hamlets","Registrations",194,1024,0.189453125
-"609","Trafford","Occurrences",163.8,1934.2,0.084686175162858
-"610","Trafford","Registrations",320.8,1934.2,0.16585668493434
-"611","Tunbridge Wells","Occurrences",29.2,1027.8,0.0284101965362911
-"612","Tunbridge Wells","Registrations",72.2,1027.8,0.0702471297917883
-"613","Uttlesford","Occurrences",71.4,692.6,0.103089806526133
-"614","Uttlesford","Registrations",90.4,692.6,0.130522668206757
-"615","Vale of Glamorgan","Occurrences",32.4,1256.6,0.0257838612127965
-"616","Vale of Glamorgan","Registrations",87.4,1256.6,0.069552761419704
-"617","Vale of White Horse","Occurrences",145.8,1030.2,0.141525917297612
-"618","Vale of White Horse","Registrations",169.8,1030.2,0.1648223645894
-"619","Wakefield","Occurrences",477.4,3291.6,0.145035848827318
-"620","Wakefield","Registrations",580.4,3291.6,0.176327621825252
-"621","Wales","Occurrences",2063.4,32117.6,0.0642451490771415
-"622","Wales","Registrations",3237.4,32117.6,0.100798316188009
-"623","Walsall","Occurrences",377.2,2628.8,0.143487522824102
-"624","Walsall","Registrations",439.2,2628.8,0.16707242848448
-"625","Waltham Forest","Occurrences",179.8,1367.2,0.131509654768871
-"626","Waltham Forest","Registrations",250.8,1367.2,0.183440608543008
-"627","Wandsworth","Occurrences",115.6,1467.4,0.0787787924219708
-"628","Wandsworth","Registrations",203.6,1467.4,0.138748807414475
-"629","Warrington","Occurrences",192.4,1888.6,0.101874404320661
-"630","Warrington","Registrations",249.4,1888.6,0.132055490839775
-"631","Warwick","Occurrences",182.2,1150.8,0.158324643726104
-"632","Warwick","Registrations",200.2,1150.8,0.173965936739659
-"633","Watford","Occurrences",60.2,700.8,0.0859018264840183
-"634","Watford","Registrations",91.2,700.8,0.13013698630137
-"635","Waverley","Occurrences",94.6,1152.4,0.082089552238806
-"636","Waverley","Registrations",161.6,1152.4,0.140229087122527
-"637","Wealden","Occurrences",31.8,1713.2,0.0185617557786598
-"638","Wealden","Registrations",74.8,1713.2,0.0436609852906841
-"639","Wellingborough","Occurrences",110.8,708.2,0.156452979384355
-"640","Wellingborough","Registrations",134.8,708.2,0.190341711380966
-"641","Welwyn Hatfield","Occurrences",73.8,926.2,0.0796804145972792
-"642","Welwyn Hatfield","Registrations",109.8,926.2,0.118548909522781
-"643","West Berkshire","Occurrences",158.8,1149.2,0.138183083884441
-"644","West Berkshire","Registrations",226.8,1149.2,0.197354681517577
-"645","West Devon","Occurrences",6.4,632.6,0.010116977552956
-"646","West Devon","Registrations",38.4,632.6,0.0607018653177363
-"647","West Lancashire","Occurrences",162,1171,0.138343296327925
-"648","West Lancashire","Registrations",196,1171,0.167378309137489
-"649","West Lindsey","Occurrences",71.8,971.2,0.0739291598023064
-"650","West Lindsey","Registrations",112.8,971.2,0.116144975288303
-"651","West Midlands","Occurrences",7136.4,52847.6,0.135037352689621
-"652","West Midlands","Registrations",8956.4,52847.6,0.169476002694541
-"653","West Oxfordshire","Occurrences",73.2,1004.8,0.0728503184713376
-"654","West Oxfordshire","Registrations",107.2,1004.8,0.106687898089172
-"655","West Suffolk","Occurrences",81.2,1570.8,0.0516934046345811
-"656","West Suffolk","Registrations",170.2,1570.8,0.108352431881844
-"657","Westminster","Occurrences",111.6,1069.4,0.10435758369179
-"658","Westminster","Registrations",222.6,1069.4,0.208154105105667
-"659","Wigan","Occurrences",413.6,3106.4,0.13314447592068
-"660","Wigan","Registrations",553.6,3106.4,0.178212722122071
-"661","Wiltshire","Occurrences",420,4477,0.0938128210855484
-"662","Wiltshire","Registrations",572,4477,0.127764127764128
-"663","Winchester","Occurrences",25.2,1068.8,0.0235778443113772
-"664","Winchester","Registrations",74.2,1068.8,0.0694236526946108
-"665","Windsor and Maidenhead","Occurrences",78.2,1214.8,0.0643727362528811
-"666","Windsor and Maidenhead","Registrations",133.2,1214.8,0.109647678630227
-"667","Wirral","Occurrences",414.4,3566.6,0.116189087646498
-"668","Wirral","Registrations",565.4,3566.6,0.158526327594908
-"669","Woking","Occurrences",131.4,746.6,0.175997856951513
-"670","Woking","Registrations",170.4,746.6,0.228234663809269
-"671","Wokingham","Occurrences",107.8,1128.2,0.095550434320156
-"672","Wokingham","Registrations",160.8,1128.2,0.142527920581457
-"673","Wolverhampton","Occurrences",386.8,2537.2,0.152451521362131
-"674","Wolverhampton","Registrations",482.8,2537.2,0.190288507015608
-"675","Worcester","Occurrences",80.6,846.4,0.095226843100189
-"676","Worcester","Registrations",114.6,846.4,0.135396975425331
-"677","Worthing","Occurrences",40.4,1318.6,0.0306385560442894
-"678","Worthing","Registrations",71.4,1318.6,0.0541483391475808
-"679","Wrexham","Occurrences",75.4,1367.6,0.0551330798479088
-"680","Wrexham","Registrations",140.4,1367.6,0.102661596958175
-"681","Wychavon","Occurrences",156.6,1194.4,0.131111855324849
-"682","Wychavon","Registrations",207.6,1194.4,0.173811118553248
-"683","Wyre","Occurrences",129.6,1449.4,0.089416310197323
-"684","Wyre","Registrations",169.6,1449.4,0.117013936801435
-"685","Wyre Forest","Occurrences",144.8,1102.2,0.131373616403557
-"686","Wyre Forest","Registrations",176.8,1102.2,0.160406459807657
-"687","York","Occurrences",91.6,1777.4,0.0515359513896703
-"688","York","Registrations",160.6,1777.4,0.0903567007989198
-"689","Yorkshire and The Humber","Occurrences",5422.2,50255.8,0.107892024403153
-"690","Yorkshire and The Humber","Registrations",7351.2,50255.8,0.146275653755387
+"1","Adur","Occurrences",-0.399999999999999,713.4,-0.000560695262125034
+"2","Adur","Registrations",8.6,713.4,0.0120549481356883
+"3","Allerdale","Occurrences",128.4,1131.6,0.113467656415695
+"4","Allerdale","Registrations",175.4,1131.6,0.155001767408978
+"5","Amber Valley","Occurrences",106.6,1303.4,0.0817860978978057
+"6","Amber Valley","Registrations",185.6,1303.4,0.142396808347399
+"7","Arun","Occurrences",49.2,2195.8,0.0224064122415521
+"8","Arun","Registrations",110.2,2195.8,0.0501867201020129
+"9","Ashfield","Occurrences",82.8,1271.2,0.0651353052234109
+"10","Ashfield","Registrations",152.8,1271.2,0.120201384518565
+"11","Ashford","Occurrences",150.4,1112.6,0.135178860327162
+"12","Ashford","Registrations",200.4,1112.6,0.180118641021032
+"13","Babergh","Occurrences",111,1002,0.110778443113772
+"14","Babergh","Registrations",147,1002,0.146706586826347
+"15","Barking and Dagenham","Occurrences",160.8,1253.2,0.128311522502394
+"16","Barking and Dagenham","Registrations",224.8,1253.2,0.179380785189914
+"17","Barnet","Occurrences",454,2397,0.189403420942845
+"18","Barnet","Registrations",515,2397,0.214851898206091
+"19","Barnsley","Occurrences",495,2491,0.198715375351265
+"20","Barnsley","Registrations",599,2491,0.240465676435167
+"21","Barrow-in-Furness","Occurrences",96,771,0.124513618677043
+"22","Barrow-in-Furness","Registrations",151,771,0.195849546044099
+"23","Basildon","Occurrences",168.2,1596.8,0.105335671342685
+"24","Basildon","Registrations",201.2,1596.8,0.126002004008016
+"25","Basingstoke and Deane","Occurrences",158.8,1374.2,0.115558142919517
+"26","Basingstoke and Deane","Registrations",210.8,1374.2,0.15339834085286
+"27","Bassetlaw","Occurrences",140.2,1238.8,0.113174039392961
+"28","Bassetlaw","Registrations",190.2,1238.8,0.153535679690023
+"29","Bath and North East Somerset","Occurrences",100.6,1666.4,0.0603696591454633
+"30","Bath and North East Somerset","Registrations",154.6,1666.4,0.092774843975036
+"31","Bedford","Occurrences",167.4,1481.6,0.11298596112311
+"32","Bedford","Registrations",220.4,1481.6,0.148758099352052
+"33","Bexley","Occurrences",124.2,2055.8,0.0604144372020625
+"34","Bexley","Registrations",187.2,2055.8,0.0910594415799202
+"35","Birmingham","Occurrences",1547.8,8475.2,0.182626958655843
+"36","Birmingham","Registrations",1845.8,8475.2,0.217788370775911
+"37","Blaby","Occurrences",105.6,849.4,0.124323051565811
+"38","Blaby","Registrations",135.6,849.4,0.159642100306098
+"39","Blackburn with Darwen","Occurrences",186.4,1296.6,0.143760604658337
+"40","Blackburn with Darwen","Registrations",221.4,1296.6,0.170754280425729
+"41","Blackpool","Occurrences",92,1888,0.048728813559322
+"42","Blackpool","Registrations",188,1888,0.0995762711864407
+"43","Blaenau Gwent","Occurrences",116.2,818.8,0.141914997557401
+"44","Blaenau Gwent","Registrations",144.2,818.8,0.176111382510992
+"45","Bolsover","Occurrences",41.2,870.8,0.0473128158015618
+"46","Bolsover","Registrations",94.2,870.8,0.108176389526872
+"47","Bolton","Occurrences",391.6,2616.4,0.149671304081945
+"48","Bolton","Registrations",498.6,2616.4,0.190567191560923
+"49","Boston","Occurrences",103.2,764.8,0.134937238493724
+"50","Boston","Registrations",142.2,764.8,0.185930962343096
+"51","Bournemouth, Christchurch and Poole","Occurrences",35,4354,0.00803858520900322
+"52","Bournemouth, Christchurch and Poole","Registrations",256,4354,0.0587965089572807
+"53","Bracknell Forest","Occurrences",65.6,726.4,0.0903083700440529
+"54","Bracknell Forest","Registrations",109.6,726.4,0.150881057268722
+"55","Bradford","Occurrences",766.8,4511.2,0.169976946267069
+"56","Bradford","Registrations",905.8,4511.2,0.200789147011882
+"57","Braintree","Occurrences",17.2,1509.8,0.0113922373824348
+"58","Braintree","Registrations",65.2,1509.8,0.0431845277520201
+"59","Breckland","Occurrences",69.2,1614.8,0.0428536041615061
+"60","Breckland","Registrations",143.2,1614.8,0.0886797126579143
+"61","Brent","Occurrences",415.2,1728.8,0.240166589541879
+"62","Brent","Registrations",502.2,1728.8,0.290490513651087
+"63","Brentwood","Occurrences",57,765,0.0745098039215686
+"64","Brentwood","Registrations",89,765,0.116339869281046
+"65","Bridgend","Occurrences",206.6,1599.4,0.129173440040015
+"66","Bridgend","Registrations",245.6,1599.4,0.153557584094035
+"67","Brighton and Hove","Occurrences",-34,2156,-0.0157699443413729
+"68","Brighton and Hove","Registrations",56,2156,0.025974025974026
+"69","Bristol, City of","Occurrences",-7.20000000000002,3376.2,-0.00213257508441444
+"70","Bristol, City of","Registrations",145.8,3376.2,0.0431846454593922
+"71","Broadland","Occurrences",58.8,1467.2,0.0400763358778626
+"72","Broadland","Registrations",103.8,1467.2,0.0707470010905125
+"73","Bromley","Occurrences",175.6,2629.4,0.0667832965695596
+"74","Bromley","Registrations",219.6,2629.4,0.0835171522020233
+"75","Bromsgrove","Occurrences",91.2,1085.8,0.083993368944557
+"76","Bromsgrove","Registrations",104.2,1085.8,0.0959661079388469
+"77","Broxbourne","Occurrences",157.8,766.2,0.205951448707909
+"78","Broxbourne","Registrations",182.8,766.2,0.238580005220569
+"79","Broxtowe","Occurrences",63,1142,0.0551663747810858
+"80","Broxtowe","Registrations",116,1142,0.101576182136602
+"81","Buckinghamshire","Occurrences",433,4275,0.101286549707602
+"82","Buckinghamshire","Registrations",601,4275,0.140584795321637
+"83","Burnley","Occurrences",168.8,933.2,0.180882983283326
+"84","Burnley","Registrations",195.8,933.2,0.209815687955422
+"85","Bury","Occurrences",231.8,1810.2,0.128052148933819
+"86","Bury","Registrations",368.8,1810.2,0.203734393989614
+"87","Caerphilly","Occurrences",205.2,1824.8,0.112450679526523
+"88","Caerphilly","Registrations",274.2,1824.8,0.150263042525208
+"89","Calderdale","Occurrences",174,1960,0.0887755102040816
+"90","Calderdale","Registrations",244,1960,0.124489795918367
+"91","Cambridge","Occurrences",-67.2,837.2,-0.0802675585284281
+"92","Cambridge","Registrations",-24.2,837.2,-0.0289058767319637
+"93","Camden","Occurrences",72,1146,0.06282722513089
+"94","Camden","Registrations",164,1146,0.143106457242583
+"95","Cannock Chase","Occurrences",72.2,941.8,0.0766617116160544
+"96","Cannock Chase","Registrations",103.2,941.8,0.109577404969208
+"97","Canterbury","Occurrences",38,1655,0.0229607250755287
+"98","Canterbury","Registrations",103,1655,0.0622356495468278
+"99","Cardiff","Occurrences",165,2829,0.0583244962884411
+"100","Cardiff","Registrations",289,2829,0.102156238953694
+"101","Carlisle","Occurrences",128.8,1182.2,0.108949416342412
+"102","Carlisle","Registrations",202.8,1182.2,0.1715445779056
+"103","Carmarthenshire","Occurrences",91.4,2257.6,0.0404854712969525
+"104","Carmarthenshire","Registrations",132.4,2257.6,0.0586463501063076
+"105","Castle Point","Occurrences",88.8,1055.2,0.0841546626231994
+"106","Castle Point","Registrations",122.8,1055.2,0.116376042456406
+"107","Central Bedfordshire","Occurrences",290.6,2113.4,0.13750354878395
+"108","Central Bedfordshire","Registrations",367.6,2113.4,0.173937730670957
+"109","Ceredigion","Occurrences",52.2,795.8,0.0655943704448354
+"110","Ceredigion","Registrations",81.2,795.8,0.102035687358633
+"111","Charnwood","Occurrences",154.6,1481.4,0.104360739840691
+"112","Charnwood","Registrations",209.6,1481.4,0.141487781828001
+"113","Chelmsford","Occurrences",65.4,1500.6,0.0435825669732107
+"114","Chelmsford","Registrations",118.4,1500.6,0.0789017726242836
+"115","Cheltenham","Occurrences",144,1158,0.124352331606218
+"116","Cheltenham","Registrations",171,1158,0.147668393782383
+"117","Cherwell","Occurrences",176.6,1226.4,0.143998695368558
+"118","Cherwell","Registrations",220.6,1226.4,0.179876060013046
+"119","Cheshire East","Occurrences",369.8,3973.2,0.0930735930735931
+"120","Cheshire East","Registrations",477.8,3973.2,0.120255713278969
+"121","Cheshire West and Chester","Occurrences",306.6,3440.4,0.0891175444715731
+"122","Cheshire West and Chester","Registrations",421.6,3440.4,0.12254389024532
+"123","Chesterfield","Occurrences",19,1201,0.0158201498751041
+"124","Chesterfield","Registrations",82,1201,0.0682764363030808
+"125","Chichester","Occurrences",133.2,1481.8,0.0898906735051964
+"126","Chichester","Registrations",180.2,1481.8,0.121608854096369
+"127","Chorley","Occurrences",222.8,1103.2,0.201957940536621
+"128","Chorley","Registrations",266.8,1103.2,0.241841914430747
+"129","Colchester","Occurrences",-14.2,1587.2,-0.00894657258064515
+"130","Colchester","Registrations",47.8,1587.2,0.0301159274193548
+"131","Conwy","Occurrences",-15.6,1547.6,-0.0100801240630654
+"132","Conwy","Registrations",37.4,1547.6,0.0241664512794004
+"133","Copeland","Occurrences",65.6,769.4,0.0852612425266441
+"134","Copeland","Registrations",112.6,769.4,0.146347803483234
+"135","Corby","Occurrences",52.4,580.6,0.0902514640027558
+"136","Corby","Registrations",80.4,580.6,0.138477437133999
+"137","Cornwall","Occurrences",-87.6000000000001,6319.6,-0.0138616368124565
+"138","Cornwall","Registrations",209.4,6319.6,0.0331350085448446
+"139","Cotswold","Occurrences",108.8,920.2,0.118235166268203
+"140","Cotswold","Registrations",143.8,920.2,0.156270376005216
+"141","County Durham","Occurrences",736.2,5626.8,0.130838131797825
+"142","County Durham","Registrations",1008.2,5626.8,0.179178218525627
+"143","Coventry","Occurrences",284,2788,0.101865136298422
+"144","Coventry","Registrations",449,2788,0.161047345767575
+"145","Craven","Occurrences",88.2,642.8,0.137212196639701
+"146","Craven","Registrations",103.2,642.8,0.160547604231487
+"147","Crawley","Occurrences",21.6,754.4,0.0286320254506893
+"148","Crawley","Registrations",56.6,754.4,0.0750265111346766
+"149","Croydon","Occurrences",417,2525,0.165148514851485
+"150","Croydon","Registrations",490,2525,0.194059405940594
+"151","Dacorum","Occurrences",140.8,1248.2,0.11280243550713
+"152","Dacorum","Registrations",186.8,1248.2,0.149655503925653
+"153","Darlington","Occurrences",129.2,1147.8,0.11256316431434
+"154","Darlington","Registrations",202.2,1147.8,0.176163094615787
+"155","Dartford","Occurrences",36.8,900.2,0.0408798044878916
+"156","Dartford","Registrations",78.8,900.2,0.0875361030882026
+"157","Daventry","Occurrences",87.2,716.8,0.121651785714286
+"158","Daventry","Registrations",120.2,716.8,0.167689732142857
+"159","Denbighshire","Occurrences",48,1220,0.039344262295082
+"160","Denbighshire","Registrations",109,1220,0.089344262295082
+"161","Derby","Occurrences",220.2,2335.8,0.0942717698433085
+"162","Derby","Registrations",397.2,2335.8,0.17004880554842
+"163","Derbyshire Dales","Occurrences",21.6,806.4,0.0267857142857143
+"164","Derbyshire Dales","Registrations",59.6,806.4,0.0739087301587302
+"165","Doncaster","Occurrences",461,3158,0.145978467384421
+"166","Doncaster","Registrations",663,3158,0.209943001899937
+"167","Dorset","Occurrences",144.8,4565.2,0.0317182160693946
+"168","Dorset","Registrations",351.8,4565.2,0.0770612459476036
+"169","Dover","Occurrences",136.8,1301.2,0.105133722717492
+"170","Dover","Registrations",192.8,1301.2,0.148170919151552
+"171","Dudley","Occurrences",476.2,3200.8,0.148775306173457
+"172","Dudley","Registrations",581.2,3200.8,0.181579605098725
+"173","Ealing","Occurrences",444.6,1958.4,0.227022058823529
+"174","Ealing","Registrations",535.6,1958.4,0.273488562091503
+"175","East Cambridgeshire","Occurrences",64.2,741.8,0.0865462388784039
+"176","East Cambridgeshire","Registrations",102.2,741.8,0.137772984631976
+"177","East Devon","Occurrences",-91.4,1898.4,-0.0481458069953645
+"178","East Devon","Registrations",-8.39999999999999,1898.4,-0.00442477876106194
+"179","East Hampshire","Occurrences",43.2,1182.8,0.0365235035508962
+"180","East Hampshire","Registrations",81.2,1182.8,0.0686506594521474
+"181","East Hertfordshire","Occurrences",144,1125,0.128
+"182","East Hertfordshire","Registrations",176,1125,0.156444444444444
+"183","East Lindsey","Occurrences",254,1981,0.128218071680969
+"184","East Lindsey","Registrations",363,1981,0.18324078748107
+"185","East Midlands","Occurrences",4330.6,45125.4,0.0959681243822769
+"186","East Midlands","Registrations",6630.6,45125.4,0.146937201664694
+"187","East Northamptonshire","Occurrences",98.4,876.6,0.112251882272416
+"188","East Northamptonshire","Registrations",139.4,876.6,0.159023499885923
+"189","East of England","Occurrences",3999,57175,0.069943156974202
+"190","East of England","Registrations",6386,57175,0.111692173152602
+"191","East Riding of Yorkshire","Occurrences",402.4,3900.6,0.103163615853971
+"192","East Riding of Yorkshire","Registrations",523.4,3900.6,0.134184484438292
+"193","East Staffordshire","Occurrences",202,1120,0.180357142857143
+"194","East Staffordshire","Registrations",236,1120,0.210714285714286
+"195","East Suffolk","Occurrences",125.4,3004.6,0.0417360047926513
+"196","East Suffolk","Registrations",288.4,3004.6,0.0959861545630034
+"197","Eastbourne","Occurrences",-45.6,1316.6,-0.0346346650463315
+"198","Eastbourne","Registrations",3.40000000000001,1316.6,0.00258240923591068
+"199","Eastleigh","Occurrences",90.8,1073.2,0.0846067834513604
+"200","Eastleigh","Registrations",121.8,1073.2,0.113492359299292
+"201","Eden","Occurrences",25.6,547.4,0.0467665327000365
+"202","Eden","Registrations",44.6,547.4,0.0814760686883449
+"203","Elmbridge","Occurrences",79,1095,0.0721461187214612
+"204","Elmbridge","Registrations",136,1095,0.124200913242009
+"205","Enfield","Occurrences",387.6,2059.4,0.188210158298534
+"206","Enfield","Registrations",471.6,2059.4,0.228998737496358
+"207","England","Occurrences",47492.4,496674.6,0.0956207545141225
+"208","England","Registrations",69422.4,496674.6,0.139774411657049
+"209","Epping Forest","Occurrences",141,1276,0.110501567398119
+"210","Epping Forest","Registrations",191,1276,0.149686520376176
+"211","Epsom and Ewell","Occurrences",85.8,585.2,0.146616541353383
+"212","Epsom and Ewell","Registrations",119.8,585.2,0.204716336295284
+"213","Erewash","Occurrences",148.4,1153.6,0.128640776699029
+"214","Erewash","Registrations",215.4,1153.6,0.186719833564494
+"215","Exeter","Occurrences",-65.2,1094.2,-0.0595869128130141
+"216","Exeter","Registrations",4.8,1094.2,0.00438676658746115
+"217","Fareham","Occurrences",106.6,1173.4,0.0908471109596046
+"218","Fareham","Registrations",145.6,1173.4,0.124083858871655
+"219","Fenland","Occurrences",71.6,1158.4,0.0618093922651934
+"220","Fenland","Registrations",145.6,1158.4,0.125690607734807
+"221","Flintshire","Occurrences",178.2,1514.8,0.117639292315817
+"222","Flintshire","Registrations",243.2,1514.8,0.160549247425403
+"223","Folkestone and Hythe","Occurrences",81.4,1320.6,0.0616386490988944
+"224","Folkestone and Hythe","Registrations",150.4,1320.6,0.113887626836287
+"225","Forest of Dean","Occurrences",65.2,921.8,0.0707311781297462
+"226","Forest of Dean","Registrations",80.2,921.8,0.0870036884356693
+"227","Fylde","Occurrences",91.4,1078.6,0.0847394770999444
+"228","Fylde","Registrations",127.4,1078.6,0.118116076395327
+"229","Gateshead","Occurrences",235.4,2181.6,0.107902456912358
+"230","Gateshead","Registrations",320.4,2181.6,0.146864686468647
+"231","Gedling","Occurrences",134.2,1183.8,0.113363743875655
+"232","Gedling","Registrations",181.2,1183.8,0.153066396350735
+"233","Gloucester","Occurrences",91.6,1139.4,0.0803931893979287
+"234","Gloucester","Registrations",141.6,1139.4,0.124275934702475
+"235","Gosport","Occurrences",25.4,840.6,0.0302165120152272
+"236","Gosport","Registrations",70.4,840.6,0.0837497025933857
+"237","Gravesham","Occurrences",169,897,0.188405797101449
+"238","Gravesham","Registrations",204,897,0.22742474916388
+"239","Great Yarmouth","Occurrences",11,1171,0.0093936806148591
+"240","Great Yarmouth","Registrations",68,1171,0.0580700256191289
+"241","Greenwich","Occurrences",132.4,1581.6,0.0837126960040465
+"242","Greenwich","Registrations",261.4,1581.6,0.165275670207385
+"243","Guildford","Occurrences",39.6,1068.4,0.0370647697491576
+"244","Guildford","Registrations",108.6,1068.4,0.101647323099963
+"245","Gwynedd","Occurrences",-0.999999999999994,1383,-0.000723065798987704
+"246","Gwynedd","Registrations",38,1383,0.0274765003615329
+"247","Hackney and City of London","Occurrences",214.4,1142.6,0.187642219499387
+"248","Hackney and City of London","Registrations",279.4,1142.6,0.244530019254332
+"249","Halton","Occurrences",103,1219,0.0844954881050041
+"250","Halton","Registrations",155,1219,0.127153404429861
+"251","Hambleton","Occurrences",62.2,936.8,0.0663962425277541
+"252","Hambleton","Registrations",104.2,936.8,0.111229718189582
+"253","Hammersmith and Fulham","Occurrences",153,931,0.164339419978518
+"254","Hammersmith and Fulham","Registrations",261,931,0.280343716433942
+"255","Harborough","Occurrences",138.2,812.8,0.170029527559055
+"256","Harborough","Registrations",173.2,812.8,0.213090551181102
+"257","Haringey","Occurrences",290.4,1216.6,0.23869801084991
+"258","Haringey","Registrations",346.4,1216.6,0.284727930297551
+"259","Harlow","Occurrences",54.8,738.2,0.0742346247629369
+"260","Harlow","Registrations",69.8,738.2,0.0945543213221349
+"261","Harrogate","Occurrences",175.4,1642.6,0.106781931084865
+"262","Harrogate","Registrations",228.4,1642.6,0.139047850967978
+"263","Harrow","Occurrences",365.6,1507.4,0.242536818362744
+"264","Harrow","Registrations",422.6,1507.4,0.280350271991509
+"265","Hart","Occurrences",-23,716,-0.032122905027933
+"266","Hart","Registrations",6,716,0.00837988826815642
+"267","Hartlepool","Occurrences",97.8,1025.2,0.0953960202887241
+"268","Hartlepool","Registrations",141.8,1025.2,0.138314475224346
+"269","Hastings","Occurrences",6,1009,0.00594648166501486
+"270","Hastings","Registrations",22,1009,0.0218037661050545
+"271","Havant","Occurrences",103,1347,0.0764662212323682
+"272","Havant","Registrations",169,1347,0.125463994060876
+"273","Havering","Occurrences",410.8,2371.2,0.173245614035088
+"274","Havering","Registrations",498.8,2371.2,0.210357624831309
+"275","Herefordshire, County of","Occurrences",108.2,2105.8,0.0513818976161079
+"276","Herefordshire, County of","Registrations",191.2,2105.8,0.090796846804065
+"277","Hertsmere","Occurrences",190.4,931.6,0.204379562043796
+"278","Hertsmere","Registrations",214.4,931.6,0.230141691713182
+"279","High Peak","Occurrences",113,890,0.126966292134831
+"280","High Peak","Registrations",169,890,0.189887640449438
+"281","Hillingdon","Occurrences",268.2,1987.8,0.134923030485964
+"282","Hillingdon","Registrations",310.2,1987.8,0.15605191669182
+"283","Hinckley and Bosworth","Occurrences",110,1045,0.105263157894737
+"284","Hinckley and Bosworth","Registrations",143,1045,0.136842105263158
+"285","Horsham","Occurrences",182.4,1308.6,0.139385602934434
+"286","Horsham","Registrations",232.4,1308.6,0.177594375668654
+"287","Hounslow","Occurrences",261.8,1520.2,0.172214182344428
+"288","Hounslow","Registrations",332.8,1520.2,0.218918563346928
+"289","Huntingdonshire","Occurrences",122.2,1472.8,0.0829712112982075
+"290","Huntingdonshire","Registrations",195.2,1472.8,0.132536664856057
+"291","Hyndburn","Occurrences",74.6,839.4,0.0888730045270431
+"292","Hyndburn","Registrations",92.6,839.4,0.110316893018823
+"293","Ipswich","Occurrences",0.80000000000001,1201.2,0.000666000666000675
+"294","Ipswich","Registrations",73.8,1201.2,0.0614385614385614
+"295","Isle of Anglesey","Occurrences",22,826,0.026634382566586
+"296","Isle of Anglesey","Registrations",45,826,0.0544794188861985
+"297","Isle of Wight","Occurrences",-10,1787,-0.00559597090095132
+"298","Isle of Wight","Registrations",165,1787,0.0923335198656967
+"299","Islington","Occurrences",67.6,1087.4,0.0621666360125069
+"300","Islington","Registrations",127.6,1087.4,0.117344123597572
+"301","Kensington and Chelsea","Occurrences",22.6,814.4,0.0277504911591356
+"302","Kensington and Chelsea","Registrations",80.6,814.4,0.0989685658153242
+"303","Kettering","Occurrences",103,900,0.114444444444444
+"304","Kettering","Registrations",149,900,0.165555555555556
+"305","King's Lynn and West Norfolk","Occurrences",90.2,1792.8,0.0503123605533244
+"306","King's Lynn and West Norfolk","Registrations",157.2,1792.8,0.0876840696117804
+"307","Kingston upon Hull, City of","Occurrences",201.6,2533.4,0.0795768532407042
+"308","Kingston upon Hull, City of","Registrations",334.6,2533.4,0.132075471698113
+"309","Kingston upon Thames","Occurrences",38.4,1090.6,0.035209976159912
+"310","Kingston upon Thames","Registrations",91.4,1090.6,0.0838070786722905
+"311","Kirklees","Occurrences",549.6,3867.4,0.142110978952268
+"312","Kirklees","Registrations",684.6,3867.4,0.177018151729844
+"313","Knowsley","Occurrences",172.8,1576.2,0.109630757518081
+"314","Knowsley","Registrations",214.8,1576.2,0.136277122192615
+"315","Lambeth","Occurrences",213.4,1446.6,0.147518318816535
+"316","Lambeth","Registrations",311.4,1446.6,0.215263376192451
+"317","Lancaster","Occurrences",40.6,1490.4,0.0272410091250671
+"318","Lancaster","Registrations",83.6,1490.4,0.0560923242082662
+"319","Leeds","Occurrences",428.4,6747.6,0.0634892406188867
+"320","Leeds","Registrations",724.4,6747.6,0.107356689785998
+"321","Leicester","Occurrences",349.8,2539.2,0.137759924385633
+"322","Leicester","Registrations",467.8,2539.2,0.184231253938248
+"323","Lewes","Occurrences",128,1125,0.113777777777778
+"324","Lewes","Registrations",161,1125,0.143111111111111
+"325","Lewisham","Occurrences",174.6,1547.4,0.112834431950368
+"326","Lewisham","Registrations",299.6,1547.4,0.193615096290552
+"327","Lichfield","Occurrences",166,1077,0.154131847725163
+"328","Lichfield","Registrations",195,1077,0.181058495821727
+"329","Lincoln","Occurrences",38.4,914.6,0.0419855674611852
+"330","Lincoln","Registrations",94.4,914.6,0.103214520008747
+"331","Liverpool","Occurrences",786.2,4500.8,0.174680056878777
+"332","Liverpool","Registrations",921.2,4500.8,0.204674724493423
+"333","London","Occurrences",7186.8,49511.2,0.145155035628302
+"334","London","Registrations",9639.8,49511.2,0.194699381150124
+"335","Luton","Occurrences",207.4,1472.6,0.140839331794106
+"336","Luton","Registrations",289.4,1472.6,0.196523156322151
+"337","Maidstone","Occurrences",106.8,1520.2,0.0702539139586896
+"338","Maidstone","Registrations",166.8,1520.2,0.109722404946718
+"339","Maldon","Occurrences",48.8,676.2,0.0721679976338361
+"340","Maldon","Registrations",62.8,676.2,0.0928719313812481
+"341","Malvern Hills","Occurrences",26.4,1018.6,0.0259179265658747
+"342","Malvern Hills","Registrations",47.4,1018.6,0.0465344590614569
+"343","Manchester","Occurrences",142,3493,0.0406527340395076
+"344","Manchester","Registrations",730,3493,0.208989407386201
+"345","Mansfield","Occurrences",111.4,1146.6,0.0971568114425257
+"346","Mansfield","Registrations",180.4,1146.6,0.1573347287633
+"347","Medway","Occurrences",255,2248,0.113434163701068
+"348","Medway","Registrations",355,2248,0.157918149466192
+"349","Melton","Occurrences",73.8,476.2,0.154976900461991
+"350","Melton","Registrations",94.8,476.2,0.19907601847963
+"351","Mendip","Occurrences",85.6,1168.4,0.0732625813077713
+"352","Mendip","Registrations",122.6,1168.4,0.104929818555289
+"353","Merthyr Tydfil","Occurrences",100.4,639.6,0.15697310819262
+"354","Merthyr Tydfil","Registrations",118.4,639.6,0.185115697310819
+"355","Merton","Occurrences",199.8,1230.2,0.162412615834824
+"356","Merton","Registrations",270.8,1230.2,0.220126808649
+"357","Mid Devon","Occurrences",27.4,803.6,0.0340965654554505
+"358","Mid Devon","Registrations",56.4,803.6,0.0701841712294674
+"359","Mid Suffolk","Occurrences",93.8,987.2,0.0950162074554295
+"360","Mid Suffolk","Registrations",137.8,987.2,0.139586709886548
+"361","Mid Sussex","Occurrences",130.4,1368.6,0.0952798480198743
+"362","Mid Sussex","Registrations",168.4,1368.6,0.123045447902967
+"363","Middlesbrough","Occurrences",127.6,1466.4,0.0870158210583742
+"364","Middlesbrough","Registrations",202.6,1466.4,0.138161483906165
+"365","Milton Keynes","Occurrences",169.2,1776.8,0.095227375056281
+"366","Milton Keynes","Registrations",252.2,1776.8,0.141940567312022
+"367","Mole Valley","Occurrences",167.6,842.4,0.198955365622032
+"368","Mole Valley","Registrations",217.6,842.4,0.258309591642925
+"369","Monmouthshire","Occurrences",0.400000000000002,997.6,0.000400962309542905
+"370","Monmouthshire","Registrations",51.4,997.6,0.051523656776263
+"371","Neath Port Talbot","Occurrences",161.4,1654.6,0.0975462347395141
+"372","Neath Port Talbot","Registrations",235.4,1654.6,0.142270035053789
+"373","New Forest","Occurrences",112.6,2184.4,0.0515473356528108
+"374","New Forest","Registrations",196.6,2184.4,0.090001831166453
+"375","Newark and Sherwood","Occurrences",71.2,1236.8,0.0575679172056921
+"376","Newark and Sherwood","Registrations",163.2,1236.8,0.131953428201811
+"377","Newcastle-under-Lyme","Occurrences",190.4,1295.6,0.14695893794381
+"378","Newcastle-under-Lyme","Registrations",248.4,1295.6,0.191725841309046
+"379","Newcastle upon Tyne","Occurrences",147.8,2517.2,0.058716033688225
+"380","Newcastle upon Tyne","Registrations",338.8,2517.2,0.134593993325918
+"381","Newham","Occurrences",324.2,1340.8,0.241795942720764
+"382","Newham","Registrations",430.2,1340.8,0.320853221957041
+"383","Newport","Occurrences",135.2,1472.8,0.0917979359043998
+"384","Newport","Registrations",203.2,1472.8,0.137968495382944
+"385","North Devon","Occurrences",-23.2,1140.2,-0.0203473074899141
+"386","North Devon","Registrations",28.8,1140.2,0.0252587265392036
+"387","North East","Occurrences",2718.8,28047.2,0.096936592601044
+"388","North East","Registrations",3939.8,28047.2,0.14047034998146
+"389","North East Derbyshire","Occurrences",75.6,1178.4,0.0641547861507128
+"390","North East Derbyshire","Registrations",136.6,1178.4,0.11591989137814
+"391","North East Lincolnshire","Occurrences",154.6,1739.4,0.0888812234103714
+"392","North East Lincolnshire","Registrations",181.6,1739.4,0.104403817408302
+"393","North Hertfordshire","Occurrences",-4.6,1251.6,-0.00367529562160434
+"394","North Hertfordshire","Registrations",39.4,1251.6,0.0314797059763503
+"395","North Kesteven","Occurrences",122,1204,0.101328903654485
+"396","North Kesteven","Registrations",186,1204,0.154485049833887
+"397","North Lincolnshire","Occurrences",86,1780,0.048314606741573
+"398","North Lincolnshire","Registrations",147,1780,0.0825842696629213
+"399","North Norfolk","Occurrences",179,1418,0.1262341325811
+"400","North Norfolk","Registrations",226,1418,0.159379407616361
+"401","North Somerset","Occurrences",78.8,2359.2,0.0334011529331977
+"402","North Somerset","Registrations",170.8,2359.2,0.0723974228552052
+"403","North Tyneside","Occurrences",60.8,2217.2,0.0274219736604727
+"404","North Tyneside","Registrations",166.8,2217.2,0.0752300198448494
+"405","North Warwickshire","Occurrences",96.8,714.2,0.135536264351722
+"406","North Warwickshire","Registrations",125.8,714.2,0.176141136936432
+"407","North West","Occurrences",8408.8,71590.2,0.117457417356007
+"408","North West","Registrations",11969.8,71590.2,0.167198862414129
+"409","North West Leicestershire","Occurrences",115.2,906.8,0.127040141155712
+"410","North West Leicestershire","Registrations",163.2,906.8,0.179973533303926
+"411","Northampton","Occurrences",296.4,1793.6,0.165254237288136
+"412","Northampton","Registrations",369.4,1793.6,0.205954504906334
+"413","Northumberland","Occurrences",207.8,3644.2,0.0570221173371385
+"414","Northumberland","Registrations",292.8,3644.2,0.0803468525327918
+"415","Norwich","Occurrences",91,1128,0.0806737588652482
+"416","Norwich","Registrations",172,1128,0.152482269503546
+"417","Nottingham","Occurrences",205.2,2370.8,0.0865530622574658
+"418","Nottingham","Registrations",332.2,2370.8,0.140121477982116
+"419","Nuneaton and Bedworth","Occurrences",192.8,1268.2,0.15202649424381
+"420","Nuneaton and Bedworth","Registrations",232.8,1268.2,0.183567260684435
+"421","Oadby and Wigston","Occurrences",107.4,590.6,0.181848967152049
+"422","Oadby and Wigston","Registrations",133.4,590.6,0.225871994581781
+"423","Oldham","Occurrences",224.8,2129.2,0.105579560398272
+"424","Oldham","Registrations",376.8,2129.2,0.176967875258313
+"425","Oxford","Occurrences",47.2,918.8,0.0513713539399216
+"426","Oxford","Registrations",64.2,918.8,0.0698737483674358
+"427","Pembrokeshire","Occurrences",21.6,1488.4,0.014512227895727
+"428","Pembrokeshire","Registrations",51.6,1488.4,0.0346680999731255
+"429","Pendle","Occurrences",132.4,879.6,0.150522964984084
+"430","Pendle","Registrations",161.4,879.6,0.183492496589359
+"431","Peterborough","Occurrences",21.6,1574.4,0.0137195121951219
+"432","Peterborough","Registrations",120.6,1574.4,0.0766006097560976
+"433","Plymouth","Occurrences",-66.8,2518.8,-0.0265205653485787
+"434","Plymouth","Registrations",70.2,2518.8,0.0278704144830872
+"435","Portsmouth","Occurrences",-101.6,1751.6,-0.0580041105275177
+"436","Portsmouth","Registrations",-12.6,1751.6,-0.00719342315597168
+"437","Powys","Occurrences",67.8,1603.2,0.0422904191616766
+"438","Powys","Registrations",114.8,1603.2,0.0716067864271457
+"439","Preston","Occurrences",230.6,1232.4,0.187114573190523
+"440","Preston","Registrations",289.6,1232.4,0.234988640051931
+"441","Reading","Occurrences",188,1096,0.171532846715328
+"442","Reading","Registrations",262,1096,0.239051094890511
+"443","Redbridge","Occurrences",416.6,1755.4,0.237324826250427
+"444","Redbridge","Registrations",494.6,1755.4,0.281759143215222
+"445","Redcar and Cleveland","Occurrences",190.8,1563.2,0.122057318321392
+"446","Redcar and Cleveland","Registrations",267.8,1563.2,0.171315250767656
+"447","Redditch","Occurrences",160,687,0.232896652110626
+"448","Redditch","Registrations",185,687,0.269286754002911
+"449","Reigate and Banstead","Occurrences",89.6,1343.4,0.0666964418639273
+"450","Reigate and Banstead","Registrations",182.6,1343.4,0.135923775495013
+"451","Rhondda Cynon Taf","Occurrences",437.8,2543.2,0.172145328719723
+"452","Rhondda Cynon Taf","Registrations",522.8,2543.2,0.205567788612771
+"453","Ribble Valley","Occurrences",131.6,599.4,0.219552886219553
+"454","Ribble Valley","Registrations",140.6,599.4,0.234567901234568
+"455","Richmond upon Thames","Occurrences",44.6,1228.4,0.0363073917290785
+"456","Richmond upon Thames","Registrations",99.6,1228.4,0.0810810810810811
+"457","Richmondshire","Occurrences",76.2,480.8,0.158485856905158
+"458","Richmondshire","Registrations",87.2,480.8,0.181364392678869
+"459","Rochdale","Occurrences",292.6,2026.4,0.144393999210422
+"460","Rochdale","Registrations",465.6,2026.4,0.229767074615081
+"461","Rochford","Occurrences",92.8,839.2,0.110581506196378
+"462","Rochford","Registrations",126.8,839.2,0.151096282173499
+"463","Rossendale","Occurrences",78.4,670.6,0.116910229645094
+"464","Rossendale","Registrations",110.4,670.6,0.164628690724724
+"465","Rother","Occurrences",109.6,1362.4,0.0804462712859659
+"466","Rother","Registrations",124.6,1362.4,0.0914562536699941
+"467","Rotherham","Occurrences",495.4,2743.6,0.180565680128299
+"468","Rotherham","Registrations",662.4,2743.6,0.241434611459396
+"469","Rugby","Occurrences",85.4,973.6,0.0877156943303205
+"470","Rugby","Registrations",126.4,973.6,0.129827444535744
+"471","Runnymede","Occurrences",90.6,718.4,0.126113585746102
+"472","Runnymede","Registrations",122.6,718.4,0.1706570155902
+"473","Rushcliffe","Occurrences",0.999999999999993,1079,0.000926784059314173
+"474","Rushcliffe","Registrations",58,1079,0.0537534754402224
+"475","Rushmoor","Occurrences",63.8,682.2,0.0935209615948402
+"476","Rushmoor","Registrations",86.8,682.2,0.127235414834359
+"477","Rutland","Occurrences",32.6,379.4,0.0859251449657353
+"478","Rutland","Registrations",36.6,379.4,0.0964681075382182
+"479","Ryedale","Occurrences",27.2,587.8,0.0462742429397754
+"480","Ryedale","Registrations",45.2,587.8,0.0768969037087445
+"481","Salford","Occurrences",313.2,2180.8,0.143617021276596
+"482","Salford","Registrations",439.2,2180.8,0.201393983859134
+"483","Sandwell","Occurrences",569.4,2967.6,0.191872219975738
+"484","Sandwell","Registrations",662.4,2967.6,0.223210675293166
+"485","Scarborough","Occurrences",79.2,1399.8,0.0565795113587655
+"486","Scarborough","Registrations",125.2,1399.8,0.0894413487641092
+"487","Sedgemoor","Occurrences",175.4,1271.6,0.137936458005662
+"488","Sedgemoor","Registrations",228.4,1271.6,0.179616231519346
+"489","Sefton","Occurrences",610.6,3259.4,0.187335092348285
+"490","Sefton","Registrations",732.6,3259.4,0.224765294225931
+"491","Selby","Occurrences",10.2,795.8,0.012817290776577
+"492","Selby","Registrations",26.2,795.8,0.0329228449359135
+"493","Sevenoaks","Occurrences",74.6,1090.4,0.0684152604548789
+"494","Sevenoaks","Registrations",123.6,1090.4,0.113352898019076
+"495","Sheffield","Occurrences",423.8,5002.2,0.084722722002319
+"496","Sheffield","Registrations",725.8,5002.2,0.145096157690616
+"497","Shropshire","Occurrences",274,3512,0.0780182232346241
+"498","Shropshire","Registrations",371,3512,0.105637813211845
+"499","Slough","Occurrences",46.2,826.8,0.055878084179971
+"500","Slough","Registrations",106.2,826.8,0.12844702467344
+"501","Solihull","Occurrences",419.4,2034.6,0.206133883810086
+"502","Solihull","Registrations",460.4,2034.6,0.226285264916937
+"503","Somerset West and Taunton","Occurrences",39.4,1837.6,0.0214410100130605
+"504","Somerset West and Taunton","Registrations",100.4,1837.6,0.0546364823683065
+"505","South Cambridgeshire","Occurrences",42.4,1196.6,0.0354337288985459
+"506","South Cambridgeshire","Registrations",89.4,1196.6,0.0747116831021227
+"507","South Derbyshire","Occurrences",100.6,884.4,0.113749434644957
+"508","South Derbyshire","Registrations",153.6,884.4,0.173677069199457
+"509","South East","Occurrences",5863.2,81318.8,0.0721014082844312
+"510","South East","Registrations",9380.2,81318.8,0.115350939758088
+"511","South Gloucestershire","Occurrences",226,2270,0.0995594713656388
+"512","South Gloucestershire","Registrations",309,2270,0.136123348017621
+"513","South Hams","Occurrences",-67,944,-0.0709745762711864
+"514","South Hams","Registrations",-26,944,-0.0275423728813559
+"515","South Holland","Occurrences",52.6,1084.4,0.0485060863150129
+"516","South Holland","Registrations",95.6,1084.4,0.0881593507930653
+"517","South Kesteven","Occurrences",70.8,1431.2,0.0494689770821688
+"518","South Kesteven","Registrations",146.8,1431.2,0.102571268865288
+"519","South Lakeland","Occurrences",243,1213,0.200329760923331
+"520","South Lakeland","Registrations",295,1213,0.243198680956307
+"521","South Norfolk","Occurrences",64.6,1363.4,0.0473815461346633
+"522","South Norfolk","Registrations",103.6,1363.4,0.0759865043274168
+"523","South Northamptonshire","Occurrences",-1.6,759.6,-0.00210637177461822
+"524","South Northamptonshire","Registrations",28.4,759.6,0.0373880989994734
+"525","South Oxfordshire","Occurrences",27.6,1220.4,0.0226155358898722
+"526","South Oxfordshire","Registrations",56.6,1220.4,0.0463782366437234
+"527","South Ribble","Occurrences",108,1031,0.104752667313288
+"528","South Ribble","Registrations",124,1031,0.120271580989331
+"529","South Somerset","Occurrences",-10.4,1847.4,-0.00562953339828948
+"530","South Somerset","Registrations",40.6,1847.4,0.0219768323048609
+"531","South Staffordshire","Occurrences",178.6,1201.4,0.148659896787082
+"532","South Staffordshire","Registrations",219.6,1201.4,0.182786748793075
+"533","South Tyneside","Occurrences",192.6,1736.4,0.110919143054596
+"534","South Tyneside","Registrations",233.6,1736.4,0.134531214005989
+"535","South West","Occurrences",1574,56921,0.0276523602888213
+"536","South West","Registrations",3939,56921,0.0692011735563325
+"537","Southampton","Occurrences",8.6,1870.4,0.00459794696321643
+"538","Southampton","Registrations",120.6,1870.4,0.0644781864841745
+"539","Southend-on-Sea","Occurrences",114.6,1960.4,0.0584574576617017
+"540","Southend-on-Sea","Registrations",193.6,1960.4,0.0987553560497857
+"541","Southwark","Occurrences",146.4,1355.6,0.107996459132487
+"542","Southwark","Registrations",249.4,1355.6,0.183977574505754
+"543","Spelthorne","Occurrences",11,889,0.0123734533183352
+"544","Spelthorne","Registrations",58,889,0.0652418447694038
+"545","St Albans","Occurrences",160.8,1110.2,0.144838767789587
+"546","St Albans","Registrations",199.8,1110.2,0.179967573410196
+"547","St. Helens","Occurrences",167.2,1961.8,0.0852278519726782
+"548","St. Helens","Registrations",219.2,1961.8,0.111734121724946
+"549","Stafford","Occurrences",211.4,1302.6,0.162290803009366
+"550","Stafford","Registrations",267.4,1302.6,0.2052817442039
+"551","Staffordshire Moorlands","Occurrences",107.8,1111.2,0.0970122390208783
+"552","Staffordshire Moorlands","Registrations",169.8,1111.2,0.15280777537797
+"553","Stevenage","Occurrences",28.4,753.6,0.0376857749469214
+"554","Stevenage","Registrations",60.4,753.6,0.0801486199575372
+"555","Stockport","Occurrences",229.6,2806.4,0.0818129988597491
+"556","Stockport","Registrations",398.6,2806.4,0.142032497149373
+"557","Stockton-on-Tees","Occurrences",168,1904,0.0882352941176471
+"558","Stockton-on-Tees","Registrations",256,1904,0.134453781512605
+"559","Stoke-on-Trent","Occurrences",293.6,2580.4,0.113780809176872
+"560","Stoke-on-Trent","Registrations",454.6,2580.4,0.176174236552472
+"561","Stratford-on-Avon","Occurrences",177,1371,0.12910284463895
+"562","Stratford-on-Avon","Registrations",237,1371,0.172866520787746
+"563","Stroud","Occurrences",80.8,1248.2,0.0647332158307963
+"564","Stroud","Registrations",121.8,1248.2,0.0975805159429579
+"565","Sunderland","Occurrences",424.8,3017.2,0.140792788015379
+"566","Sunderland","Registrations",508.8,3017.2,0.168633169826329
+"567","Surrey Heath","Occurrences",117.8,773.2,0.152353854112778
+"568","Surrey Heath","Registrations",170.8,773.2,0.220900155199172
+"569","Sutton","Occurrences",199.4,1482.6,0.134493457439633
+"570","Sutton","Registrations",225.4,1482.6,0.152030217186025
+"571","Swale","Occurrences",230,1334,0.172413793103448
+"572","Swale","Registrations",299,1334,0.224137931034483
+"573","Swansea","Occurrences",253.2,2608.8,0.0970561177552898
+"574","Swansea","Registrations",367.2,2608.8,0.140754369825207
+"575","Swindon","Occurrences",193.8,1735.2,0.111687413554633
+"576","Swindon","Registrations",241.8,1735.2,0.139349930843707
+"577","Tameside","Occurrences",270,2307,0.11703511053316
+"578","Tameside","Registrations",418,2307,0.181187689640225
+"579","Tamworth","Occurrences",104.4,643.6,0.162212554381603
+"580","Tamworth","Registrations",130.4,643.6,0.20261031696706
+"581","Tandridge","Occurrences",66.4,820.6,0.0809164026322203
+"582","Tandridge","Registrations",128.4,820.6,0.156470874969534
+"583","Teignbridge","Occurrences",-6.2,1554.2,-0.00398919058036289
+"584","Teignbridge","Registrations",52.8,1554.2,0.0339724617166388
+"585","Telford and Wrekin","Occurrences",204.6,1512.4,0.135281671515472
+"586","Telford and Wrekin","Registrations",251.6,1512.4,0.166358106321079
+"587","Tendring","Occurrences",75.8,2193.2,0.034561371511946
+"588","Tendring","Registrations",166.8,2193.2,0.0760532555170527
+"589","Test Valley","Occurrences",113.6,1128.4,0.100673520028359
+"590","Test Valley","Registrations",153.6,1128.4,0.136121942573555
+"591","Tewkesbury","Occurrences",38,859,0.0442374854481956
+"592","Tewkesbury","Registrations",64,859,0.0745052386495925
+"593","Thanet","Occurrences",211.8,1736.2,0.121990554083631
+"594","Thanet","Registrations",307.8,1736.2,0.177283723073379
+"595","Three Rivers","Occurrences",3.2,806.8,0.00396628656420427
+"596","Three Rivers","Registrations",30.2,806.8,0.0374318294496777
+"597","Thurrock","Occurrences",151.6,1244.4,0.121825779492125
+"598","Thurrock","Registrations",215.6,1244.4,0.17325618772099
+"599","Tonbridge and Malling","Occurrences",115.2,1058.8,0.108802417831507
+"600","Tonbridge and Malling","Registrations",146.2,1058.8,0.138080846241028
+"601","Torbay","Occurrences",-19,1804,-0.0105321507760532
+"602","Torbay","Registrations",60,1804,0.0332594235033259
+"603","Torfaen","Occurrences",110.6,1005.4,0.11000596777402
+"604","Torfaen","Registrations",140.6,1005.4,0.139844837875472
+"605","Torridge","Occurrences",-27.6,834.6,-0.0330697340043134
+"606","Torridge","Registrations",20.4,834.6,0.0244428468727534
+"607","Tower Hamlets","Occurrences",147.8,1067.2,0.138493253373313
+"608","Tower Hamlets","Registrations",206.8,1067.2,0.193778110944528
+"609","Trafford","Occurrences",168.2,2009.8,0.0836899193949647
+"610","Trafford","Registrations",328.2,2009.8,0.163299830828938
+"611","Tunbridge Wells","Occurrences",55.8,1064.2,0.0524337530539372
+"612","Tunbridge Wells","Registrations",101.8,1064.2,0.0956587107686525
+"613","Uttlesford","Occurrences",68.2,717.8,0.0950125383115074
+"614","Uttlesford","Registrations",103.2,717.8,0.143772638617999
+"615","Vale of Glamorgan","Occurrences",55.2,1306.8,0.0422405876951332
+"616","Vale of Glamorgan","Registrations",106.2,1306.8,0.081267217630854
+"617","Vale of White Horse","Occurrences",152.2,1066.8,0.142669666291714
+"618","Vale of White Horse","Registrations",172.2,1066.8,0.161417322834646
+"619","Wakefield","Occurrences",526.8,3415.2,0.15425158116655
+"620","Wakefield","Registrations",654.8,3415.2,0.19173108456313
+"621","Wales","Occurrences",2509.2,33353.8,0.075229808897337
+"622","Wales","Registrations",3708.2,33353.8,0.111177736869562
+"623","Walsall","Occurrences",373.4,2732.6,0.136646417331479
+"624","Walsall","Registrations",446.4,2732.6,0.163360901705336
+"625","Waltham Forest","Occurrences",198,1424,0.139044943820225
+"626","Waltham Forest","Registrations",275,1424,0.19311797752809
+"627","Wandsworth","Occurrences",129.2,1519.8,0.0850111856823266
+"628","Wandsworth","Registrations",225.2,1519.8,0.148177391762074
+"629","Warrington","Occurrences",204,1962,0.103975535168196
+"630","Warrington","Registrations",256,1962,0.130479102956167
+"631","Warwick","Occurrences",217,1191,0.182199832073887
+"632","Warwick","Registrations",240,1191,0.201511335012594
+"633","Watford","Occurrences",56,734,0.0762942779291553
+"634","Watford","Registrations",84,734,0.114441416893733
+"635","Waverley","Occurrences",102,1195,0.0853556485355648
+"636","Waverley","Registrations",167,1195,0.139748953974895
+"637","Wealden","Occurrences",45.8,1778.2,0.025756382859071
+"638","Wealden","Registrations",89.8,1778.2,0.0505005061297942
+"639","Wellingborough","Occurrences",115.4,733.6,0.157306434023991
+"640","Wellingborough","Registrations",142.4,733.6,0.194111232279171
+"641","Welwyn Hatfield","Occurrences",74.2,960.8,0.0772273105745212
+"642","Welwyn Hatfield","Registrations",113.2,960.8,0.11781848459617
+"643","West Berkshire","Occurrences",170.2,1198.8,0.141975308641975
+"644","West Berkshire","Registrations",236.2,1198.8,0.19703036369703
+"645","West Devon","Occurrences",11.8,653.2,0.0180649112063686
+"646","West Devon","Registrations",47.8,653.2,0.0731781996325781
+"647","West Lancashire","Occurrences",174.6,1218.4,0.143302692055154
+"648","West Lancashire","Registrations",208.6,1218.4,0.171208141825345
+"649","West Lindsey","Occurrences",96,1011,0.0949554896142433
+"650","West Lindsey","Registrations",149,1011,0.147378832838773
+"651","West Midlands","Occurrences",7627,54807,0.13916105606948
+"652","West Midlands","Registrations",9599,54807,0.175141861441057
+"653","West Oxfordshire","Occurrences",75.6,1042.4,0.0725249424405219
+"654","West Oxfordshire","Registrations",105.6,1042.4,0.101304681504221
+"655","West Suffolk","Occurrences",103,1628,0.0632678132678133
+"656","West Suffolk","Registrations",198,1628,0.121621621621622
+"657","Westminster","Occurrences",116.6,1109.4,0.105101856859564
+"658","Westminster","Registrations",229.6,1109.4,0.206958716423292
+"659","Wigan","Occurrences",444.4,3226.6,0.137730118390876
+"660","Wigan","Registrations",591.4,3226.6,0.183288910927912
+"661","Wiltshire","Occurrences",398.6,4658.4,0.0855658595225829
+"662","Wiltshire","Registrations",578.6,4658.4,0.124205735874979
+"663","Winchester","Occurrences",11.2,1112.8,0.0100647016534867
+"664","Winchester","Registrations",61.2,1112.8,0.0549964054636952
+"665","Windsor and Maidenhead","Occurrences",74.8,1257.2,0.0594972955774738
+"666","Windsor and Maidenhead","Registrations",136.8,1257.2,0.108813235762011
+"667","Wirral","Occurrences",414.6,3705.4,0.111890754034652
+"668","Wirral","Registrations",579.6,3705.4,0.15642035947536
+"669","Woking","Occurrences",138.8,774.2,0.179281839318006
+"670","Woking","Registrations",176.8,774.2,0.22836476362697
+"671","Wokingham","Occurrences",123.8,1175.2,0.105343771272975
+"672","Wokingham","Registrations",173.8,1175.2,0.14788972089857
+"673","Wolverhampton","Occurrences",379,2637,0.143723928706864
+"674","Wolverhampton","Registrations",493,2637,0.186954872961699
+"675","Worcester","Occurrences",87.6,872.4,0.10041265474553
+"676","Worcester","Registrations",123.6,872.4,0.141678129298487
+"677","Worthing","Occurrences",34.2,1374.8,0.0248763456502764
+"678","Worthing","Registrations",76.2,1374.8,0.0554262438172825
+"679","Wrexham","Occurrences",97.4,1416.6,0.0687561767612594
+"680","Wrexham","Registrations",157.4,1416.6,0.111111111111111
+"681","Wychavon","Occurrences",172.8,1242.2,0.13910803413299
+"682","Wychavon","Registrations",214.8,1242.2,0.172919014651425
+"683","Wyre","Occurrences",146.2,1510.8,0.0967699232194864
+"684","Wyre","Registrations",185.2,1510.8,0.122584061424411
+"685","Wyre Forest","Occurrences",157.6,1143.4,0.137834528598916
+"686","Wyre Forest","Registrations",185.6,1143.4,0.162322896624104
+"687","York","Occurrences",100.2,1842.8,0.054373779031908
+"688","York","Registrations",168.2,1842.8,0.091274148035598
+"689","Yorkshire and The Humber","Occurrences",5784.2,52178.8,0.110853450060178
+"690","Yorkshire and The Humber","Registrations",7938.2,52178.8,0.152134583394022
 "691","Aberdeen City","Occurrences",-5,2112,-0.00236742424242424
 "692","Aberdeen City","Registrations",22,2123,0.0103626943005181
 "693","Aberdeenshire","Occurrences",108,2416,0.0447019867549669

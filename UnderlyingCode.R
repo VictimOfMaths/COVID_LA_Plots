@@ -16,7 +16,7 @@ library(gt)
 ###################
 
 #England mortality data - updated on Tuesday mornings
-EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek501.xlsx"
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek52.xlsx"
 #English/Welsh deaths by occurrence - updated monthly
 #https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/monthlymortalityanalysisenglandandwales
 EWMortOccUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fbirthsdeathsandmarriages%2fdeaths%2fdatasets%2fmonthlymortalityanalysisenglandandwales%2fnovember2020/monthlymortalityanalysisnovember.xlsx"
@@ -28,18 +28,18 @@ ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-d
 ScotMortRange <- 6268
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
 ScotMortRange2 <- "BA"
-#Admissions data which is published weekly on a Thursday (next update on 17th December)
+#Admissions data which is published weekly on a Thursday (next update on 7th January)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/12/Weekly-covid-admissions-and-beds-publication-201224.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/12/Weekly-covid-admissions-and-beds-publication-201231.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/12/COVID-19-total-announced-deaths-29-December-2020.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-6-January-2021.xlsx"
 #Increment by 7 when each new report is published
-admrange <- "EP"
+admrange <- "EW"
 #Increment by 1 each day
-deathrange <- "KW"
+deathrange <- "LE"
 #Set latest date of admissions data
-admdate <- as.Date("2020-12-20")
+admdate <- as.Date("2020-12-27")
 
 ###################################################################################
 #Weekly data
@@ -416,7 +416,7 @@ admissions <- raw.adm %>%
 #Read in deaths
 temp <- tempfile()
 temp <- curl_download(url=deathurl, destfile=temp, quiet=FALSE, mode="wb")
-raw.deaths <- read_excel(temp, sheet=6, range=paste0("B19:",deathrange,"240"), col_names=FALSE)[,-c(2,5)]
+raw.deaths <- read_excel(temp, sheet="Tab4 Deaths by trust", range=paste0("B19:",deathrange,"240"), col_names=FALSE)[,-c(2,5)]
 
 #Tidy up data
 deaths <- raw.deaths %>% 

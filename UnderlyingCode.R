@@ -25,19 +25,20 @@ EWMortOccRange <- 348
 EWLastFullWeek <- 48
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
-ScotMortRange <- 6268
+ScotMortRange <- 6540
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
-ScotMortRange2 <- "BA"
+ScotMortRange2 <- "BC"
 #Admissions data which is published weekly on a Thursday (next update on 7th January)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
 admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2020/12/Weekly-covid-admissions-and-beds-publication-201231.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-6-January-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-7-January-2021.xlsx"
 #Increment by 7 when each new report is published
 admrange <- "EW"
+occrange <- "AU"
 #Increment by 1 each day
-deathrange <- "LE"
+deathrange <- "LF"
 #Set latest date of admissions data
 admdate <- as.Date("2020-12-27")
 
@@ -400,7 +401,7 @@ daydata$country <- case_when(
 daydata$date <- as.Date(daydata$date)
 
 ###################################################
-#Hospital admissions and deaths in hospitals
+#Hospital admissions, occupancy and deaths in hospitals
 
 #Read in admissions
 temp <- tempfile()
@@ -412,6 +413,40 @@ admissions <- raw.adm %>%
   gather(date, admissions, c(4:ncol(raw.adm))) %>% 
   mutate(date=as.Date("2020-08-01")+days(as.integer(substr(date, 4, 6))-4)) %>% 
   rename(Region=...1, code=...2, name=...3)
+
+#Read in occupancy data
+#First COVID-19
+raw.occ.CV <- read_excel(temp, sheet="Adult G&A Beds Occupied COVID", 
+                         range=paste0("C25:", occrange, "167"), col_names=FALSE)
+
+#Tidy up data
+occ.cv <- raw.occ.CV %>% 
+  gather(date, COVID, c(3:ncol(.))) %>% 
+  mutate(date=as.Date("2020-11-17")+days(as.numeric(substr(date, 4,7))-3)) %>% 
+  rename(code=`...1`, name=`...2`)
+
+#Second non-COVID-19
+raw.occ.oth <- read_excel(temp, sheet="Adult G&A Bed Occupied NonCOVID", 
+                         range=paste0("C25:", occrange, "167"), col_names=FALSE)
+
+#Tidy up data
+occ.oth <- raw.occ.oth %>% 
+  gather(date, Other, c(3:ncol(.))) %>% 
+  mutate(date=as.Date("2020-11-17")+days(as.numeric(substr(date, 4,7))-3)) %>% 
+  rename(code=`...1`, name=`...2`)
+
+#Third Unoccupied beds
+raw.unocc <- read_excel(temp, sheet="Adult G&A Beds Unoccupied", 
+                         range=paste0("C25:", occrange, "167"), col_names=FALSE)
+
+#Tidy up data
+unocc <- raw.unocc %>% 
+  gather(date, Unoccupied, c(3:ncol(.))) %>% 
+  mutate(date=as.Date("2020-11-17")+days(as.numeric(substr(date, 4,7))-3)) %>% 
+  rename(code=`...1`, name=`...2`)
+
+occupancy <- merge(occ.cv, occ.oth) %>% 
+  merge(unocc)
 
 #Read in deaths
 temp <- tempfile()
@@ -443,6 +478,9 @@ data.deaths.adm <- deaths %>%
   mutate(admissions=if_else(is.na(admissions) & date<=admdate, 0, admissions),
          deaths=if_else(is.na(deaths), 0, deaths),
          name=coalesce(name.x, name.y)) %>% 
+  select(-c("name.x", "name.y")) %>% 
+  merge(occupancy, all.x=TRUE, all.y=TRUE, by=c("code", "date")) %>% 
+  mutate(name=coalesce(name.x, name.y)) %>% 
   select(-c("name.x", "name.y"))
 
 #Bring in PHE data summarising admissions in HES to each trust by MSOA
@@ -544,9 +582,15 @@ data.deaths.adm <- data.deaths.adm %>%
   mutate(LA.deaths=deaths*popprop1, 
          LA.admissions=case_when(
            date<=as.Date("2020-10-04") ~ admissions*popprop2,
-           TRUE ~ admissions*popprop3)) %>% 
+           TRUE ~ admissions*popprop3),
+         LA.COVID.Beds=COVID*popprop3,
+         LA.Other.Beds=Other*popprop3,
+         LA.Unocc.Beds=Unoccupied*popprop3) %>% 
   group_by(LAD19CD, date) %>% 
-  summarise(deaths=sum(LA.deaths, na.rm=TRUE), admissions=sum(LA.admissions, na.rm=TRUE)) %>% 
+  summarise(deaths=sum(LA.deaths, na.rm=TRUE), admissions=sum(LA.admissions, na.rm=TRUE),
+            COVID.Beds=sum(LA.COVID.Beds, na.rm=TRUE),
+            Other.Beds=sum(LA.Other.Beds, na.rm=TRUE),
+            Unocc.Beds=sum(LA.Unocc.Beds, na.rm=TRUE)) %>% 
   ungroup() %>% 
   filter(!is.na(LAD19CD)) %>% 
   #merge City of London into Hackney and Isles of Scilly into Cornwall
@@ -556,8 +600,13 @@ data.deaths.adm <- data.deaths.adm %>%
                                           "E07000007") ~ "E06000060",
                            TRUE ~ as.character(LAD19CD))) %>%
   group_by(LAD19CD, date) %>% 
-  summarise(deaths=sum(deaths), admissions=sum(admissions)) %>% 
-  ungroup()
+  summarise(deaths=sum(deaths), admissions=sum(admissions),
+            COVID.Beds=sum(COVID.Beds), Other.Beds=sum(Other.Beds),
+            Unocc.Beds=sum(Unocc.Beds)) %>% 
+  ungroup() %>% 
+  mutate(COVID.Beds=if_else(date<as.Date("2020-11-17") | date>admdate+days(2), NA_real_, COVID.Beds),
+         Other.Beds=if_else(date<as.Date("2020-11-17") | date>admdate+days(2), NA_real_, Other.Beds),
+         Unocc.Beds=if_else(date<as.Date("2020-11-17") | date>admdate+days(2), NA_real_, Unocc.Beds))
 
 #Merge into case data
 daydata <- merge(daydata, data.deaths.adm, by.x=c("date", "code"), by.y=c("date", "LAD19CD"), 
@@ -578,14 +627,18 @@ daydata$Region <- case_when(
 daydata.reg <- daydata %>% 
   filter(!is.na(Region)) %>% 
   group_by(date, Region) %>% 
-  summarise(cases=sum(cases), admissions=sum(admissions), deaths=sum(deaths)) %>% 
+  summarise(cases=sum(cases), admissions=sum(admissions), deaths=sum(deaths),
+            COVID.Beds=sum(COVID.Beds), Other.Beds=sum(Other.Beds),
+            Unocc.Beds=sum(Unocc.Beds)) %>% 
   mutate(name=Region, Region="Region") %>% 
   ungroup()
 
 #National summary (E&W only)
 daydata.nat <- daydata %>% 
   group_by(date, country) %>% 
-  summarise(cases=sum(cases), admissions=sum(admissions), deaths=sum(deaths)) %>% 
+  summarise(cases=sum(cases), admissions=sum(admissions), deaths=sum(deaths),
+            COVID.Beds=sum(COVID.Beds), Other.Beds=sum(Other.Beds),
+            Unocc.Beds=sum(Unocc.Beds)) %>% 
   mutate(name=country, Region="Nation") %>% 
   ungroup()
 
@@ -647,11 +700,11 @@ natpop <- daydata %>%
 
 daydata <- merge(daydata, natpop, by="country", all.x=TRUE)
 daydata$pop <- if_else(is.na(daydata$pop.x), daydata$pop.y, daydata$pop.x)
-daydata <- daydata[,-c(13,14)]
+daydata <- daydata %>% select(-c(pop.x, pop.y))
 
 daydata <- merge(daydata, regpop, by.x="name", by.y="Region", all.x=TRUE)
 daydata$pop <- if_else(is.na(daydata$pop.x), daydata$pop.y, daydata$pop.x)
-daydata <- daydata[,-c(13,14)]
+daydata <- daydata %>% select(-c(pop.x, pop.y))
 
 daydata$caserate <- daydata$cases*100000/daydata$pop
 daydata$caserate_avg <- daydata$casesroll_avg*100000/daydata$pop

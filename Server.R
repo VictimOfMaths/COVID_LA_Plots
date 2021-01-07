@@ -96,7 +96,7 @@ server <- function(input, output) {
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(), plot.title.position="plot",
               plot.title=element_text(face="bold", size=rel(1.5)))+
-        annotate("text", x=week(enddate)-15, y=max(labpos*1.5, labpos+20), 
+        annotate("text", x=30, y=max(labpos*1.5, labpos+20), 
                  label=lab,
                  hjust=0, colour="red", size=rel(5))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
@@ -238,7 +238,7 @@ server <- function(input, output) {
     if (input$plottype == 8){
       subtitle=case_when(
         merger==0 ~ "Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths and admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days.<br> Data for the most recent days for both measures may be an undercount due to delays in processing tests.",
-        TRUE ~  "Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>This LA has been affected by a recent NHS trust merger, which NHS Digital reflect in admissions, but not deaths data.<br>As a result, the process for estimating the two series is slightly different and they should be compared with caution.<br>A small number of deaths and admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days.<br> Data for the most recent days for both measures may be an undercount due to delays in processing tests."
+        TRUE ~  "Daily number of confirmed new COVID-19 hospital <span style='color:#0361AA;'>admissions</span> and <span style='color:#BE0094;'>deaths</span> with 7-day rolling averages.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>This LA has been affected by a recent NHS trust merger, which NHS Digital reflect in admissions, but not deaths data.<br>As a result, the process for estimating the two series is slightly different and they should be compared with caution.<br>A small number of deaths and admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days."
         )
       p <- ggplot()+
         geom_col(data=subset(daydata, name==LA), 
@@ -295,7 +295,44 @@ server <- function(input, output) {
         theme(plot.subtitle=element_markdown(),
               plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("COVID-19 hospitals deaths in ", LA, " vs. the rest of England"),
-             subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths from mental health specialist trusts are excluded from these plots.<br> Data for the most recent days may be an undercount due to delays in processing tests."),
+             subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths from mental health specialist trusts are excluded from these plots."),
+             caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
+    }
+    
+    if (input$plottype == 11) {
+      p <- daydata %>% 
+        filter(name==LA & !is.na(COVID.Beds)) %>% 
+        select(date, COVID.Beds, Other.Beds, Unocc.Beds, pop) %>% 
+        gather(cause, count, c(2:4)) %>% 
+        ggplot()+
+        geom_area(aes(x=date, y=count*100000/pop, fill=cause), show.legend=FALSE)+
+        scale_x_date(name="")+
+        scale_y_continuous(name="Beds per 100,000 population")+
+        scale_fill_manual(values=c("#FD625E", "#374649", "#00B8AA"), name="Occupied by", 
+                          labels=c("Patient with COVID-19", "Other patient", "Unoccupied"))+
+        theme_classic(base_size=16)+
+        theme(plot.title=element_text(face="bold", size=rel(1.5)), plot.subtitle=element_markdown())+
+        labs(title=paste0("Hospital bed occupancy in ", LA),
+             subtitle=paste0("<span style='color:Grey60;'>Bed occupancy rate in England for <span style='color:#FD625E;'>COVID-19 patients</span>, <span style='color:#374649;'>non-COVID patients</span> and <span style='color:#00B8AA;'>unoccupied beds</span>.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths from mental health specialist trusts are excluded from these plots."),
+             caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
+    }
+    
+    if (input$plottype == 12) {
+      p <- ggplot()+
+        geom_line(data=subset(daydata, name!="England" & Region!="Region"),
+                  aes(x=date, y=COVID.Beds/(COVID.Beds+Other.Beds+Unocc.Beds), 
+                      group=name), colour="Grey80")+
+        geom_line(data=subset(daydata, name==LA),
+                  aes(x=date, y=COVID.Beds/(COVID.Beds+Other.Beds+Unocc.Beds)),
+                  colour="#FF4E86")+
+        scale_x_date(name="Date", limits=c(as.Date("2020-11-17"), NA))+
+        scale_y_continuous(name="Proportion of beds occupied by patients with COVID-19", 
+                           position="right", labels=scales::label_percent(accuracy=1))+
+        theme_classic(base_size=16)+
+        theme(plot.subtitle=element_markdown(),
+              plot.title=element_text(face="bold", size=rel(1.5)))+
+        labs(title=paste0("COVID-19 hospitals bed occupancy in ", LA, " vs. the rest of England"),
+             subtitle=paste0("Proportion of hospital beds in <span style='color:#FF4E86;'>", LA, " </span>which are occupied by patients with a positive COVID-19 test<br>compared to other Local Authorities in England.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths from mental health specialist trusts are excluded from these plots."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
     }
     p     

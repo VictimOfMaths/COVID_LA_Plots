@@ -689,69 +689,69 @@
 "688","York","Registrations",168.2,1842.8,0.091274148035598
 "689","Yorkshire and The Humber","Occurrences",6087.2,52178.8,0.116660406141958
 "690","Yorkshire and The Humber","Registrations",7938.2,52178.8,0.152134583394022
-"691","Aberdeen City","Occurrences",11.8,2197.2,0.00537047150919352
-"692","Aberdeen City","Registrations",49.8,2197.2,0.0226652102676133
-"693","Aberdeenshire","Occurrences",131,2520,0.051984126984127
+"691","Aberdeen City","Occurrences",58.8,2197.2,0.0267613326051338
+"692","Aberdeen City","Registrations",50.8,2197.2,0.0231203349717823
+"693","Aberdeenshire","Occurrences",165,2520,0.0654761904761905
 "694","Aberdeenshire","Registrations",157.8,2522.2,0.0625644278804219
-"695","Angus","Occurrences",32,1431,0.0223619846261356
+"695","Angus","Occurrences",57,1431,0.039832285115304
 "696","Angus","Registrations",59.2,1424.8,0.0415496911847277
-"697","Argyll and Bute","Occurrences",23.5833333333333,1143.41666666667,0.0206253188543109
-"698","Argyll and Bute","Registrations",47.6833333333333,1139.31666666667,0.0418525724483974
-"699","City of Edinburgh","Occurrences",329.9,4438.1,0.0743336112300309
+"697","Argyll and Bute","Occurrences",41.5833333333333,1143.41666666667,0.03636761169011
+"698","Argyll and Bute","Registrations",51.6833333333333,1139.31666666667,0.0453634488509194
+"699","City of Edinburgh","Occurrences",419.9,4438.1,0.0946125594285843
 "700","City of Edinburgh","Registrations",418.4,4430.6,0.0944341624159256
-"701","Clackmannanshire","Occurrences",23.3833333333333,601.616666666667,0.0388674959137878
+"701","Clackmannanshire","Occurrences",31.3833333333333,601.616666666667,0.0521649998614843
 "702","Clackmannanshire","Registrations",36.55,601.45,0.0607698063014382
-"703","Dumfries and Galloway","Occurrences",81.6,1972.4,0.041370918677753
+"703","Dumfries and Galloway","Occurrences",115.6,1972.4,0.0586088014601501
 "704","Dumfries and Galloway","Registrations",137.2,1960.8,0.0699714402284782
-"705","Dundee City","Occurrences",102.35,1787.65,0.0572539367325819
+"705","Dundee City","Occurrences",145.35,1787.65,0.0813078622772914
 "706","Dundee City","Registrations",159.6,1773.4,0.0899966166685463
-"707","East Ayrshire","Occurrences",80.55,1495.45,0.0538633856029958
+"707","East Ayrshire","Occurrences",121.55,1495.45,0.0812798823096727
 "708","East Ayrshire","Registrations",112.1,1489.9,0.0752399489898651
-"709","East Dunbartonshire","Occurrences",192.5,1128.5,0.170580416482056
+"709","East Dunbartonshire","Occurrences",206.5,1128.5,0.182986264953478
 "710","East Dunbartonshire","Registrations",206.1,1130.9,0.182244230259086
-"711","East Lothian","Occurrences",38,1080,0.0351851851851852
+"711","East Lothian","Occurrences",62,1080,0.0574074074074074
 "712","East Lothian","Registrations",55.7,1089.3,0.0511337556228771
-"713","East Renfrewshire","Occurrences",105.65,928.35,0.113804060968385
+"713","East Renfrewshire","Occurrences",122.65,928.35,0.132116119997846
 "714","East Renfrewshire","Registrations",113.05,931.95,0.121304791029562
-"715","Falkirk","Occurrences",199.2,1740.8,0.114430147058824
+"715","Falkirk","Occurrences",231.2,1740.8,0.1328125
 "716","Falkirk","Registrations",239.4,1743.6,0.137302133516862
-"717","Fife","Occurrences",93.2,4159.8,0.0224049233136208
+"717","Fife","Occurrences",201.2,4159.8,0.048367709986057
 "718","Fife","Registrations",180.8,4154.2,0.0435222184776852
-"719","Glasgow City","Occurrences",655.9,6549.1,0.100151165809042
-"720","Glasgow City","Registrations",831.566666666667,6530.43333333333,0.127337134340243
-"721","Highland","Occurrences",40,2626,0.0152322924600152
+"719","Glasgow City","Occurrences",800.9,6549.1,0.122291612587989
+"720","Glasgow City","Registrations",833.566666666667,6530.43333333333,0.127643392730447
+"721","Highland","Occurrences",73,2626,0.0277989337395278
 "722","Highland","Registrations",107.4,2606.6,0.0412030998235249
-"723","Inverclyde","Occurrences",125.5,1081.5,0.116042533518262
-"724","Inverclyde","Registrations",153.3,1084.7,0.141329399834055
-"725","Midlothian","Occurrences",67.05,916.95,0.0731228529363651
-"726","Midlothian","Registrations",91.35,910.65,0.100312963267995
-"727","Moray","Occurrences",-39.85,1059.85,-0.0375996603292919
+"723","Inverclyde","Occurrences",151.5,1081.5,0.140083217753121
+"724","Inverclyde","Registrations",154.3,1084.7,0.142251313727298
+"725","Midlothian","Occurrences",88.05,916.95,0.0960248650417144
+"726","Midlothian","Registrations",92.35,910.65,0.101411079997804
+"727","Moray","Occurrences",-20.85,1059.85,-0.019672595178563
 "728","Moray","Registrations",-16.75,1058.75,-0.0158205430932704
-"729","Na h-Eileanan Siar","Occurrences",-47.7666666666667,406.766666666667,-0.117430140129476
+"729","Na h-Eileanan Siar","Occurrences",-44.7666666666667,406.766666666667,-0.110054904531673
 "730","Na h-Eileanan Siar","Registrations",-42.5833333333333,403.583333333333,-0.105513111707619
-"731","North Ayrshire","Occurrences",153.8,1722.2,0.089304378121008
+"731","North Ayrshire","Occurrences",192.8,1722.2,0.11194983161073
 "732","North Ayrshire","Registrations",188.4,1722.6,0.10936955764542
-"733","North Lanarkshire","Occurrences",391.233333333333,3721.76666666667,0.105120328159566
+"733","North Lanarkshire","Occurrences",415.233333333333,3721.76666666667,0.111568878579169
 "734","North Lanarkshire","Registrations",460.3,3725.7,0.123547252865233
-"735","Orkney Islands","Occurrences",-54.8166666666667,307.816666666667,-0.178082191780822
+"735","Orkney Islands","Occurrences",-58.8166666666667,307.816666666667,-0.191076939736856
 "736","Orkney Islands","Registrations",-60.4,314.4,-0.192111959287532
-"737","Perth and Kinross","Occurrences",132.233333333333,1736.76666666667,0.0761376504232002
-"738","Perth and Kinross","Registrations",170.616666666667,1733.38333333333,0.09842985298501
-"739","Renfrewshire","Occurrences",216,2090,0.103349282296651
-"740","Renfrewshire","Registrations",283.1,2080.9,0.13604690278245
-"741","Scotland","Occurrences",4299.05,59330.95,0.072458809440941
-"742","Scotland","Registrations",5570.41666666667,59221.5833333333,0.0940605832051659
-"743","Scottish Borders","Occurrences",-6.08333333333333,1405.08333333333,-0.00432951782219322
+"737","Perth and Kinross","Occurrences",128.233333333333,1736.76666666667,0.0738345200852158
+"738","Perth and Kinross","Registrations",172.616666666667,1733.38333333333,0.0995836658557926
+"739","Renfrewshire","Occurrences",246,2090,0.117703349282297
+"740","Renfrewshire","Registrations",294.1,2080.9,0.141333077033976
+"741","Scotland","Occurrences",5145.05,59330.95,0.0867178091704245
+"742","Scotland","Registrations",5592.41666666667,59221.5833333333,0.0944320693891163
+"743","Scottish Borders","Occurrences",-7.08333333333333,1405.08333333333,-0.00504121938200581
 "744","Scottish Borders","Registrations",22.0833333333333,1403.91666666667,0.0157298035258503
-"745","Shetland Islands","Occurrences",-82.1666666666667,291.166666666667,-0.282198053806525
+"745","Shetland Islands","Occurrences",-83.1666666666667,291.166666666667,-0.285632512879222
 "746","Shetland Islands","Registrations",-88.65,298.65,-0.296835760924159
-"747","South Ayrshire","Occurrences",239.6,1512.4,0.158423697434541
+"747","South Ayrshire","Occurrences",231.6,1512.4,0.153134091510182
 "748","South Ayrshire","Registrations",278.6,1508.4,0.184699018827897
-"749","South Lanarkshire","Occurrences",582.2,3617.8,0.16092652993532
+"749","South Lanarkshire","Occurrences",576.2,3617.8,0.159268063463984
 "750","South Lanarkshire","Registrations",645.8,3606.2,0.17908047251955
-"751","Stirling","Occurrences",61.25,941.75,0.0650384921688346
+"751","Stirling","Occurrences",62.25,941.75,0.0661003451022033
 "752","Stirling","Registrations",81.7,939.3,0.0869796657085063
-"753","West Dunbartonshire","Occurrences",142.85,1098.15,0.130082411328143
+"753","West Dunbartonshire","Occurrences",138.85,1098.15,0.126439921686473
 "754","West Dunbartonshire","Registrations",177,1092,0.162087912087912
-"755","West Lothian","Occurrences",277.4,1621.6,0.171065614208189
+"755","West Lothian","Occurrences",275.4,1621.6,0.169832264430192
 "756","West Lothian","Registrations",314.2,1611.8,0.194937337138603

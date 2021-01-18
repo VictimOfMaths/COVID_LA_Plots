@@ -19,28 +19,28 @@ library(gt)
 EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek53.xlsx"
 #English/Welsh deaths by occurrence - updated monthly
 #https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/monthlymortalityanalysisenglandandwales
-EWMortOccUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fbirthsdeathsandmarriages%2fdeaths%2fdatasets%2fmonthlymortalityanalysisenglandandwales%2fnovember2020/monthlymortalityanalysisnovember.xlsx"
-EWMortOccRange <- 348
+EWMortOccUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fbirthsdeathsandmarriages%2fdeaths%2fdatasets%2fmonthlymortalityanalysisenglandandwales%2fdecember2020/monthlymortalityanalysisdecember15012021164301.xlsx"
+EWMortOccRange <- 379
 #Need to update this last number in the server.r code as well
-EWLastFullWeek <- 48
+EWLastFullWeek <- 53
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
 ScotMortRange <- 6540
-ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020.xlsx"
+ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020-2021.xlsx"
 ScotMortRange2 <- "BC"
 #Admissions data which is published weekly on a Thursday (next update on 7th January)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/Weekly-covid-admissions-and-beds-publication-210107.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/Weekly-covid-admissions-and-beds-publication-210114.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-12-January-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-17-January-2021-1.xlsx"
 #Increment by 7 when each new report is published
-admrange <- "FD"
-occrange <- "BB"
+admrange <- "FK"
+occrange <- "BI"
 #Increment by 1 each day
-deathrange <- "LJ"
+deathrange <- "LO"
 #Set latest date of admissions data
-admdate <- as.Date("2021-01-03")
+admdate <- as.Date("2021-01-10")
 
 ###################################################################################
 #Weekly data
@@ -137,7 +137,7 @@ source <- ScotMortUrl
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data20.s <- read_excel(temp, sheet=2, range=paste0("A5:E", ScotMortRange), col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
-data20.s$week <- as.numeric(data20.s$week)
+data20.s$week <- as.numeric(substr(data20.s$week, 4,6))
 
 maxweek.s <- max(data20.s$week)
 enddate.s <- as.Date("2020-01-04")+weeks(maxweek.s-1)

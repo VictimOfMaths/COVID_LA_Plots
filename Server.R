@@ -81,8 +81,8 @@ server <- function(input, output) {
       p <- LAdata %>% 
         group_by(week) %>% 
         summarise(deaths.1519=case_when(
-          LA %in% c("England", "Wales") & input$measure=="Occurrences" & week>1 & week<=48 ~ sum(death.1519v2, na.rm=TRUE),
-          LA %in% c("England", "Wales") & input$measure=="Occurrences" & (week==1 | week>48) ~ NA_real_,
+          LA %in% c("England", "Wales") & input$measure=="Occurrences" & week>1 & week<=53 ~ sum(death.1519v2, na.rm=TRUE),
+          LA %in% c("England", "Wales") & input$measure=="Occurrences" & (week==1 | week>53) ~ NA_real_,
           TRUE ~sum(deaths.1519)), 
           AllCause.20=sum(AllCause.20)) %>% 
         #mutate(deaths.1519=case_when(

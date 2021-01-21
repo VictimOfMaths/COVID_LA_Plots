@@ -3,7 +3,8 @@ library(ggplot2)
 
 #A clever person would make use of global.R instead of reading this in here as well as
 #in server.R
-cases <- read.csv("LACases.csv")
+load("Alldata.RData")
+#cases <- read.csv("LACases.csv")
 
 ui <- fluidPage(
   
@@ -15,7 +16,7 @@ ui <- fluidPage(
                                                                     "East of England", "East Midlands", "London", "North East",
                                                                     "North West", "South East", "South West", "West Midlands",
                                                                     "Yorkshire and The Humber",
-                                                            sort(as.character(unique(cases$name))), multiple=FALSE,
+                                                            sort(as.character(unique(data$name))), multiple=FALSE,
                 selected="England")),
     selectInput('plottype', 'Select plot', c("Total excess deaths (GB only)"=1,"Excess deaths by cause (GB only)"=2,"Excess deaths by location (GB only)"=3,
                                              "Cases vs deaths (GB only)"=4, "Case numbers"=5, 

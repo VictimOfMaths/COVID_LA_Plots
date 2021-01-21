@@ -8,9 +8,10 @@ library(forcats)
 
 options(scipen=9999)
 
-data <- read.csv("LAExcess.csv")
-excess <- read.csv("LAExcessSummary.csv")
-daydata <- read.csv("LACases.csv")
+load("Alldata.RData")
+#data <- read.csv("LAExcess.csv")
+#excess <- read.csv("LAExcessSummary.csv")
+#daydata <- read.csv("LACases.csv")
 
 maxweek.ew <- max(subset(data, country!="Scotland" & !is.na(COVID.20))$week)
 enddate.ew <- as.Date("2020-01-03")+weeks(maxweek.ew-1)
@@ -37,8 +38,8 @@ server <- function(input, output) {
     LAexcess <- excess %>% filter(name==LA & measure==if_else(
       input$measure=="Registrations", "Registrations", "Occurrences"))
     LAdaydata <- daydata %>% filter(name==LA)
-    LAv1 <- as.numeric(LAexcess[4])
-    LAv2 <- as.numeric(LAexcess[6])
+    LAv1 <- as.numeric(LAexcess[3])
+    LAv2 <- as.numeric(LAexcess[5])
     
     #Set up flag for LAs heavily affected by trust mergers in NHS data
     merger <- case_when(

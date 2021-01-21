@@ -718,5 +718,7 @@ write.csv(data, "COVID_LA_Plots/LAExcess.csv")
 write.csv(excess, "COVID_LA_Plots/LAExcessSummary.csv")
 write.csv(daydata, "COVID_LA_Plots/LACases.csv")
 
+save(data, excess, daydata, file="COVID_LA_Plots/Alldata.RData")
+
 setwd("C:/data projects/colin_misc/COVID_LA_Plots")
 setwd("C:/data projects/colin_misc")

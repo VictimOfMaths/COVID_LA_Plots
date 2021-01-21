@@ -28,19 +28,19 @@ ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-d
 ScotMortRange <- 6540
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020-2021.xlsx"
 ScotMortRange2 <- "BC"
-#Admissions data which is published weekly on a Thursday (next update on 7th January)
+#Admissions data which is published weekly on a Thursday (next update on 28th January)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/Weekly-covid-admissions-and-beds-publication-210114.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/Weekly-covid-admissions-and-beds-publication-210121.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-17-January-2021-1.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-21-January-2021.xlsx"
 #Increment by 7 when each new report is published
-admrange <- "FK"
-occrange <- "BI"
+admrange <- "FR"
+occrange <- "BP"
 #Increment by 1 each day
-deathrange <- "LO"
+deathrange <- "LS"
 #Set latest date of admissions data
-admdate <- as.Date("2021-01-10")
+admdate <- as.Date("2021-01-17")
 
 ###################################################################################
 #Weekly data

@@ -16,38 +16,63 @@ library(gt)
 ###################
 
 #England mortality data - updated on Tuesday mornings
-EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek53.xlsx"
-#English/Welsh deaths by occurrence - updated monthly
-#https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/monthlymortalityanalysisenglandandwales
-EWMortOccUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fbirthsdeathsandmarriages%2fdeaths%2fdatasets%2fmonthlymortalityanalysisenglandandwales%2fdecember2020/monthlymortalityanalysisdecember15012021164301.xlsx"
-EWMortOccRange <- 379
-#Need to update this last number in the server.r code as well
-EWLastFullWeek <- 53
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week1.xlsx"
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
-ScotMortRange <- 6540
+ScotMortRange <- 6889
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020-2021.xlsx"
-ScotMortRange2 <- "BC"
+ScotMortRange2 <- "BE"
 #Admissions data which is published weekly on a Thursday (next update on 28th January)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
 admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/Weekly-covid-admissions-and-beds-publication-210121.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-21-January-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/01/COVID-19-total-announced-deaths-25-January-2021.xlsx"
 #Increment by 7 when each new report is published
 admrange <- "FR"
 occrange <- "BP"
 #Increment by 1 each day
-deathrange <- "LS"
+deathrange <- "LW"
 #Set latest date of admissions data
 admdate <- as.Date("2021-01-17")
 
 ###################################################################################
 #Weekly data
+#2021 Data
+
+#Read in 2021 data for England
+temp <- tempfile()
+temp <- curl_download(url=EngMortUrl, destfile=temp, quiet=FALSE, mode="wb")
+
+#Occurrences
+data21 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
+colnames(data21) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
+data21 <- subset(data21, type=="Local Authority")[,-c(2)]
+
+data21$deaths.20 <- as.numeric(data21$deaths.20)
+data21$week <- as.numeric(data21$week)+53
+data21$measure <- "Occurrences"
+
+maxweek.ew <- max(data21$week)
+enddate.ew <- as.Date("2020-01-03")+weeks(maxweek.ew-1)
+
+#Registrations
+data21.2 <- read_excel(temp, sheet=4, col_names=FALSE)[-c(1:4),]
+colnames(data21.2) <- c("code", "type", "name", "cause", "week", "location", "deaths.20")
+data21.2 <- subset(data21.2, type=="Local Authority")[,-c(2)]
+
+data21.2$deaths.20 <- as.numeric(data21.2$deaths.20)
+data21.2$week <- as.numeric(data21.2$week)+53
+data21.2$measure <- "Registrations"
+
+data21 <- bind_rows(data21, data21.2)
+
+#Spread causes
+data21 <- pivot_wider(data21, names_from="cause", values_from="deaths.20")
 
 #Read in 2020 data for England
 temp <- tempfile()
-source <- EngMortUrl
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2020/lahbtablesweek53.xlsx"
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 #Occurrences
 data20 <- read_excel(temp, sheet=6, col_names=FALSE)[-c(1:4),]
@@ -58,7 +83,7 @@ data20$deaths.20 <- as.numeric(data20$deaths.20)
 data20$week <- as.numeric(data20$week)
 data20$measure <- "Occurrences"
 
-maxweek.ew <- max(data20$week)
+maxweek.ew <- max(data21$week)
 enddate.ew <- as.Date("2020-01-03")+weeks(maxweek.ew-1)
 
 #Registrations
@@ -74,6 +99,9 @@ data20 <- bind_rows(data20, data20.2)
 
 #Spread causes
 data20 <- pivot_wider(data20, names_from="cause", values_from="deaths.20")
+
+#Merge with 2021 data
+data2021 <- bind_rows(data20, data21)
 
 #Read in 2015-19 historic data for England & Wales
 #Historic data is only available for registrations at subnational level
@@ -106,7 +134,13 @@ data1519 <- data1519 %>%
   mutate(measure="Occurrences") %>% 
   bind_rows(temp)
 
-data.ew <- merge(data1519, data20, all.x=TRUE)
+#Duplicate first weeks to align with 2021 data
+data1519 <- data1519 %>% 
+  filter(week<=(max(data21$week)-53)) %>% 
+  mutate(week=week+53) %>% 
+  bind_rows(data1519)
+
+data.ew <- merge(data1519, data2021, all=TRUE)
 
 #Combine Cornwall & Isles of Scilly
 data.ew$code <- if_else(data.ew$code=="E06000053", "E06000052", data.ew$code)
@@ -129,7 +163,7 @@ data.ew <- data.ew %>%
   ungroup()
 
 #Bring in Scottish deaths data 
-#2020 data
+#2020/21 data
 
 #Occurrences
 temp <- tempfile()
@@ -137,7 +171,10 @@ source <- ScotMortUrl
 temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 data20.s <- read_excel(temp, sheet=2, range=paste0("A5:E", ScotMortRange), col_names=FALSE)
 colnames(data20.s) <- c("week", "name", "location", "cause", "deaths")
-data20.s$week <- as.numeric(substr(data20.s$week, 4,6))
+data20.s$week <- case_when(
+  substr(data20.s$week, 1, 2)=="20" ~ as.numeric(substr(data20.s$week, 4,6)),
+  TRUE ~ as.numeric(substr(data20.s$week, 4,6))+53
+)
 
 maxweek.s <- max(data20.s$week)
 enddate.s <- as.Date("2020-01-04")+weeks(maxweek.s-1)
@@ -201,6 +238,12 @@ data1519.s <- data1519.s %>%
   group_by(week, name, location, measure) %>% 
   summarise(deaths.1519=mean(deaths)) %>% 
   ungroup()
+
+#Add 15-19 averages as comparators for 2021 data
+data1519.s <- data1519.s %>% 
+  filter(week<=maxweek.s-53) %>% 
+  mutate(week=week+53) %>% 
+  bind_rows(data1519.s)
 
 #Merge years
 data.s <- merge(data1519.s, data20.s, all=TRUE)
@@ -303,15 +346,17 @@ data.nat <- data %>%
 data <- bind_rows(data, data.reg, data.nat)
 
 #Replace overall occurrences data for England & Wales with actual data from monthly mortality analysis file
+
 #(rather than using registrations as a proxy)
 temp <- tempfile()
-temp <- curl_download(url=EWMortOccUrl, destfile=temp, quiet=FALSE, mode="wb")
+source <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fbirthsdeathsandmarriages%2fdeaths%2fdatasets%2fmonthlymortalityanalysisenglandandwales%2fdecember2020/monthlymortalityanalysisdecember15012021164301.xlsx"
+temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 
-Eng.occ <- read_excel(temp, sheet="Table 12", range=paste0("A13:B", EWMortOccRange))
+Eng.occ <- read_excel(temp, sheet="Table 12", range=paste0("A13:B", 379))
 colnames(Eng.occ) <- c("date", "deaths.1519")
 Eng.occ$name <- "England"
 
-Wal.occ <- read_excel(temp, sheet="Table 12", range=paste0("A13:G", EWMortOccRange))[,c(1,7)]
+Wal.occ <- read_excel(temp, sheet="Table 12", range=paste0("A13:G", 379))[,c(1,7)]
 colnames(Wal.occ) <- c("date", "deaths.1519")
 Wal.occ$name <- "Wales"
 
@@ -319,10 +364,15 @@ Occ.data <- bind_rows(Eng.occ, Wal.occ) %>%
   mutate(week=floor((as.Date(date)-as.Date("2020-01-04"))/7)+2) %>% 
   group_by(name, week) %>% 
   summarise(death.1519v2=sum(deaths.1519)) %>% 
-  filter(week<=EWLastFullWeek & week>1) %>% 
   ungroup() %>% 
 #Add in a dummy location (since we're only going to use this data in the aggregate graph)
   mutate(location="Home/Other", measure="Occurrences")
+
+#Duplicate weeks to match early 2021
+Occ.data <- Occ.data %>% 
+  filter(week<=maxweek.ew) %>% 
+  mutate(week=week+53) %>% 
+  bind_rows(Occ.data)
 
 data <- merge(data, Occ.data, by=c("week", "name", "location", "measure"), all.x=TRUE)
 
@@ -655,7 +705,9 @@ daydata <- daydata %>%
 daydata$date <- as.Date(daydata$date)
 
 #Calculate weekly cases
-daydata$week <- week(as.Date(daydata$date)-days(4))
+daydata$week <- case_when(
+  daydata$date<as.Date("2021-01-08") ~ week(as.Date(daydata$date)-days(4)),
+  TRUE ~ week(as.Date(daydata$date)-days(4))+53)
 
 daydata.week <- daydata %>% 
   group_by(name, week) %>% 
@@ -669,13 +721,14 @@ data <- merge(data, daydata.week, all.x=TRUE) %>%
 excess.ew <- data %>% 
   filter(country!="Scotland" & week<=maxweek.ew) %>% 
   group_by(name, measure) %>% 
-  summarise(excess=sum(allexcess, na.rm=TRUE), hist=sum(deaths.1519), excessprop=excess/hist) %>% 
+  summarise(excess=sum(allexcess, na.rm=TRUE), hist=sum(deaths.1519, na.rm=TRUE), 
+            excessprop=excess/hist) %>% 
   ungroup()
 
 excess.s <-  data %>% 
   filter(country=="Scotland" & week<=maxweek.s) %>% 
   group_by(name, measure) %>% 
-  summarise(excess=sum(allexcess, na.rm=TRUE), hist=sum(deaths.1519), excessprop=excess/hist) %>% 
+  summarise(excess=sum(allexcess, na.rm=TRUE), hist=sum(deaths.1519, na.rm=TRUE), excessprop=excess/hist) %>% 
   ungroup()
 
 excess <- bind_rows(excess.ew, excess.s)
@@ -712,6 +765,12 @@ daydata$admrate <- daydata$admissions*100000/daydata$pop
 daydata$admrate_avg <- daydata$admroll_avg*100000/daydata$pop
 daydata$deathrate <- daydata$deaths*100000/daydata$pop
 daydata$deathrate_avg <- daydata$deathsroll_avg*100000/daydata$pop
+
+#Add actual dates for tidier plotting
+data <- data %>% mutate(date=case_when(
+  country=="Scotland" ~ as.Date("2020-01-05")+weeks(week-1),
+  TRUE ~ as.Date("2020-01-03")+weeks(week-1)
+))
 
 #Save master data
 write.csv(data, "COVID_LA_Plots/LAExcess.csv")

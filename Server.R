@@ -16,7 +16,7 @@ load("Alldata.RData")
 maxweek.ew <- max(subset(data, country!="Scotland" & !is.na(COVID.20))$week)
 enddate.ew <- as.Date("2020-01-03")+weeks(maxweek.ew-1)
 maxweek.s <- max(subset(data, country=="Scotland" & !is.na(COVID.20))$week)
-enddate.s <- as.Date("2020-01-04")+weeks(maxweek.s-1)
+enddate.s <- as.Date("2020-01-05")+weeks(maxweek.s-1)
 
 daydata$date <- as.Date(daydata$date)
 
@@ -34,7 +34,9 @@ server <- function(input, output) {
     LA <- input$LA
     lag <- if_else(input$censoring==TRUE, 3, 0)
 
-    LAdata <- data %>% filter(name==LA & measure==input$measure) 
+    LAdata <- data %>% 
+      filter(name==LA & measure==input$measure) %>% 
+      mutate(date=as.Date(date))
     LAexcess <- excess %>% filter(name==LA & measure==if_else(
       input$measure=="Registrations", "Registrations", "Occurrences"))
     LAdaydata <- daydata %>% filter(name==LA)
@@ -80,24 +82,22 @@ server <- function(input, output) {
                          input$measure=="Occurrences" & LAdaydata$country[1]=="Scotland" ~ paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,<br>when a significant proportion of the deaths that have happened will be missing from the most recent weeks of data."),
                          TRUE ~ paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,<br>e.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data. <br> 2015-19 data by date of occurrence is not available at subnational level for England & Wales,<br>so 2015-19 registrations data are used here as the comparator. The impact of this is likely to be very small."))
       p <- LAdata %>% 
-        group_by(week) %>% 
+        group_by(week, date) %>% 
         summarise(deaths.1519=case_when(
-          LA %in% c("England", "Wales") & input$measure=="Occurrences" & week>1 & week<=53 ~ sum(death.1519v2, na.rm=TRUE),
-          LA %in% c("England", "Wales") & input$measure=="Occurrences" & (week==1 | week>53) ~ NA_real_,
-          TRUE ~sum(deaths.1519)), 
+          LA %in% c("England", "Wales") & input$measure=="Occurrences" & !week %in% c(1,52) ~ sum(death.1519v2, na.rm=TRUE),
+          LA %in% c("England", "Wales") & input$measure=="Occurrences" ~ NA_real_,
+          TRUE ~ sum(deaths.1519, na.rm=TRUE)), 
           AllCause.20=sum(AllCause.20)) %>% 
-        #mutate(deaths.1519=case_when(
-        #  LA %in% c("England", "Wales") & input$measure=="Occurrences" & deaths1519==0) ~ NA_real_,
-        #  TRUE ~ deaths.1519) %>%
+        ungroup() %>% 
         ggplot()+
-        geom_line(aes(x=week, y=deaths.1519), colour="skyblue4")+
-        geom_line(aes(x=week, y=AllCause.20), colour="red")+
-        scale_x_continuous(name="Week")+
+        geom_line(aes(x=date, y=deaths.1519), colour="skyblue4")+
+        geom_line(aes(x=date, y=AllCause.20), colour="red")+
+        scale_x_date(name="")+
         scale_y_continuous(name="Deaths", limits=c(0,NA))+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(), plot.title.position="plot",
               plot.title=element_text(face="bold", size=rel(1.5)))+
-        annotate("text", x=30, y=max(labpos*1.5, labpos+20), 
+        annotate("text", x=as.Date("2020-07-01"), y=max(labpos*1.5, labpos+20), 
                  label=lab,
                  hjust=0, colour="red", size=rel(5))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
@@ -110,14 +110,20 @@ server <- function(input, output) {
       subtitle=if_else(input$measure=="Registrations",
                        paste0("Excess deaths by date of registration in 2020 vs. 2015-19 average by cause.\nData up to ", enddate),
                        paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by cause.\nData up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,\ne.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data."))
-      p <- LAdata %>% 
-        gather(cause, excess, c(9,17)) %>% 
-        group_by(week, cause) %>% 
-        summarise(excess=sum(excess)) %>% 
-        ggplot(aes(x=week, y=excess, fill=cause))+
+      
+      caption <- if_else(LAdata$country=="Scotland", paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"),
+                      paste0("* Historical data is not available for week 53 to allow the calculation of excess other cause deaths\nData from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
+      
+      temp <- LAdata %>% 
+        gather(cause, excess, c(8,16)) %>% 
+        group_by(week, cause, date) %>% 
+        summarise(excess=sum(excess))
+      
+      p <-  temp %>% 
+        ggplot(aes(x=date, y=excess, fill=cause))+
         geom_bar(stat="identity")+
-        geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
-        scale_x_continuous(name="Week")+
+        geom_hline(yintercept=0, colour="Grey30")+
+        scale_x_date(name="")+
         scale_y_continuous(name="Excess deaths vs. 2015-19 average")+
         scale_fill_paletteer_d("LaCroixColoR::PinaFraise", name="Cause", labels=c("COVID-19", "Other causes"))+
         theme_classic(base_size=16)+
@@ -125,7 +131,12 @@ server <- function(input, output) {
               plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=subtitle,
-             caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
+             caption=caption)
+      
+      if (LAdata$country %in% c("England", "Wales")){
+        p <- p+annotate("text", x=as.Date("2021-01-01"), 
+                        y=0-(min(temp$excess, na.rm=TRUE)+max(temp$excess, na.rm=TRUE))/30, label="*")
+      }
     }
     
     #Excess deaths by location
@@ -135,10 +146,14 @@ server <- function(input, output) {
                        paste0("Excess deaths by date of registration in 2020 vs. 2015-19 average by location\nData up to ", enddate),
                        paste0("Excess deaths by date of occurence in 2020 vs. 2015-19 average by location\nData up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,\ne.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data."))
       
-      p <- ggplot(LAdata, aes(x=week, y=allexcess, fill=location))+
+      caption <- if_else(LAdata$country=="Scotland", paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"),
+                         paste0("* Historical data is not available for week 53 to allow the calculation of excess deaths in 2020\nData from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
+      
+      
+      p <- ggplot(LAdata, aes(x=date, y=allexcess, fill=location))+
         geom_col()+
-        geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
-        scale_x_continuous(name="Week")+
+        geom_hline(yintercept=0, colour="Grey30")+
+        scale_x_date(name="")+
         scale_y_continuous(name="Excess deaths vs. 2015-19 average")+
         scale_fill_paletteer_d("ggsci::planetexpress_futurama", name="Place of death")+
         theme_classic(base_size=16)+
@@ -146,7 +161,14 @@ server <- function(input, output) {
               plot.title=element_text(face="bold", size=rel(1.5)))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=subtitle,
-             caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
+             caption=caption)
+    
+      
+      if (LAdata$country %in% c("England", "Wales")){
+        p <- p+annotate("text", x=as.Date("2021-01-01"), 
+                        y=0+0-(min(LAdata$allexcess, na.rm=TRUE)+max(LAdata$allexcess, na.rm=TRUE))/30, 
+                        label="*")
+      }
     }
     
     #Cases vs. deaths
@@ -155,13 +177,13 @@ server <- function(input, output) {
                        paste0("Confirmed new COVID-19 <span style='color:#B25D91;'>cases</span> compared to confirmed COVID-19 <span style='color:#1BB6AF;'>deaths</span> by week of registration<br>Data up to ", enddate),
                        paste0("Confirmed new COVID-19 <span style='color:#B25D91;'>cases</span> compared to confirmed COVID-19 <span style='color:#1BB6AF;'>deaths</span> by week of occurence.<br>Data up to ", enddate))
       p <- LAdata %>% 
-        group_by(week) %>% 
+        group_by(week, date) %>% 
         summarise(excess=sum(COVID.20), cases=unique(cases)) %>% 
         ggplot()+
-        geom_segment(aes(x=0.5, xend=maxweek+0.5, y=0, yend=0), colour="Grey30")+
-        geom_line(aes(x=week, y=cases), colour="#B25D91")+
-        geom_line(aes(x=week, y=excess), colour="#1BB6AF")+
-        scale_x_continuous(name="Week", limits=c(0,maxweek+1))+
+        geom_hline(yintercept=0, colour="Grey30")+
+        geom_line(aes(x=date, y=cases), colour="#B25D91")+
+        geom_line(aes(x=date, y=excess), colour="#1BB6AF")+
+        #scale_x_date(name="Week", limits=c(0,maxweek+1))+
         scale_y_continuous(name="")+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(), plot.title.position="plot",

@@ -81,12 +81,12 @@ server <- function(input, output) {
                          input$measure=="Occurrences" & LA %in% c("England", "Wales") ~ paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,<br>e.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data."),
                          input$measure=="Occurrences" & LAdaydata$country[1]=="Scotland" ~ paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,<br>when a significant proportion of the deaths that have happened will be missing from the most recent weeks of data."),
                          TRUE ~ paste0("Weekly deaths (by date of death) in <span style='color:red;'>2020</span> compared to <span style='color:Skyblue4;'>the average in 2015-19</span><br>Data up to ", enddate, ". Date of occurrence data can have substantial reporting delays, particularly in recent weeks,<br>e.g. around 12% of deaths that have happened will be missing from the most recent 2 weeks of data. <br> 2015-19 data by date of occurrence is not available at subnational level for England & Wales,<br>so 2015-19 registrations data are used here as the comparator. The impact of this is likely to be very small."))
+      
       p <- LAdata %>% 
         group_by(week, date) %>% 
         summarise(deaths.1519=case_when(
-          LA %in% c("England", "Wales") & input$measure=="Occurrences" & !week %in% c(1,52) ~ sum(death.1519v2, na.rm=TRUE),
-          LA %in% c("England", "Wales") & input$measure=="Occurrences" ~ NA_real_,
-          TRUE ~ sum(deaths.1519, na.rm=TRUE)), 
+          LA %in% c("England", "Wales") & input$measure=="Occurrences" ~ sum(death.1519v2, na.rm=TRUE),
+          TRUE ~ sum(deaths.1519)), 
           AllCause.20=sum(AllCause.20)) %>% 
         ungroup() %>% 
         ggplot()+
@@ -103,6 +103,7 @@ server <- function(input, output) {
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=subtitle,
              caption=paste0("Data from ", source," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
+     
     }
     
     #Excess deaths by cause

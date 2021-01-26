@@ -16,7 +16,7 @@ library(gt)
 ###################
 
 #England mortality data - updated on Tuesday mornings
-EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week1.xlsx"
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week2.xlsx"
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
 ScotMortRange <- 6889
@@ -366,11 +366,17 @@ Occ.data <- bind_rows(Eng.occ, Wal.occ) %>%
   summarise(death.1519v2=sum(deaths.1519)) %>% 
   ungroup() %>% 
 #Add in a dummy location (since we're only going to use this data in the aggregate graph)
-  mutate(location="Home/Other", measure="Occurrences")
+  mutate(location="Home/Other", measure="Occurrences",
+         #Adjust for wraparound of weeks at beginning/end of year
+         death.1519v2=case_when(
+           week==1 ~ death.1519v2*7/3,
+           week==53 ~ death.1519v2*7/6,
+           TRUE~death.1519v2
+         ))
 
 #Duplicate weeks to match early 2021
 Occ.data <- Occ.data %>% 
-  filter(week<=maxweek.ew) %>% 
+  filter(week<=maxweek.ew-53) %>% 
   mutate(week=week+53) %>% 
   bind_rows(Occ.data)
 

@@ -5,8 +5,9 @@ library(ggtext)
 library(paletteer)
 library(lubridate)
 library(forcats)
+library(Cairo)
 
-options(scipen=9999)
+options(scipen=9999, shiny.useragg=TRUE)
 
 load("Alldata.RData")
 #data <- read.csv("LAExcess.csv")

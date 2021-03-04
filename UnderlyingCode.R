@@ -19,22 +19,22 @@ library(gt)
 EngMortUrl <- "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week7.xlsx"
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
-ScotMortRange <- 8235
+ScotMortRange <- 8409
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020-2021.xlsx"
-ScotMortRange2 <- "BJ"
+ScotMortRange2 <- "BK"
 #Admissions data which is published weekly on a Thursday (next update on 25th February)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/02/Weekly-covid-admissions-and-beds-publication-210225.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/03/Weekly-covid-admissions-and-beds-publication-210304.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/03/COVID-19-total-announced-deaths-1-March-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/03/COVID-19-total-announced-deaths-4-March-2021.xlsx"
 #Increment by 7 when each new report is published
-admrange <- "HA"
-occrange <- "CY"
+admrange <- "HH"
+occrange <- "DF"
 #Increment by 1 each day
-deathrange <- "NB"
+deathrange <- "NE"
 #Set latest date of admissions data
-admdate <- as.Date("2021-02-21")
+admdate <- as.Date("2021-02-28")
 
 ###################################################################################
 #Weekly data

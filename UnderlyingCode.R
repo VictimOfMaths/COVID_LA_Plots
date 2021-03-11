@@ -16,23 +16,23 @@ library(gt)
 ###################
 
 #England mortality data - updated on Tuesday mornings
-EngMortUrl <- "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week7.xlsx"
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week8.xlsx"
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
-ScotMortRange <- 8409
+ScotMortRange <- 8557
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020-2021.xlsx"
-ScotMortRange2 <- "BK"
-#Admissions data which is published weekly on a Thursday (next update on 25th February)
+ScotMortRange2 <- "BL"
+#Admissions data which is published weekly on a Thursday (next update on 11th March)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
 admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/03/Weekly-covid-admissions-and-beds-publication-210304.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/03/COVID-19-total-announced-deaths-4-March-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/03/COVID-19-total-announced-deaths-10-March-2021.xlsx"
 #Increment by 7 when each new report is published
 admrange <- "HH"
 occrange <- "DF"
 #Increment by 1 each day
-deathrange <- "NE"
+deathrange <- "NK"
 #Set latest date of admissions data
 admdate <- as.Date("2021-02-28")
 
@@ -181,7 +181,11 @@ enddate.s <- as.Date("2020-01-04")+weeks(maxweek.s-1)
 
 data20.s$cause <- if_else(data20.s$cause=="Non-COVID-19", "Other.20", "COVID.20")
 
-data20.s <- spread(data20.s, cause, deaths)
+data20.s <- data20.s %>% 
+  group_by(week, name, location, cause) %>% 
+  summarise(deaths=sum(deaths)) %>% 
+  ungroup() %>% 
+  spread(cause, deaths)
 data20.s$COVID.20 <- replace_na(data20.s$COVID.20, 0)
 data20.s$Other.20 <- replace_na(data20.s$Other.20, 0)
 data20.s$measure <- "Occurrences"

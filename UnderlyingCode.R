@@ -16,25 +16,25 @@ library(gt)
 ###################
 
 #England mortality data - updated on Tuesday mornings
-EngMortUrl <- "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week14.xlsx"
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week18.xlsx"
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
-ScotMortRange <- 9327
+ScotMortRange <- 9748
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020-2021.xlsx"
-ScotMortRange2 <- "BR"
-#Admissions data which is published weekly on a Thursday (next update on 25th March)
+ScotMortRange2 <- "BV"
+#Admissions data which is published weekly on a Thursday (next update on 27th May)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/04/Weekly-covid-admissions-and-beds-publication-210415.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/05/Weekly-covid-admissions-and-beds-publication-210520-1.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/04/COVID-19-total-announced-deaths-25-April-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/05/COVID-19-total-announced-deaths-20-May-2021.xlsx"
 #Increment by 7 when each new report is published
-admrange <- "IX"
-occrange <- "EV"
+admrange <- "AR"
+occrange <- "AT"
 #Increment by 1 each day
-deathrange <- "PE"
+deathrange <- "QD"
 #Set latest date of admissions data
-admdate <- as.Date("2021-04-11")
+admdate <- as.Date("2021-05-16")
 
 ###################################################################################
 #Weekly data
@@ -464,46 +464,87 @@ daydata$date <- as.Date(daydata$date)
 #Hospital admissions, occupancy and deaths in hospitals
 
 #Read in admissions
-temp <- tempfile()
-temp <- curl_download(url=admurl, destfile=temp, quiet=FALSE, mode="wb")
-raw.adm <- read_excel(temp, sheet="Hosp ads & diag", range=paste0("B25:",admrange,"508"), col_names=FALSE)
+#First data up to 6th April
+admurl.old <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/04/Weekly-covid-admissions-and-beds-publication-210429-up-to-210406.xlsx"
+
+temp1 <- tempfile()
+temp1 <- curl_download(url=admurl.old, destfile=temp1, quiet=FALSE, mode="wb")
+raw.adm.old <- read_excel(temp1, sheet="Hosp ads & diag", range=paste0("B25:IS508"), col_names=FALSE)
+
+#Read in more recent data
+temp2 <- tempfile()
+temp2 <- curl_download(url=admurl, destfile=temp2, quiet=FALSE, mode="wb")
+raw.adm <- read_excel(temp2, sheet="Hosp ads & diag", range=paste0("B25:",admrange,"508"), col_names=FALSE)
 
 #Tidy up data
-admissions <- raw.adm %>% 
-  gather(date, admissions, c(4:ncol(raw.adm))) %>% 
+admissions.old <- raw.adm.old %>% 
+  gather(date, admissions, c(4:ncol(raw.adm.old))) %>% 
   mutate(date=as.Date("2020-08-01")+days(as.integer(substr(date, 4, 6))-4)) %>% 
   rename(Region=...1, code=...2, name=...3)
 
+admissions <- raw.adm %>% 
+  gather(date, admissions, c(4:ncol(raw.adm))) %>% 
+  mutate(date=as.Date("2021-04-07")+days(as.integer(substr(date, 4, 6))-4)) %>% 
+  rename(Region=...1, code=...2, name=...3) %>% 
+  bind_rows(admissions.old)
+
 #Read in occupancy data
 #First COVID-19
-raw.occ.CV <- read_excel(temp, sheet="Adult G&A Beds Occupied COVID", 
+raw.occ.CV.old <- read_excel(temp1, sheet="Adult G&A Beds Occupied COVID", 
+                         range=paste0("C25:EO167"), col_names=FALSE)
+
+raw.occ.CV <- read_excel(temp2, sheet="Adult G&A Beds Occupied COVID", 
                          range=paste0("C25:", occrange, "167"), col_names=FALSE)
 
 #Tidy up data
-occ.cv <- raw.occ.CV %>% 
+occ.cv.old <- raw.occ.CV.old %>% 
   gather(date, COVID, c(3:ncol(.))) %>% 
   mutate(date=as.Date("2020-11-17")+days(as.numeric(substr(date, 4,7))-3)) %>% 
   rename(code=`...1`, name=`...2`)
 
+occ.cv <- raw.occ.CV %>% 
+  gather(date, COVID, c(3:ncol(.))) %>% 
+  mutate(date=as.Date("2021-04-07")+days(as.numeric(substr(date, 4,7))-3)) %>% 
+  rename(code=`...1`, name=`...2`) %>% 
+  bind_rows(occ.cv.old)
+
 #Second non-COVID-19
-raw.occ.oth <- read_excel(temp, sheet="Adult G&A Bed Occupied NonCOVID", 
+raw.occ.oth.old <- read_excel(temp1, sheet="Adult G&A Bed Occupied NonCOVID", 
+                          range=paste0("C25:EO167"), col_names=FALSE)
+
+raw.occ.oth <- read_excel(temp2, sheet="Adult G&A Bed Occupied NonCOVID", 
                          range=paste0("C25:", occrange, "167"), col_names=FALSE)
 
 #Tidy up data
-occ.oth <- raw.occ.oth %>% 
+occ.oth.old <- raw.occ.oth.old %>% 
   gather(date, Other, c(3:ncol(.))) %>% 
   mutate(date=as.Date("2020-11-17")+days(as.numeric(substr(date, 4,7))-3)) %>% 
   rename(code=`...1`, name=`...2`)
 
+occ.oth <- raw.occ.oth %>% 
+  gather(date, Other, c(3:ncol(.))) %>% 
+  mutate(date=as.Date("2021-04-07")+days(as.numeric(substr(date, 4,7))-3)) %>% 
+  rename(code=`...1`, name=`...2`)%>% 
+  bind_rows(occ.oth.old)
+
 #Third Unoccupied beds
-raw.unocc <- read_excel(temp, sheet="Adult G&A Beds Unoccupied", 
+raw.unocc.old <- read_excel(temp1, sheet="Adult G&A Beds Unoccupied", 
+                        range=paste0("C25:EO167"), col_names=FALSE)
+
+raw.unocc <- read_excel(temp2, sheet="Adult G&A Beds Unoccupied", 
                          range=paste0("C25:", occrange, "167"), col_names=FALSE)
 
 #Tidy up data
-unocc <- raw.unocc %>% 
+unocc.old <- raw.unocc.old %>% 
   gather(date, Unoccupied, c(3:ncol(.))) %>% 
   mutate(date=as.Date("2020-11-17")+days(as.numeric(substr(date, 4,7))-3)) %>% 
   rename(code=`...1`, name=`...2`)
+
+unocc <- raw.unocc %>% 
+  gather(date, Unoccupied, c(3:ncol(.))) %>% 
+  mutate(date=as.Date("2021-04-07")+days(as.numeric(substr(date, 4,7))-3)) %>% 
+  rename(code=`...1`, name=`...2`) %>% 
+  bind_rows(unocc.old)
 
 occupancy <- merge(occ.cv, occ.oth) %>% 
   merge(unocc)

@@ -5,7 +5,8 @@ library(ggtext)
 library(paletteer)
 library(lubridate)
 library(forcats)
-library(Cairo)
+library(ragg)
+library(extrafont)
 
 options(scipen=9999, shiny.useragg=TRUE)
 
@@ -97,7 +98,8 @@ server <- function(input, output) {
         scale_y_continuous(name="Deaths", limits=c(0,NA))+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(), plot.title.position="plot",
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         annotate("text", x=as.Date("2020-07-01"), y=max(labpos*1.5, labpos+20), 
                  label=lab,
                  hjust=0, colour="red", size=rel(5))+
@@ -130,7 +132,8 @@ server <- function(input, output) {
         scale_fill_paletteer_d("LaCroixColoR::PinaFraise", name="Cause", labels=c("COVID-19", "Other causes"))+
         theme_classic(base_size=16)+
         theme(plot.title.position="plot",
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=subtitle,
              caption=caption)
@@ -160,7 +163,8 @@ server <- function(input, output) {
         scale_fill_paletteer_d("ggsci::planetexpress_futurama", name="Place of death")+
         theme_classic(base_size=16)+
         theme(plot.title.position="plot",
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("Excess deaths in ", LA, " during the pandemic"),
              subtitle=subtitle,
              caption=caption)
@@ -189,7 +193,8 @@ server <- function(input, output) {
         scale_y_continuous(name="")+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(), plot.title.position="plot",
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("Timeline of COVID-19 in ", LA),
              subtitle=subtitle,
              caption=paste0("Data from ", source," & ", source2 ," | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
@@ -210,7 +215,8 @@ server <- function(input, output) {
         scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(), plot.title.position="plot",
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("Confirmed new COVID cases in ",LA),
              subtitle="Confirmed new COVID-19 cases identified through combined pillar 1 & 2 testing<br>and the <span style='color:Red;'>7-day rolling average",
              caption=paste0("Data from ", source2, " | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088"))
@@ -232,7 +238,8 @@ server <- function(input, output) {
         scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(),
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("Rates of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales, Scotland & Northern Ireland"),
              caption="Data from PHE, PHW, ScotGov & DoHNI | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -253,7 +260,8 @@ server <- function(input, output) {
         scale_y_continuous(name=plotlabel, position="right", trans=scaletype)+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(),
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("Number of confirmed new COVID-19 cases in ", LA, " vs. the rest of the country"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 cases in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England, Wales, Scotland & Northern Ireland"),
              caption="Data from PHE, PHW, ScotGov & DoHNI | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -283,7 +291,8 @@ server <- function(input, output) {
                  label="Daily hospital deaths", size=rel(5))+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(),
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("NHS England data on COVID-19 in hospitals in ", LA),
              subtitle=subtitle,
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -301,7 +310,8 @@ server <- function(input, output) {
                            position="right")+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(),
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("COVID-19 cases in hospitals in ", LA, " vs. the rest of England"),
              subtitle=paste0("Rolling 7-day average of confirmed new COVID-19 admissions per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of admissions from mental health specialist trusts are excluded from these plots.<br> Admissions data is published weekly, so may by missing for more recent days."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -318,7 +328,8 @@ server <- function(input, output) {
         scale_y_continuous(name="Daily confirmed hospital deaths per 100,000", position="right")+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(),
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("COVID-19 hospitals deaths in ", LA, " vs. the rest of England"),
              subtitle=paste0("Rolling 7-day average of deaths in hospital of patients with a positive COVID-19 diagnosis per 100,000 inhabitants in <span style='color:#FF4E86;'>", LA, " </span><br>compared to other Local Authorities in England.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths from mental health specialist trusts are excluded from these plots."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -336,7 +347,8 @@ server <- function(input, output) {
         scale_fill_manual(values=c("#FD625E", "#374649", "#00B8AA"), name="Occupied by", 
                           labels=c("Patient with COVID-19", "Other patient", "Unoccupied"))+
         theme_classic(base_size=16)+
-        theme(plot.title=element_text(face="bold", size=rel(1.5)), plot.subtitle=element_markdown())+
+        theme(plot.title=element_text(face="bold", size=rel(1.8)), plot.subtitle=element_markdown(),
+              text=element_text(family="Lato"))+
         labs(title=paste0("Hospital bed occupancy in ", LA),
              subtitle=paste0("<span style='color:Grey60;'>Bed occupancy rate in England for <span style='color:#FD625E;'>COVID-19 patients</span>, <span style='color:#374649;'>non-COVID patients</span> and <span style='color:#00B8AA;'>unoccupied beds</span>.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths from mental health specialist trusts are excluded from these plots."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")
@@ -355,7 +367,8 @@ server <- function(input, output) {
                            position="right", labels=scales::label_percent(accuracy=1))+
         theme_classic(base_size=16)+
         theme(plot.subtitle=element_markdown(),
-              plot.title=element_text(face="bold", size=rel(1.5)))+
+              plot.title=element_text(face="bold", size=rel(1.8)),
+              text=element_text(family="Lato"))+
         labs(title=paste0("COVID-19 hospitals bed occupancy in ", LA, " vs. the rest of England"),
              subtitle=paste0("Proportion of hospital beds in <span style='color:#FF4E86;'>", LA, " </span>which are occupied by patients with a positive COVID-19 test<br>compared to other Local Authorities in England.<br>Data is published at NHS Trust level, so these figures are apportioned between Local Authorities<br>using data on the proportion of admissions to each trust originating from each LA in 2016-18.<br>A small number of deaths from mental health specialist trusts are excluded from these plots."),
              caption="Data from NHS England | Plot by @VictimOfMaths\nDOI: 10.15131/shef.data.12658088")

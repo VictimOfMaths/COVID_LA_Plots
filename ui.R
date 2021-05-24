@@ -7,6 +7,7 @@ load("Alldata.RData")
 #cases <- read.csv("LACases.csv")
 
 ui <- fluidPage(
+  tags$head(tags$style(HTML('* {font-family: "Lato"};'))),
   
   titlePanel("Visualising Local Authority COVID-19 deaths/cases data"),
   

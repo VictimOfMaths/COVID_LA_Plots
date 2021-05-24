@@ -27,12 +27,12 @@ ScotMortRange2 <- "BV"
 admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/05/Weekly-covid-admissions-and-beds-publication-210520-1.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/05/COVID-19-total-announced-deaths-20-May-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/05/COVID-19-total-announced-deaths-24-May-2021.xlsx"
 #Increment by 7 when each new report is published
 admrange <- "AR"
 occrange <- "AT"
 #Increment by 1 each day
-deathrange <- "QD"
+deathrange <- "QH"
 #Set latest date of admissions data
 admdate <- as.Date("2021-05-16")
 

@@ -16,25 +16,25 @@ library(gt)
 ###################
 
 #England mortality data - updated on Tuesday mornings
-EngMortUrl <- "https://www.ons.gov.uk/file?uri=/peoplepopulationandcommunity/healthandsocialcare/causesofdeath/datasets/deathregistrationsandoccurrencesbylocalauthorityandhealthboard/2021/lahbtables2021week18.xlsx"
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week24.xlsx"
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
-ScotMortRange <- 9748
+ScotMortRange <- 10397
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020-2021.xlsx"
-ScotMortRange2 <- "BV"
-#Admissions data which is published weekly on a Thursday (next update on 27th May)
+ScotMortRange2 <- "CB"
+#Admissions data which is published weekly on a Thursday (next update on 17th June)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/05/Weekly-covid-admissions-and-beds-publication-210520-1.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/06/Weekly-covid-admissions-and-beds-publication-210624.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/05/COVID-19-total-announced-deaths-24-May-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/06/COVID-19-total-announced-deaths-30-June-2021.xlsx"
 #Increment by 7 when each new report is published
-admrange <- "AR"
-occrange <- "AT"
+admrange <- "CA"
+occrange <- "CC"
 #Increment by 1 each day
-deathrange <- "QH"
+deathrange <- "RS"
 #Set latest date of admissions data
-admdate <- as.Date("2021-05-16")
+admdate <- as.Date("2021-06-22")
 
 ###################################################################################
 #Weekly data
@@ -95,7 +95,25 @@ data20.2$deaths.20 <- as.numeric(data20.2$deaths.20)
 data20.2$week <- as.numeric(data20.2$week)
 data20.2$measure <- "Registrations"
 
-data20 <- bind_rows(data20, data20.2)
+data20 <- bind_rows(data20, data20.2) %>% 
+  #Deal with Northamptonshire
+  mutate(code=case_when(
+    code %in% c("E07000150", "E07000152", "E07000153", "E07000156") ~
+      "E06000061",
+    code %in% c("E07000151", "E07000154", "E07000155") ~
+      "E06000062",
+    TRUE ~ code),
+    name=case_when(
+      name %in% c("Corby", "East Northamptonshire", "Kettering",
+                  "Wellingborough") ~
+      "North Northamptonshire",
+      name %in% c("Daventry", "Northampton", "South Northamptonshire") ~
+      "West Northamptonshire",
+    TRUE ~ name)) %>% 
+  group_by(code, name, cause, week, location, measure) %>% 
+  summarise(deaths.20=sum(deaths.20)) %>% 
+  ungroup()
+
 
 #Spread causes
 data20 <- pivot_wider(data20, names_from="cause", values_from="deaths.20")
@@ -115,11 +133,25 @@ data1519$deaths.1519 <- as.numeric(data1519$deaths.1519)
 data1519$week <- as.numeric(data1519$week)
 data1519 <- data1519 %>% drop_na(name)
 
-#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
-data1519$name <- if_else(data1519$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
-                         "Buckinghamshire", data1519$name)
-data1519$code <- if_else(data1519$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
-                         "E06000060", data1519$code)
+#Address boundary changes in Bucks and Northants
+data1519$name <- case_when(
+  data1519$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe") ~
+    "Buckinghamshire", 
+  data1519$name %in% c("Corby", "East Northamptonshire", "Kettering",
+                       "Wellingborough") ~
+    "North Northamptonshire",
+  data1519$name %in% c("Daventry", "Northampton", "South Northamptonshire") ~
+    "West Northamptonshire",
+  TRUE ~ data1519$name)
+
+data1519$code <- case_when(
+  data1519$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ 
+                         "E06000060", 
+  data1519$code %in% c("E07000150", "E07000152", "E07000153", "E07000156") ~
+    "E06000061",
+  data1519$code %in% c("E07000151", "E07000154", "E07000155") ~
+    "E06000062",
+  TRUE ~ data1519$code)
 
 data1519 <- data1519 %>% 
   group_by(week, location, name, code) %>% 
@@ -293,20 +325,30 @@ temp <- curl_download(url=source, destfile=temp, quiet=FALSE, mode="wb")
 LApop <- read_excel(temp, sheet="MYE2-All", range="A5:D435", col_names=TRUE)
 colnames(LApop) <- c("code", "name", "geography", "pop")
 
-#Merge isles of Scilly in with Cornwall
-LApop$code <- if_else(LApop$code=="E06000053", "E06000052", LApop$code)
-LApop$name <- if_else(LApop$name=="Isles of Scilly", "Cornwall", LApop$name)
+#Deal with boundary changes
+LApop$code <- case_when(
+  LApop$code=="E06000053" ~ "E06000052",
+  LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ 
+  "E06000060",
+  LApop$code=="E09000001" ~ "E09000012",
+  LApop$code %in% c("E07000150", "E07000152", "E07000153", "E07000156") ~
+    "E06000061",
+  LApop$code %in% c("E07000151", "E07000154", "E07000155") ~
+    "E06000062",
+  TRUE ~ LApop$code)
 
-#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
-LApop$name <- if_else(LApop$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
-                      "Buckinghamshire", LApop$name)
-LApop$code <- if_else(LApop$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
-                      "E06000060", LApop$code)
-
-#Merge City of London & Hackney
-LApop$code <- if_else(LApop$code=="E09000001", "E09000012", LApop$code)
-LApop$name <- if_else(LApop$name=="City of London", "Hackney and City of London", LApop$name)
-LApop$name <- if_else(LApop$name=="Hackney", "Hackney and City of London", LApop$name)
+LApop$name <- case_when(
+   LApop$name=="Isles of Scilly" ~ "Cornwall",
+   LApop$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe") ~ 
+   "Buckinghamshire",
+   LApop$name=="City of London" ~ "Hackney and City of London",
+   LApop$name=="Hackney" ~ "Hackney and City of London",
+   LApop$name %in% c("Corby", "East Northamptonshire", "Kettering",
+                        "Wellingborough") ~
+     "North Northamptonshire",
+   LApop$name %in% c("Daventry", "Northampton", "South Northamptonshire") ~
+     "West Northamptonshire",
+   TRUE ~ LApop$name)
 
 LApop <- LApop %>% 
   group_by(name, code) %>% 
@@ -398,10 +440,11 @@ data$COVIDrate <- data$COVID.20*100000/data$pop
 
 #############################################################
 #Daily data from PHE API
-APIdata <- get_data(filters="areaType=ltla", structure=list(date="date",
-                                                             name="areaName",
-                                                             code="areaCode",
-                                                             cases="newCasesBySpecimenDate"))
+APIurl <- "https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=newCasesBySpecimenDate&format=csv"
+temp <- curl_download(url=APIurl, destfile=temp, quiet=FALSE, mode="wb")
+
+APIdata <- read.csv(temp) %>% 
+  set_names(c("code", "name", "areaType", "date", "cases"))
 
 casedata <- APIdata %>% 
   mutate(date=as.Date(date)) %>% 
@@ -411,18 +454,27 @@ casedata <- APIdata %>%
 mindate <- min(as.Date(casedata$date))
 maxdate <- max(as.Date(casedata$date))
 
-#Address merging of Aylesbury Vale, Chiltern and South Bucks into Bucks
-casedata$name <- if_else(casedata$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe"), 
-                           "Buckinghamshire", as.character(casedata$name))
-casedata$code <- if_else(casedata$code %in% c("E07000004", "E07000005", "E07000006", "E07000007"), 
-                           "E06000060", as.character(casedata$code))
+#Align names/codes
+casedata$name <- case_when(
+  casedata$name %in% c("Aylesbury Vale", "Chiltern", "South Bucks", "Wycombe") ~ 
+    "Buckinghamshire",
+  casedata$name=="Cornwall and Isles of Scilly" ~ "Cornwall",
+  casedata$name=="Comhairle nan Eilean Siar" ~ "Na h-Eileanan Siar",
+  casedata$name %in% c("Corby", "East Northamptonshire", "Kettering",
+                    "Wellingborough") ~
+    "North Northamptonshire",
+  casedata$name %in% c("Daventry", "Northampton", "South Northamptonshire") ~
+    "West Northamptonshire",
+  TRUE ~ as.character(casedata$name))
 
-#Align names
-casedata$name <- if_else(casedata$name=="Cornwall and Isles of Scilly", "Cornwall", 
-                         casedata$name)
-
-casedata$name <- if_else(casedata$name=="Comhairle nan Eilean Siar", 
-                         "Na h-Eileanan Siar", casedata$name)
+casedata$code <- case_when(
+  casedata$code %in% c("E07000004", "E07000005", "E07000006", "E07000007") ~ 
+    "E06000060",
+  casedata$code %in% c("E07000150", "E07000152", "E07000153", "E07000156") ~
+    "E06000061",
+  casedata$code %in% c("E07000151", "E07000154", "E07000155") ~
+    "E06000062",
+  TRUE ~ as.character(casedata$code))
 
 casedata <- casedata %>% 
   group_by(name, code, date) %>% 
@@ -708,6 +760,20 @@ data.deaths.adm <- data.deaths.adm %>%
   mutate(COVID.Beds=if_else(date<as.Date("2020-11-17") | date>admdate+days(2), NA_real_, COVID.Beds),
          Other.Beds=if_else(date<as.Date("2020-11-17") | date>admdate+days(2), NA_real_, Other.Beds),
          Unocc.Beds=if_else(date<as.Date("2020-11-17") | date>admdate+days(2), NA_real_, Unocc.Beds))
+
+#Deal with Northamptonsire LA merging
+data.deaths.adm$LAD19CD <- case_when(
+  data.deaths.adm$LAD19CD %in% c("E07000150", "E07000152", "E07000153", "E07000156") ~
+    "E06000061",
+  data.deaths.adm$LAD19CD %in% c("E07000151", "E07000154", "E07000155") ~
+    "E06000062",
+  TRUE ~ data.deaths.adm$LAD19CD)
+
+data.deaths.adm <- data.deaths.adm %>% 
+  group_by(LAD19CD, date) %>% 
+  summarise(across(c(deaths, admissions, COVID.Beds, Other.Beds, Unocc.Beds),
+                   sum)) %>% 
+  ungroup()
 
 #Merge into case data
 daydata <- merge(daydata, data.deaths.adm, by.x=c("date", "code"), by.y=c("date", "LAD19CD"), 

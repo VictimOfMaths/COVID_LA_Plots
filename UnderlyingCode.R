@@ -16,25 +16,25 @@ library(gt)
 ###################
 
 #England mortality data - updated on Tuesday mornings
-EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week24.xlsx"
+EngMortUrl <- "https://www.ons.gov.uk/file?uri=%2fpeoplepopulationandcommunity%2fhealthandsocialcare%2fcausesofdeath%2fdatasets%2fdeathregistrationsandoccurrencesbylocalauthorityandhealthboard%2f2021/lahbtables2021week37.xlsx"
 #Scottish mortality data - updated on Wednesday lunchtime
 ScotMortUrl <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-date-council-area-location.xlsx"
-ScotMortRange <- 10397
+ScotMortRange <- 12250
 ScotMortUrl2 <- "https://www.nrscotland.gov.uk/files//statistics/covid19/weekly-deaths-by-location-health-board-council-area-2020-2021.xlsx"
-ScotMortRange2 <- "CB"
-#Admissions data which is published weekly on a Thursday (next update on 17th June)
+ScotMortRange2 <- "CP"
+#Admissions data which is published weekly on a Thursday (next update on 12th August)
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-hospital-activity/
-admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/06/Weekly-covid-admissions-and-beds-publication-210624.xlsx"
+admurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/10/Weekly-covid-admissions-and-beds-publication-211007.xlsx"
 #Hospital deaths data which is published daily
 #https://www.england.nhs.uk/statistics/statistical-work-areas/covid-19-daily-deaths/
-deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/06/COVID-19-total-announced-deaths-30-June-2021.xlsx"
+deathurl <- "https://www.england.nhs.uk/statistics/wp-content/uploads/sites/2/2021/10/COVID-19-total-announced-deaths-07-October-2021.xlsx"
 #Increment by 7 when each new report is published
-admrange <- "CA"
-occrange <- "CC"
+admrange <- "GB"
+occrange <- "GD"
 #Increment by 1 each day
-deathrange <- "RS"
+deathrange <- "VN"
 #Set latest date of admissions data
-admdate <- as.Date("2021-06-22")
+admdate <- as.Date("2021-10-03")
 
 ###################################################################################
 #Weekly data
